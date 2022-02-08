@@ -23,7 +23,7 @@ import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 public class UserController {
 
     private final UserService userService;
@@ -71,7 +71,6 @@ public class UserController {
 
     @PutMapping("/planner/work/{id}")
     public ResponseEntity<BaseResponseEntity> modifyWork(@PathVariable Long id, @RequestBody AddPlannerWorkReqDto requestDto) {
-        String userEmail = getUsername(SecurityUtils.getCurrentUsername());
         userService.modifyWork(id, requestDto);
         return ResponseEntity.status(200).body(new BaseResponseEntity(200, "Success"));
     }

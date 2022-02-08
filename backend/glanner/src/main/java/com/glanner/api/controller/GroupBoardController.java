@@ -1,6 +1,7 @@
 package com.glanner.api.controller;
 
 import com.glanner.api.dto.request.SaveGroupBoardReqDto;
+import com.glanner.api.dto.request.SearchBoardReqDto;
 import com.glanner.api.dto.response.BaseResponseEntity;
 import com.glanner.api.dto.response.FindGroupBoardResDto;
 import com.glanner.api.exception.UserNotFoundException;
@@ -55,4 +56,15 @@ public class GroupBoardController extends BoardController<SaveGroupBoardReqDto> 
         return ResponseEntity.status(200).body(responseDto);
     }
 
+    @GetMapping("/search/{page}/{limit}")
+    public ResponseEntity<List<FindGroupBoardResDto>> searchBoards(@PathVariable int page, @PathVariable int limit, @RequestBody @Valid SearchBoardReqDto reqDto){
+        List<FindGroupBoardResDto> responseDto = queryRepository.findByKeyWord(page, limit, reqDto);
+        return ResponseEntity.status(200).body(responseDto);
+    }
+
+    @GetMapping("/interest/{page}/{limit}")
+    public ResponseEntity<List<FindGroupBoardResDto>> searchInterestBoards(@PathVariable int page, @PathVariable int limit, @RequestBody @Valid SearchBoardReqDto reqDto){
+        List<FindGroupBoardResDto> responseDto = queryRepository.findByInterest(page, limit, reqDto);
+        return ResponseEntity.status(200).body(responseDto);
+    }
 }

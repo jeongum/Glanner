@@ -1,5 +1,6 @@
 package com.glanner.api.repository;
 
+import com.glanner.api.dto.request.SearchBoardReqDto;
 import com.glanner.api.dto.response.FindGlannerBoardResDto;
 import com.glanner.api.queryrepository.GlannerBoardQueryRepository;
 import com.glanner.core.domain.glanner.Glanner;
@@ -67,6 +68,25 @@ public class GlannerBoardQueryRepositoryTest {
         //given
         int offset = 0;
         int limit = 5;
+        SearchBoardReqDto reqDto = new SearchBoardReqDto("5");
+
+        //when
+        List<FindGlannerBoardResDto> results = queryRepository.findByKeyWord(glannerId, offset, limit, reqDto);
+
+        //then
+        assertThat(results.size()).isEqualTo(1);
+        assertThat(results.get(0).getTitle()).isEqualTo("title5");
+    }
+
+    /**
+     *
+     * 검색할 키워드와 offset과 limit으로 게시판 페이지를 가져오는 서비스
+     */
+    @Test
+    public void testSearchBoards() throws Exception{
+        //given
+        int offset = 0;
+        int limit = 5;
 
         //when
         List<FindGlannerBoardResDto> results = queryRepository.findPage(glannerId, offset, limit);
@@ -75,12 +95,6 @@ public class GlannerBoardQueryRepositoryTest {
         assertThat(results.size()).isEqualTo(5);
         assertThat(results.get(0).getTitle()).isEqualTo("title10");
     }
-
-    /**
-     *
-     * 생성된 시간 순서로 offset과 limit으로 게시판 페이지를 가져오는 서비스
-     */
-
     public void createUser(){
         User user = User.builder()
                 .phoneNumber("010-6575-2938")

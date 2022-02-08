@@ -14,7 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -37,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
 @SpringBootTest
-@WithUserDetails("cherish8514@naver.com")
+@WithMockUser(username = "cherish8514@naver.com", password = "1234")
 class UserControllerTest {
 
     @Autowired
@@ -63,7 +63,7 @@ class UserControllerTest {
 
 
         //when
-        mockMvc.perform(post("/user")
+        mockMvc.perform(post("/api/user")
                 .content(asJsonString(reqDto))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -85,7 +85,7 @@ class UserControllerTest {
 
         //when
         when(userService.getWorks("cherish8513@naver.com", dateTimeStart, dateTimeEnd)).thenReturn(response);
-        mockMvc.perform(get("/user/planner/{date}", date))
+        mockMvc.perform(get("/api/user/planner/{date}", date))
 
         //then
                 .andDo(print())
@@ -101,7 +101,7 @@ class UserControllerTest {
 
         //when
         when(userQueryRepository.findDailyWork(workId)).thenReturn(Optional.of(success));
-        mockMvc.perform(get("/user/planner/work/{id}", workId))
+        mockMvc.perform(get("/api/user/planner/work/{id}", workId))
 
                 //then
                 .andDo(print())
@@ -117,7 +117,7 @@ class UserControllerTest {
         AddPlannerWorkReqDto reqDto = new AddPlannerWorkReqDto("title", "content", now, now.plusDays(3), null);
 
         //when
-        mockMvc.perform(post("/user/planner/work")
+        mockMvc.perform(post("/api/user/planner/work")
                 .content(asJsonString(reqDto))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -130,7 +130,6 @@ class UserControllerTest {
 
     public static String asJsonString(final Object obj) {
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
             return new ObjectMapper().registerModule(new JavaTimeModule()).writeValueAsString(obj);
         } catch (Exception e) {
             throw new RuntimeException(e);

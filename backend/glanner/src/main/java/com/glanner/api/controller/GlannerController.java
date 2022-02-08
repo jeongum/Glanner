@@ -23,6 +23,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * 그룹 플래너를 Glanner 라고 부르며, 가능한 모든 기능을 포함하는 컨트롤러.
+ */
 @RestController
 @RequestMapping("/api/glanner")
 @RequiredArgsConstructor
@@ -57,6 +60,12 @@ public class GlannerController {
         return ResponseEntity.status(200).body(responseDto);
     }
 
+    /**
+     *
+     * @param id : 가져올 일정이 속해있는 글래너의 Id
+     * @param date : yyyy-mm-dd로 각 달의 시작 일을 인수로 받는다 ex) 2022.01.01
+     * @return : 해당 달의 모든 일정 정보를 List Dto로 반환한다.
+     */
     @GetMapping("/{id}/{date}")
     public ResponseEntity<List<FindGlannerWorkResDto>> findGlannerWorks(@PathVariable Long id, @PathVariable @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate date){
         LocalDateTime dateTimeStart = date.atStartOfDay();
@@ -95,6 +104,13 @@ public class GlannerController {
         return ResponseEntity.status(200).body(new BaseResponseEntity(200, "Success"));
     }
 
+    /**
+     *
+     * @param glannerId : 일정이 속해있는 글래너 Id
+     * @param startTime : 검색할 일정의 최소 일정 시간(언제 부터)
+     * @param endTime : 검색할 일정의 최대 일정 시간 (언제 까지)
+     * @return 찾아온 데이터의 Dto를 리스트로 반환
+     */
     @GetMapping("/work/{glannerId}/{startTime}/{endTime}")
     public ResponseEntity<List<FindGlannerWorkResDto>> findWork(@PathVariable  Long glannerId,
                                                                 @PathVariable @DateTimeFormat(pattern="yyyy-MM-dd'T'HH:mm") LocalDateTime startTime,

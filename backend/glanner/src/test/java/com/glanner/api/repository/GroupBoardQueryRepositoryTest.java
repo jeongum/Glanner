@@ -1,6 +1,7 @@
 package com.glanner.api.repository;
 
 import com.glanner.api.dto.request.SaveGroupBoardReqDto;
+import com.glanner.api.dto.request.SearchBoardReqDto;
 import com.glanner.api.dto.response.FindGroupBoardResDto;
 import com.glanner.api.queryrepository.GroupBoardQueryRepository;
 import com.glanner.api.service.GroupBoardService;
@@ -65,6 +66,25 @@ public class GroupBoardQueryRepositoryTest {
         //then
         assertThat(boardPage.size()).isEqualTo(5);
         assertThat(boardPage.get(0).getTitle()).isEqualTo("title9");
+    }
+
+    /**
+     *
+     * 검색 키워드와 offset과 limit으로 게시판 페이지를 가져오는 서비스
+     */
+    @Test
+    public void testSearchBoards() throws Exception{
+        //given
+        int page = 0;
+        int limit = 5;
+        SearchBoardReqDto reqDto = new SearchBoardReqDto("1");
+
+        //when
+        List<FindGroupBoardResDto> boardPage = queryRepository.findByKeyWord(page, limit, reqDto);
+
+        //then
+        assertThat(boardPage.size()).isEqualTo(1);
+        assertThat(boardPage.get(0).getTitle()).isEqualTo("title1");
     }
 
     public void createUser(){

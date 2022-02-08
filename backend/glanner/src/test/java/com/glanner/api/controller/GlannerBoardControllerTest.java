@@ -3,6 +3,7 @@ package com.glanner.api.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.glanner.api.dto.request.SaveGlannerBoardReqDto;
+import com.glanner.api.dto.request.SearchBoardReqDto;
 import com.glanner.api.dto.response.FindGlannerBoardResDto;
 import com.glanner.api.queryrepository.GlannerBoardQueryRepository;
 import com.glanner.api.service.BoardService;
@@ -14,7 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -26,14 +27,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * DB에 cherish8514@naver.com 유저가 있는 상황에서
- * FreeBoard 컨트롤러 접근 테스트
- */
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
 @SpringBootTest
-@WithUserDetails("cherish8514@naver.com")
+@WithMockUser(username = "cherish8514@naver.com", password = "1234")
 public class GlannerBoardControllerTest {
 
     @Autowired
@@ -122,6 +119,26 @@ public class GlannerBoardControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
         verify(queryRepository, times(1)).findById(glannerBoardId);
+    }
+
+    @Test
+    public void testSearchBoardsPage() throws Exception{
+        //given
+        Long glannerId = 1L;
+        int page = 0;
+        int limit = 25;
+        SearchBoardReqDto reqDto = new SearchBoardReqDto("1");
+
+        //when
+        mockMvc.perform(get("/api/glanner-board/{id}/search/{page}/{limit}", glannerId, page, limit)
+                        .content(asJsonString(reqDto))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+
+                //then
+                .andExpect(status().isOk());
+        verify(queryRepository, times(1))
+                .findByKeyWord(eq(glannerId), eq(page), eq(limit), any(SearchBoardReqDto.class));
     }
 
     public static String asJsonString(final Object obj) {

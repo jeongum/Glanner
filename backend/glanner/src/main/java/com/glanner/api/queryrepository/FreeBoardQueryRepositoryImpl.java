@@ -1,5 +1,6 @@
 package com.glanner.api.queryrepository;
 
+import com.glanner.api.dto.request.SearchBoardReqDto;
 import com.glanner.api.dto.response.FindFreeBoardResDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -43,6 +44,24 @@ public class FreeBoardQueryRepositoryImpl implements FreeBoardQueryRepository{
                         freeBoard.likeCount,
                         freeBoard.dislikeCount))
                 .from(freeBoard)
+                .orderBy(freeBoard.createdDate.desc())
+                .offset(offset)
+                .limit(limit)
+                .fetch();
+    }
+
+    @Override
+    public List<FindFreeBoardResDto> findByKeyWord(int offset, int limit, SearchBoardReqDto reqDto) {
+        return query
+                .select(Projections.constructor(FindFreeBoardResDto.class,
+                        freeBoard.title,
+                        freeBoard.content,
+                        freeBoard.count,
+                        freeBoard.likeCount,
+                        freeBoard.dislikeCount))
+                .from(freeBoard)
+                .where(freeBoard.title.contains(reqDto.getKeyWord())
+                        .or(freeBoard.content.contains(reqDto.getKeyWord())))
                 .orderBy(freeBoard.createdDate.desc())
                 .offset(offset)
                 .limit(limit)

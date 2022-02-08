@@ -1,5 +1,6 @@
 package com.glanner.api.queryrepository;
 
+import com.glanner.api.dto.request.SearchBoardReqDto;
 import com.glanner.api.dto.response.FindGlannerBoardResDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -40,6 +41,22 @@ public class GlannerBoardQueryRepositoryImpl implements GlannerBoardQueryReposit
                         glannerBoard.count))
                 .from(glannerBoard)
                 .where(glannerBoard.glanner.id.eq(glannerId))
+                .orderBy(glannerBoard.createdDate.desc())
+                .offset(offset)
+                .limit(limit)
+                .fetch();
+    }
+
+    @Override
+    public List<FindGlannerBoardResDto> findByKeyWord(Long glannerId, int offset, int limit, SearchBoardReqDto reqDto) {
+        return query
+                .select(Projections.constructor(FindGlannerBoardResDto.class,
+                        glannerBoard.title,
+                        glannerBoard.content,
+                        glannerBoard.count))
+                .from(glannerBoard)
+                .where(glannerBoard.glanner.id.eq(glannerId)
+                        .and((glannerBoard.title.contains(reqDto.getKeyWord()).or(glannerBoard.content.contains(reqDto.getKeyWord())))))
                 .orderBy(glannerBoard.createdDate.desc())
                 .offset(offset)
                 .limit(limit)

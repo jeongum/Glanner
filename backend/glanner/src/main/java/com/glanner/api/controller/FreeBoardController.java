@@ -1,16 +1,15 @@
 package com.glanner.api.controller;
 
 import com.glanner.api.dto.request.SaveFreeBoardReqDto;
+import com.glanner.api.dto.request.SearchBoardReqDto;
 import com.glanner.api.dto.response.FindFreeBoardResDto;
 import com.glanner.api.queryrepository.FreeBoardQueryRepository;
 import com.glanner.api.service.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -24,6 +23,12 @@ public class FreeBoardController extends BoardController<SaveFreeBoardReqDto> {
         this.freeBoardQueryRepository = freeBoardQueryRepository;
     }
 
+    /**
+     *
+     * @param page : 0이 아닌 1부터 시작하며 데이터를 가져오는 시작 인덱스를 지정한다.
+     * @param limit : 가져올 데이터의 갯수를 지정한다.
+     * @return : 데이터의 정보를 Dto List 로 반환한다.
+     */
     @GetMapping("/{page}/{limit}")
     public ResponseEntity<List<FindFreeBoardResDto>> getBoards(@PathVariable int page, @PathVariable int limit){
         List<FindFreeBoardResDto> responseDto =freeBoardQueryRepository.findPage(page, limit);
@@ -36,4 +41,9 @@ public class FreeBoardController extends BoardController<SaveFreeBoardReqDto> {
         return ResponseEntity.status(200).body(responseDto);
     }
 
+    @GetMapping("/search/{page}/{limit}")
+    public ResponseEntity<List<FindFreeBoardResDto>> searchBoards(@PathVariable int page, @PathVariable int limit, @RequestBody @Valid SearchBoardReqDto reqDto){
+        List<FindFreeBoardResDto> responseDto =freeBoardQueryRepository.findByKeyWord(page, limit, reqDto);
+        return ResponseEntity.status(200).body(responseDto);
+    }
 }

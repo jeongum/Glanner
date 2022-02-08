@@ -14,7 +14,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.Optional;
 
-@RestController
+/**
+ * *Board Controller 부모 객체로 범용적인 CRUD를 담당한다.
+ * @param <Q> : 각 Board Controller 에 맞는 Request dto 를 저장 및 수정에 이용하도록 Generic 으로 받는다.
+ */
 @RequiredArgsConstructor
 public class BoardController<Q extends SaveBoardReqDto> {
     private final BoardService boardService;
@@ -46,8 +49,8 @@ public class BoardController<Q extends SaveBoardReqDto> {
     }
 
     @PutMapping("/comment/{id}")
-    public ResponseEntity<BaseResponseEntity> modifyComment(@PathVariable Long commentId, @RequestBody @Valid UpdateCommentReqDto reqDto){
-        boardService.modifyComment(commentId, reqDto);
+    public ResponseEntity<BaseResponseEntity> modifyComment(@PathVariable Long id, @RequestBody @Valid UpdateCommentReqDto reqDto){
+        boardService.modifyComment(id, reqDto);
         return ResponseEntity.status(200).body(new BaseResponseEntity(200, "Success"));
     }
 

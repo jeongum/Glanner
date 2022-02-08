@@ -31,7 +31,7 @@ public class DailyWorkGlannerQueryRepositoryImpl implements DailyWorkGlannerQuer
                 .from(dailyWorkGlanner)
                 .where(dailyWorkGlanner.glanner.id.eq(glannerId),
                         dailyWorkGlanner.startDate.after(startDate),
-                        dailyWorkGlanner.endDate.before(endDate))
+                        dailyWorkGlanner.startDate.before(endDate))
                 .orderBy(dailyWorkGlanner.startDate.desc())
                 .fetch();
     }

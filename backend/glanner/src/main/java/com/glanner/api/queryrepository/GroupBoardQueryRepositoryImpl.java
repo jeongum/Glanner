@@ -1,5 +1,6 @@
 package com.glanner.api.queryrepository;
 
+import com.glanner.api.dto.request.SearchBoardReqDto;
 import com.glanner.api.dto.response.FindGroupBoardResDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -41,6 +42,39 @@ public class GroupBoardQueryRepositoryImpl implements GroupBoardQueryRepository{
                         groupBoard.count,
                         groupBoard.interests))
                 .from(groupBoard)
+                .orderBy(groupBoard.createdDate.desc())
+                .offset(offset)
+                .limit(limit)
+                .fetch();
+    }
+
+    @Override
+    public List<FindGroupBoardResDto> findByKeyWord(int offset, int limit, SearchBoardReqDto reqDto) {
+        return query
+                .select(Projections.constructor(FindGroupBoardResDto.class,
+                        groupBoard.title,
+                        groupBoard.content,
+                        groupBoard.count,
+                        groupBoard.interests))
+                .from(groupBoard)
+                .where(groupBoard.title.contains(reqDto.getKeyWord())
+                        .or(groupBoard.content.contains(reqDto.getKeyWord())))
+                .orderBy(groupBoard.createdDate.desc())
+                .offset(offset)
+                .limit(limit)
+                .fetch();
+    }
+
+    @Override
+    public List<FindGroupBoardResDto> findByInterest(int offset, int limit, SearchBoardReqDto reqDto) {
+        return query
+                .select(Projections.constructor(FindGroupBoardResDto.class,
+                        groupBoard.title,
+                        groupBoard.content,
+                        groupBoard.count,
+                        groupBoard.interests))
+                .from(groupBoard)
+                .where(groupBoard.interests.contains(reqDto.getKeyWord()))
                 .orderBy(groupBoard.createdDate.desc())
                 .offset(offset)
                 .limit(limit)

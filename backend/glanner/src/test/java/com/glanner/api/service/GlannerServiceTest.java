@@ -130,7 +130,7 @@ public class GlannerServiceTest {
         Schedule schedule = Schedule.builder()
                 .build();
         anotherUser.changeSchedule(schedule);
-        User savedAnotherUser = userRepository.save(anotherUser);
+        userRepository.save(anotherUser);
 
         int size = 5;
         AddUserToGlannerReqDto reqDto = new AddUserToGlannerReqDto(savedGlanner.getId(),"cherish8514@naver.com");
