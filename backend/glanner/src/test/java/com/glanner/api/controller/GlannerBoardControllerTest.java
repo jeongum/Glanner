@@ -19,6 +19,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -110,7 +111,7 @@ public class GlannerBoardControllerTest {
     public void testFindBoard() throws Exception{
         //given
         Long glannerBoardId = 1L;
-        FindGlannerBoardResDto resDto = new FindGlannerBoardResDto("title", "content", 1);
+        FindGlannerBoardResDto resDto = new FindGlannerBoardResDto(glannerBoardId, userEmail, "title", "content", 1, LocalDateTime.now());
         //when
         when(queryRepository.findById(glannerBoardId)).thenReturn(Optional.of(resDto));
         mockMvc.perform(get("/api/glanner-board/{id}", glannerBoardId))

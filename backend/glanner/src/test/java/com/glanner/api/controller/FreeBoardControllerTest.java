@@ -25,6 +25,7 @@ import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.test.web.servlet.MockMvc;
 
 import javax.persistence.EntityManager;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -32,6 +33,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
@@ -94,13 +96,14 @@ public class FreeBoardControllerTest {
         //given
         Long boardId = 1L;
         FindFreeBoardResDto findFreeBoardResDto =
-                new FindFreeBoardResDto("title", "content", 0, 0, 0);
+                new FindFreeBoardResDto(boardId, userEmail, "title", "content", 0, LocalDateTime.now(), 0, 0);
 
         //when
         when(freeBoardQueryRepository.findById(boardId)).thenReturn(Optional.of(findFreeBoardResDto));
         mockMvc.perform(get("/api/free-board/{id}", boardId))
 
-                //then
+        //then
+                .andDo(print())
                 .andExpect(status().isOk());
         verify(freeBoardQueryRepository, times(1)).findById(boardId);
     }

@@ -16,6 +16,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
@@ -39,7 +40,7 @@ public class NoticeBoardControllerTest {
     public void testFindBoardOne() throws Exception{
         //given
         Long boardId = 1L;
-        FindNoticeBoardResDto noticeBoardResDto = new FindNoticeBoardResDto("title", "content", 0);
+        FindNoticeBoardResDto noticeBoardResDto = new FindNoticeBoardResDto(boardId, userEmail, "title", "content", 0, LocalDateTime.now());
 
         //when
         when(queryRepository.findById(boardId)).thenReturn(Optional.of(noticeBoardResDto));
