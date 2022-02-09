@@ -20,6 +20,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -113,7 +114,7 @@ public class GroupBoardControllerTest {
     public void testFindBoardOne() throws Exception{
         //given
         Long boardId = 1L;
-        FindGroupBoardResDto groupBoardResDto = new FindGroupBoardResDto("title", "content", 0, "#휴식#");
+        FindGroupBoardResDto groupBoardResDto = new FindGroupBoardResDto(boardId, userEmail, "title", "content", 0, LocalDateTime.now(), "#휴식#");
 
         //when
         when(queryRepository.findById(boardId)).thenReturn(Optional.of(groupBoardResDto));

@@ -24,9 +24,12 @@ public class NoticeBoardQueryRepositoryImpl implements NoticeBoardQueryRepositor
     public Optional<FindNoticeBoardResDto> findById(Long id) {
         return Optional.ofNullable(query
                 .select(Projections.constructor(FindNoticeBoardResDto.class,
+                        noticeBoard.id,
+                        noticeBoard.user.email,
                         noticeBoard.title,
                         noticeBoard.content,
-                        noticeBoard.count))
+                        noticeBoard.count,
+                        noticeBoard.createdDate))
                 .from(noticeBoard)
                 .where(noticeBoard.id.eq(id))
                 .fetchOne());
@@ -36,9 +39,12 @@ public class NoticeBoardQueryRepositoryImpl implements NoticeBoardQueryRepositor
     public List<FindNoticeBoardResDto> findPage(int offset, int limit) {
         return query
                 .select(Projections.constructor(FindNoticeBoardResDto.class,
+                        noticeBoard.id,
+                        noticeBoard.user.email,
                         noticeBoard.title,
                         noticeBoard.content,
-                        noticeBoard.count))
+                        noticeBoard.count,
+                        noticeBoard.createdDate))
                 .from(noticeBoard)
                 .orderBy(noticeBoard.createdDate.desc())
                 .offset(offset)
@@ -50,9 +56,12 @@ public class NoticeBoardQueryRepositoryImpl implements NoticeBoardQueryRepositor
     public List<FindNoticeBoardResDto> findPageWithKeyword(int offset, int limit, String keyword) {
         return query
                 .select(Projections.constructor(FindNoticeBoardResDto.class,
+                        noticeBoard.id,
+                        noticeBoard.user.email,
                         noticeBoard.title,
                         noticeBoard.content,
-                        noticeBoard.count))
+                        noticeBoard.count,
+                        noticeBoard.createdDate))
                 .from(noticeBoard)
                 .where(noticeBoard.title.contains(keyword)
                         .or(noticeBoard.content.contains(keyword)))

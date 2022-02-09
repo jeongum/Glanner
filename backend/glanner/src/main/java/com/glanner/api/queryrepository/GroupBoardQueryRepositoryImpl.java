@@ -24,9 +24,12 @@ public class GroupBoardQueryRepositoryImpl implements GroupBoardQueryRepository{
     public Optional<FindGroupBoardResDto> findById(Long id) {
         return Optional.ofNullable(query
                 .select(Projections.constructor(FindGroupBoardResDto.class,
+                        groupBoard.id,
+                        groupBoard.user.email,
                         groupBoard.title,
                         groupBoard.content,
                         groupBoard.count,
+                        groupBoard.createdDate,
                         groupBoard.interests))
                 .from(groupBoard)
                 .where(groupBoard.id.eq(id))
@@ -37,9 +40,12 @@ public class GroupBoardQueryRepositoryImpl implements GroupBoardQueryRepository{
     public List<FindGroupBoardResDto> findPage(int offset, int limit) {
         return query
                 .select(Projections.constructor(FindGroupBoardResDto.class,
+                        groupBoard.id,
+                        groupBoard.user.email,
                         groupBoard.title,
                         groupBoard.content,
                         groupBoard.count,
+                        groupBoard.createdDate,
                         groupBoard.interests))
                 .from(groupBoard)
                 .orderBy(groupBoard.createdDate.desc())
@@ -52,9 +58,12 @@ public class GroupBoardQueryRepositoryImpl implements GroupBoardQueryRepository{
     public List<FindGroupBoardResDto> findPageWithKeyword(int offset, int limit, String keyword) {
         return query
                 .select(Projections.constructor(FindGroupBoardResDto.class,
+                        groupBoard.id,
+                        groupBoard.user.email,
                         groupBoard.title,
                         groupBoard.content,
                         groupBoard.count,
+                        groupBoard.createdDate,
                         groupBoard.interests))
                 .from(groupBoard)
                 .where(groupBoard.title.contains(keyword)
@@ -69,9 +78,12 @@ public class GroupBoardQueryRepositoryImpl implements GroupBoardQueryRepository{
     public List<FindGroupBoardResDto> findPageWithInterest(int offset, int limit, String interest) {
         return query
                 .select(Projections.constructor(FindGroupBoardResDto.class,
+                        groupBoard.id,
+                        groupBoard.user.email,
                         groupBoard.title,
                         groupBoard.content,
                         groupBoard.count,
+                        groupBoard.createdDate,
                         groupBoard.interests))
                 .from(groupBoard)
                 .where(groupBoard.interests.contains(interest))

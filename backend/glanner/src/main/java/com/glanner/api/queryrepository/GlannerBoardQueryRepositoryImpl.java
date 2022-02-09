@@ -24,9 +24,12 @@ public class GlannerBoardQueryRepositoryImpl implements GlannerBoardQueryReposit
     public Optional<FindGlannerBoardResDto> findById(Long id) {
         return Optional.ofNullable(query
                 .select(Projections.constructor(FindGlannerBoardResDto.class,
+                        glannerBoard.id,
+                        glannerBoard.user.email,
                         glannerBoard.title,
                         glannerBoard.content,
-                        glannerBoard.count))
+                        glannerBoard.count,
+                        glannerBoard.createdDate))
                 .from(glannerBoard)
                 .where(glannerBoard.id.eq(id))
                 .fetchOne());
@@ -36,9 +39,12 @@ public class GlannerBoardQueryRepositoryImpl implements GlannerBoardQueryReposit
     public List<FindGlannerBoardResDto> findPage(Long glannerId, int offset, int limit) {
         return query
                 .select(Projections.constructor(FindGlannerBoardResDto.class,
+                        glannerBoard.id,
+                        glannerBoard.user.email,
                         glannerBoard.title,
                         glannerBoard.content,
-                        glannerBoard.count))
+                        glannerBoard.count,
+                        glannerBoard.createdDate))
                 .from(glannerBoard)
                 .where(glannerBoard.glanner.id.eq(glannerId))
                 .orderBy(glannerBoard.createdDate.desc())
@@ -51,9 +57,12 @@ public class GlannerBoardQueryRepositoryImpl implements GlannerBoardQueryReposit
     public List<FindGlannerBoardResDto> findPageWithKeyword(Long glannerId, int offset, int limit, String keyword) {
         return query
                 .select(Projections.constructor(FindGlannerBoardResDto.class,
+                        glannerBoard.id,
+                        glannerBoard.user.email,
                         glannerBoard.title,
                         glannerBoard.content,
-                        glannerBoard.count))
+                        glannerBoard.count,
+                        glannerBoard.createdDate))
                 .from(glannerBoard)
                 .where(glannerBoard.glanner.id.eq(glannerId)
                         .and((glannerBoard.title.contains(keyword).or(glannerBoard.content.contains(keyword)))))
