@@ -49,7 +49,7 @@ public class GroupBoardQueryRepositoryImpl implements GroupBoardQueryRepository{
     }
 
     @Override
-    public List<FindGroupBoardResDto> findByKeyWord(int offset, int limit, SearchBoardReqDto reqDto) {
+    public List<FindGroupBoardResDto> findPageWithKeyword(int offset, int limit, String keyword) {
         return query
                 .select(Projections.constructor(FindGroupBoardResDto.class,
                         groupBoard.title,
@@ -57,8 +57,8 @@ public class GroupBoardQueryRepositoryImpl implements GroupBoardQueryRepository{
                         groupBoard.count,
                         groupBoard.interests))
                 .from(groupBoard)
-                .where(groupBoard.title.contains(reqDto.getKeyWord())
-                        .or(groupBoard.content.contains(reqDto.getKeyWord())))
+                .where(groupBoard.title.contains(keyword)
+                        .or(groupBoard.content.contains(keyword)))
                 .orderBy(groupBoard.createdDate.desc())
                 .offset(offset)
                 .limit(limit)
@@ -66,7 +66,7 @@ public class GroupBoardQueryRepositoryImpl implements GroupBoardQueryRepository{
     }
 
     @Override
-    public List<FindGroupBoardResDto> findByInterest(int offset, int limit, SearchBoardReqDto reqDto) {
+    public List<FindGroupBoardResDto> findPageWithInterest(int offset, int limit, String interest) {
         return query
                 .select(Projections.constructor(FindGroupBoardResDto.class,
                         groupBoard.title,
@@ -74,7 +74,7 @@ public class GroupBoardQueryRepositoryImpl implements GroupBoardQueryRepository{
                         groupBoard.count,
                         groupBoard.interests))
                 .from(groupBoard)
-                .where(groupBoard.interests.contains(reqDto.getKeyWord()))
+                .where(groupBoard.interests.contains(interest))
                 .orderBy(groupBoard.createdDate.desc())
                 .offset(offset)
                 .limit(limit)

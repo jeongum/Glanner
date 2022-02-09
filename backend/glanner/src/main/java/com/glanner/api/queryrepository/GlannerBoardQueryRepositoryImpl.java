@@ -48,7 +48,7 @@ public class GlannerBoardQueryRepositoryImpl implements GlannerBoardQueryReposit
     }
 
     @Override
-    public List<FindGlannerBoardResDto> findByKeyWord(Long glannerId, int offset, int limit, SearchBoardReqDto reqDto) {
+    public List<FindGlannerBoardResDto> findPageWithKeyword(Long glannerId, int offset, int limit, String keyword) {
         return query
                 .select(Projections.constructor(FindGlannerBoardResDto.class,
                         glannerBoard.title,
@@ -56,7 +56,7 @@ public class GlannerBoardQueryRepositoryImpl implements GlannerBoardQueryReposit
                         glannerBoard.count))
                 .from(glannerBoard)
                 .where(glannerBoard.glanner.id.eq(glannerId)
-                        .and((glannerBoard.title.contains(reqDto.getKeyWord()).or(glannerBoard.content.contains(reqDto.getKeyWord())))))
+                        .and((glannerBoard.title.contains(keyword).or(glannerBoard.content.contains(keyword)))))
                 .orderBy(glannerBoard.createdDate.desc())
                 .offset(offset)
                 .limit(limit)

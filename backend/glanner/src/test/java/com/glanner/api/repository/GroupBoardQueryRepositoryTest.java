@@ -80,7 +80,7 @@ public class GroupBoardQueryRepositoryTest {
         SearchBoardReqDto reqDto = new SearchBoardReqDto("1");
 
         //when
-        List<FindGroupBoardResDto> boardPage = queryRepository.findByKeyWord(page, limit, reqDto);
+        List<FindGroupBoardResDto> boardPage = queryRepository.findPageWithKeyword(page, limit, reqDto.getKeyWord());
 
         //then
         assertThat(boardPage.size()).isEqualTo(1);

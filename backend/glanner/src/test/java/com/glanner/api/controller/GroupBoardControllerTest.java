@@ -156,7 +156,7 @@ public class GroupBoardControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
         verify(queryRepository, times(1))
-                .findByKeyWord(eq(page), eq(limit), any(SearchBoardReqDto.class));
+                .findPageWithKeyword(page, limit, reqDto.getKeyWord());
     }
 
 

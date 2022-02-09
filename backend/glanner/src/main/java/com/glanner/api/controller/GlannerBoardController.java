@@ -55,8 +55,8 @@ public class GlannerBoardController extends BoardController<SaveGlannerBoardReqD
     }
 
     @GetMapping("{glannerId}/search/{page}/{limit}")
-    public ResponseEntity<List<FindGlannerBoardResDto>> getBoards(@PathVariable Long glannerId, @PathVariable int page, @PathVariable int limit, @RequestBody @Valid SearchBoardReqDto reqDto){
-        List<FindGlannerBoardResDto> responseDto = queryRepository.findByKeyWord(glannerId, page, limit, reqDto);
+    public ResponseEntity<List<FindGlannerBoardResDto>> searchBoards(@PathVariable Long glannerId, @PathVariable int page, @PathVariable int limit, @RequestBody @Valid SearchBoardReqDto reqDto){
+        List<FindGlannerBoardResDto> responseDto = queryRepository.findPageWithKeyword(glannerId, page, limit, reqDto.getKeyWord());
         return ResponseEntity.status(200).body(responseDto);
     }
 }

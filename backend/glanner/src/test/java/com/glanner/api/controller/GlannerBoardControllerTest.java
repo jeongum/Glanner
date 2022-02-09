@@ -138,7 +138,7 @@ public class GlannerBoardControllerTest {
                 //then
                 .andExpect(status().isOk());
         verify(queryRepository, times(1))
-                .findByKeyWord(eq(glannerId), eq(page), eq(limit), any(SearchBoardReqDto.class));
+                .findPageWithKeyword(glannerId, page, limit, reqDto.getKeyWord());
     }
 
     public static String asJsonString(final Object obj) {

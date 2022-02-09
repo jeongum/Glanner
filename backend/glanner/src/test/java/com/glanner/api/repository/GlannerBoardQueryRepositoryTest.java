@@ -71,7 +71,7 @@ public class GlannerBoardQueryRepositoryTest {
         SearchBoardReqDto reqDto = new SearchBoardReqDto("5");
 
         //when
-        List<FindGlannerBoardResDto> results = queryRepository.findByKeyWord(glannerId, offset, limit, reqDto);
+        List<FindGlannerBoardResDto> results = queryRepository.findPageWithKeyword(glannerId, offset, limit, reqDto.getKeyWord());
 
         //then
         assertThat(results.size()).isEqualTo(1);

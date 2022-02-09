@@ -37,7 +37,7 @@ public class NoticeBoardController extends BoardController<SaveBoardReqDto> {
 
     @GetMapping("/search/{page}/{limit}")
     public ResponseEntity<List<FindNoticeBoardResDto>> searchBoards(@PathVariable int page, @PathVariable int limit, @RequestBody @Valid SearchBoardReqDto reqDto){
-        List<FindNoticeBoardResDto> responseDto =queryRepository.findByKeyWord(page, limit, reqDto);
+        List<FindNoticeBoardResDto> responseDto =queryRepository.findPageWithKeyword(page, limit, reqDto.getKeyWord());
         return ResponseEntity.status(200).body(responseDto);
     }
 }

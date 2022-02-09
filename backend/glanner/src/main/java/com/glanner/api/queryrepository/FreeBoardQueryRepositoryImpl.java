@@ -51,7 +51,7 @@ public class FreeBoardQueryRepositoryImpl implements FreeBoardQueryRepository{
     }
 
     @Override
-    public List<FindFreeBoardResDto> findByKeyWord(int offset, int limit, SearchBoardReqDto reqDto) {
+    public List<FindFreeBoardResDto> findPageWithKeyword(int offset, int limit, String keyword) {
         return query
                 .select(Projections.constructor(FindFreeBoardResDto.class,
                         freeBoard.title,
@@ -60,8 +60,8 @@ public class FreeBoardQueryRepositoryImpl implements FreeBoardQueryRepository{
                         freeBoard.likeCount,
                         freeBoard.dislikeCount))
                 .from(freeBoard)
-                .where(freeBoard.title.contains(reqDto.getKeyWord())
-                        .or(freeBoard.content.contains(reqDto.getKeyWord())))
+                .where(freeBoard.title.contains(keyword)
+                        .or(freeBoard.content.contains(keyword)))
                 .orderBy(freeBoard.createdDate.desc())
                 .offset(offset)
                 .limit(limit)
