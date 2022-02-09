@@ -43,7 +43,7 @@ public class FreeBoardController extends BoardController<SaveFreeBoardReqDto> {
 
     @GetMapping("/search/{page}/{limit}")
     public ResponseEntity<List<FindFreeBoardResDto>> searchBoards(@PathVariable int page, @PathVariable int limit, @RequestBody @Valid SearchBoardReqDto reqDto){
-        List<FindFreeBoardResDto> responseDto =freeBoardQueryRepository.findByKeyWord(page, limit, reqDto);
+        List<FindFreeBoardResDto> responseDto =freeBoardQueryRepository.findPageWithKeyword(page, limit, reqDto.getKeyWord());
         return ResponseEntity.status(200).body(responseDto);
     }
 }

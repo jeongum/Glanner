@@ -135,7 +135,7 @@ public class FreeBoardControllerTest {
                 //then
                 .andExpect(status().isOk());
         verify(freeBoardQueryRepository, times(1))
-                .findByKeyWord(eq(page), eq(limit), any(SearchBoardReqDto.class));
+                .findPageWithKeyword(page, limit, reqDto.getKeyWord());
     }
 
     public static String asJsonString(final Object obj) {

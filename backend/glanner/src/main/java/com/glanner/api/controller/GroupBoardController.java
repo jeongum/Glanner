@@ -58,13 +58,13 @@ public class GroupBoardController extends BoardController<SaveGroupBoardReqDto> 
 
     @GetMapping("/search/{page}/{limit}")
     public ResponseEntity<List<FindGroupBoardResDto>> searchBoards(@PathVariable int page, @PathVariable int limit, @RequestBody @Valid SearchBoardReqDto reqDto){
-        List<FindGroupBoardResDto> responseDto = queryRepository.findByKeyWord(page, limit, reqDto);
+        List<FindGroupBoardResDto> responseDto = queryRepository.findPageWithKeyword(page, limit, reqDto.getKeyWord());
         return ResponseEntity.status(200).body(responseDto);
     }
 
     @GetMapping("/interest/{page}/{limit}")
     public ResponseEntity<List<FindGroupBoardResDto>> searchInterestBoards(@PathVariable int page, @PathVariable int limit, @RequestBody @Valid SearchBoardReqDto reqDto){
-        List<FindGroupBoardResDto> responseDto = queryRepository.findByInterest(page, limit, reqDto);
+        List<FindGroupBoardResDto> responseDto = queryRepository.findPageWithInterest(page, limit, reqDto.getKeyWord());
         return ResponseEntity.status(200).body(responseDto);
     }
 }

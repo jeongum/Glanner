@@ -9,5 +9,5 @@ import java.util.Optional;
 public interface FreeBoardQueryRepository {
     public Optional<FindFreeBoardResDto> findById(Long id);
     public List<FindFreeBoardResDto> findPage(int offset, int limit);
-    public List<FindFreeBoardResDto> findByKeyWord(int offset, int limit, SearchBoardReqDto reqDto);
+    public List<FindFreeBoardResDto> findPageWithKeyword(int offset, int limit, String keyword);
 }

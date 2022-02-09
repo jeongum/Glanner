@@ -47,15 +47,15 @@ public class NoticeBoardQueryRepositoryImpl implements NoticeBoardQueryRepositor
     }
 
     @Override
-    public List<FindNoticeBoardResDto> findByKeyWord(int offset, int limit, SearchBoardReqDto reqDto) {
+    public List<FindNoticeBoardResDto> findPageWithKeyword(int offset, int limit, String keyword) {
         return query
                 .select(Projections.constructor(FindNoticeBoardResDto.class,
                         noticeBoard.title,
                         noticeBoard.content,
                         noticeBoard.count))
                 .from(noticeBoard)
-                .where(noticeBoard.title.contains(reqDto.getKeyWord())
-                        .or(noticeBoard.content.contains(reqDto.getKeyWord())))
+                .where(noticeBoard.title.contains(keyword)
+                        .or(noticeBoard.content.contains(keyword)))
                 .orderBy(noticeBoard.createdDate.desc())
                 .offset(offset)
                 .limit(limit)

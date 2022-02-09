@@ -9,5 +9,5 @@ import java.util.Optional;
 public interface NoticeBoardQueryRepository {
     public Optional<FindNoticeBoardResDto> findById(Long id);
     public List<FindNoticeBoardResDto> findPage(int offset, int limit);
-    public List<FindNoticeBoardResDto> findByKeyWord(int offset, int limit, SearchBoardReqDto reqDto);
+    public List<FindNoticeBoardResDto> findPageWithKeyword(int offset, int limit, String keyword);
 }
