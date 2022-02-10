@@ -7,20 +7,24 @@ export default function FindGroupContainer () {
 
   const [loading, setLoading] = useState(true);
   const [groupBoardList, setGroupBoardList] = useState([]);
-    
-    // 임시 테스트용 API, 
-    // `json-server --watch data/db.json --port 8000` 으로 서버를 켜야 데이터 받아올 수 있음
-    // 백엔드 REST API 구축되면 지울 예정
+  const [page, setPage] = useState(0);
+
     useEffect(() => {      
-      axios('http://localhost:8000/groupBoardList', { method: 'GET' })
+      fetchGroupBoardList()
+    }, [page])
+    const fetchGroupBoardList = () => {
+      axios(`/api/group-board/${page}/4`, { method: 'GET' })
       .then(res => {
         setGroupBoardList(res.data)
         setLoading(false)
       }
       )
       .catch(err => console.log(err))
-    }, [])
-        
+    }
+    const handleChangePage = newPage => {
+      setPage((newPage - 1) * 4)
+    }
+
     return (
       <>
         <Helmet>
@@ -29,6 +33,7 @@ export default function FindGroupContainer () {
         <FindGroupPresenter
           loading={loading}
           groupBoardList={groupBoardList}
+          handleChangePage={handleChangePage}
         />
       </>
     );

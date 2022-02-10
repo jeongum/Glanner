@@ -19,44 +19,46 @@ import DailyPlanner from '../Routes/Planner/DailyPlanner/DailyPlanerContainer';
 const HeaderDiv = styled.div`
   border-bottom: 2px solid #e5e5e5;
 `;
-
+const isLogin = localStorage.getItem('token')
 export default () => (
-  <Paper elevation={2} sx={{width: "100%", minWidth:"900px", minHeight:"100%"}}>
-    <Router>
-    <HeaderDiv>
-      <Header title="글래너님의 플래너" />
-    </HeaderDiv>
-      <Navigator
-        PaperProps={{
-          style: {
-            height: 100 + "%",
-            backgroundColor: "#f6f6f6",
-            padding: "0 20px",
-            display: "inline-block",
-            border: "0px"
-          },
-        }}
-      />
-      <Routes>
-        <Route path="*" element={<MainPage />}/>
-        <Route path="/" element={<MainPage />}
+  <>
+    <Paper elevation={2} sx={{width: "1200px", minWidth:"900px", minHeight:"100%"}}>
+      <Router>
+      <HeaderDiv>
+        <Header title="글래너님의 플래너" />
+      </HeaderDiv>
+        <Navigator
+          PaperProps={{
+            style: {
+              height: 100 + "%",
+              backgroundColor: "#f6f6f6",
+              padding: "0 20px",
+              display: "inline-block",
+              border: "0px"
+            },
+          }}
         />
-        <Route path="/community/free" element={<BoardList />} />
-        <Route path="/community/notice" element={<NoticeList />} />
-        <Route path="/community/group" element={<GroupBoardList />} />
-        {/* <Route path="/community/:type" element={<BoardList />} /> */}
-        <Route path="/home" />
-        <Route path="/board/free/:id" element={<BoardDetail />} />
-        <Route path="/board/notice/:id" element={<BoardDetail />} />
-        <Route path="/board/group/:id" element={<BoardDetail />} />
-        <Route path="/board-form"  element={<BoardForm />} />
-        <Route path="/notice-form"  element={<BoardForm />} />
-        <Route path="/group-form" element={<GroupForm />} />
-        <Route path="/board/:id" element={<BoardDetail />} />
-        <Route path="/daily" element={<DailyPlanner />} />
+        <Routes>
+          <Route path="*" element={<MainPage />}/>
+          <Route path="/" element={<MainPage />}
+          />
+          <Route path="/community/free" element={<BoardList />} />
+          <Route path="/community/notice" element={<NoticeList />} />
+          <Route path="/community/group" element={<GroupBoardList />} />
+          {/* <Route path="/community/:type" element={<BoardList />} /> */}
+          <Route path="/home" />
+          <Route path="/board/free/:id" element={<BoardDetail />} />
+          <Route path="/board/notice/:id" element={<BoardDetail />} />
+          <Route path="/board/group/:id" element={<BoardDetail />} />
+          <Route path="/board-form"  element={<BoardForm />} />
+          <Route path="/notice-form"  element={<BoardForm />} />
+          <Route path="/group-form" element={<GroupForm />} />
+          <Route path="/board/:id" element={<BoardDetail />} />
+          <Route path="/daily" element={<DailyPlanner />} />
 
-      </Routes>
-      <FloatingActionButtons />
-    </Router>
-  </Paper>
+        </Routes>
+        <FloatingActionButtons />
+      </Router>
+    </Paper>
+  </>
 );

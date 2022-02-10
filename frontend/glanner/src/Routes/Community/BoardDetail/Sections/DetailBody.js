@@ -40,8 +40,8 @@ export const DetailBody = ({ post, addLike }) => {
           <MoreBtn editData={post} type={`/free/body`} />
         }
         
-        title={post.writer}
-        subheader={moment(post.date).format('YYYY.MM.DD HH:mm:ss')}
+        title={post.userEmail}
+        subheader={moment(post.createdDate).format('YYYY.MM.DD HH:mm:ss')}
         className={classes.dateText}
       />
       <Divider />
@@ -62,13 +62,14 @@ export const DetailBody = ({ post, addLike }) => {
       {groupPage &&
       <Stack spacing={1} sx={{mt: 5}}>        
         <Stack direction="row" spacing={1}>          
-          {post.tags && post.tags.map(title => {
-            return <Chip label={title} size="small" sx={{borderRadius: '5px', color: 'white', backgroundColor: "#8C7B80"}} />
-          })}
+          {/* {post.tags && post.tags.map((title, idx) => {
+            return <Chip label={title} size="small" sx={{borderRadius: '5px', color: 'white', backgroundColor: "#8C7B80"}} key={idx} />
+          })} */}
+          <Chip label={post.interests} size="small" sx={{borderRadius: '5px', color: 'white', backgroundColor: "#8C7B80"}} />
         </Stack>
       </Stack>}
       <CardActions disableSpacing sx={{display: 'flex', justifyContent: 'space-between'}}>
-        <span className={classes.botText}>조회수 {post.count}{post.like ? <>{`, 좋아요 ${post.like}`}</>: null } </span>
+        <span className={classes.botText}>조회수 {post.count}{post.likeCount ? <>{`, 좋아요 ${post.likeCount}`}</>: null } </span>
         <div>
           <IconButton onClick={addLike}>
             <FavoriteIcon />

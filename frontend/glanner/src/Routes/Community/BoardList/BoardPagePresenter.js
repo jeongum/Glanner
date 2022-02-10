@@ -92,7 +92,7 @@ export default function BoardPagePresenter({
               </Grid>
             </Grid>
             <Divider />
-            {latestNoticeList.map(({ id, title, writer, date, count, like }) => (
+            {latestNoticeList.map(({ id, title, userEmail, createdDate, count, like }) => (
               <Paper sx={{ mb: 1, width: "100%", backgroundColor: "#F9F9F9" }} key={id}>
                 <ListItem
                   disableGutters
@@ -108,10 +108,10 @@ export default function BoardPagePresenter({
                       </Link>
                     </Grid>
                     <Grid item xs={1.8}>
-                      <ListItemText>{writer}</ListItemText>
+                      <ListItemText>{userEmail}</ListItemText>
                     </Grid>
                     <Grid item xs={1}>
-                      <ListItemText>{getListTime(date)}</ListItemText>
+                      <ListItemText>{getListTime(createdDate)}</ListItemText>
                     </Grid>
                     <Grid item xs={0.6}>
                       <ListItemText>{count}</ListItemText>
@@ -133,14 +133,14 @@ export default function BoardPagePresenter({
               minHeight: "100%",
             }}
           >
-            {boardList.map(({ id, title, writer, date, count, like }) => (
-              <Paper sx={{ mb: 1, width: "100%", backgroundColor: "#F9F9F9" }} key={id}>
+            {boardList.map(({ boardId, title, userEmail, createdDate, count, likeCount }) => (
+              <Paper sx={{ mb: 1, width: "100%", backgroundColor: "#F9F9F9" }} key={boardId}>
                 <ListItem                
                   disableGutters
                   sx={{ 
                     height: "35px", 
                     textAlign: "center", 
-                    "&:hover": {
+                    "&:hover": {                      
                       color: "#FFFFFF",
                       backgroundColor: "#8C7B80",
                       borderColor: "#8C7B80",
@@ -153,16 +153,16 @@ export default function BoardPagePresenter({
                       <ListItemText primary={type == 'notice' ? "[공지]" : "[자유]"} />
                     </Grid>
                     <Grid item xs={7}>
-                      <Link to={`/board/free/${id}`}>
-                        <ListItemText sx={{textAlign: 'start'}}>{title}</ListItemText>
+                      <Link to={`/board/free/${boardId}`}>
+                        <ListItemText sx={{textAlign: 'start', '&:hover': { color: '#FFFFFF'}}}>{title}</ListItemText>
                       </Link>
                     </Grid>
                     <Grid item xs={1.8}>
-                      <ListItemText sx={{mx: 3}}>{writer}</ListItemText>
+                      <ListItemText sx={{mx: 3}}>{userEmail}</ListItemText>
                     </Grid>
                     <Grid item xs={1}>
                       <ListItemText>
-                        {getListTime(date)}
+                        {getListTime(createdDate)}
                       </ListItemText>
                     </Grid>
                     <Grid item xs={0.6}>
@@ -172,7 +172,7 @@ export default function BoardPagePresenter({
                     </Grid>
                     <Grid item xs={0.6}>
                       <ListItemText>
-                        {like}
+                        {likeCount}
                       </ListItemText>
                     </Grid>
                   </Grid>
@@ -181,7 +181,7 @@ export default function BoardPagePresenter({
             ))}
           </List>
         </Box>
-        <div style={{ width: "95%", textAlign: "right", marginTop: "12px" }}>
+        <div style={{ width: "95%", textAlign: "right", margin: "12px" }}>
           <Link to={'/board-form/'}>
             <Button 
               sx={{
@@ -203,10 +203,11 @@ export default function BoardPagePresenter({
             >글쓰기</Button>
           </Link>
         </div>
+      
+      <Stack alignItems={'center'} spacing={2}>
+        <Pagination onChange={e => handleChangePage(e.target.innerText)} count={5} sx={{position: 'fixed', bottom: 25}} size="large"/>      
+      </Stack>
       </>}
-    <Stack alignItems={'center'} spacing={2}>
-      <Pagination onChange={e => handleChangePage(e.target.innerText)} count={5} sx={{position: 'fixed', bottom: 100}} size="large"/>      
-    </Stack>
     </>
   );
 }
