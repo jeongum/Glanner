@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 import static com.glanner.core.domain.glanner.QGlannerBoard.glannerBoard;
 
@@ -20,26 +19,36 @@ public class GlannerBoardQueryRepositoryImpl implements GlannerBoardQueryReposit
     private final JPAQueryFactory query;
 
     @Override
-    public Optional<FindGlannerBoardResDto> findById(Long id) {
-        return Optional.ofNullable(query
-                .select(Projections.constructor(FindGlannerBoardResDto.class,
-                        glannerBoard.title,
-                        glannerBoard.content,
-                        glannerBoard.count))
-                .from(glannerBoard)
-                .where(glannerBoard.id.eq(id))
-                .fetchOne());
-    }
-
-    @Override
     public List<FindGlannerBoardResDto> findPage(Long glannerId, int offset, int limit) {
         return query
                 .select(Projections.constructor(FindGlannerBoardResDto.class,
+                        glannerBoard.id,
+                        glannerBoard.user.name,
                         glannerBoard.title,
                         glannerBoard.content,
-                        glannerBoard.count))
+                        glannerBoard.count,
+                        glannerBoard.createdDate))
                 .from(glannerBoard)
                 .where(glannerBoard.glanner.id.eq(glannerId))
+                .orderBy(glannerBoard.createdDate.desc())
+                .offset(offset)
+                .limit(limit)
+                .fetch();
+    }
+
+    @Override
+    public List<FindGlannerBoardResDto> findPageWithKeyword(Long glannerId, int offset, int limit, String keyword) {
+        return query
+                .select(Projections.constructor(FindGlannerBoardResDto.class,
+                        glannerBoard.id,
+                        glannerBoard.user.name,
+                        glannerBoard.title,
+                        glannerBoard.content,
+                        glannerBoard.count,
+                        glannerBoard.createdDate))
+                .from(glannerBoard)
+                .where(glannerBoard.glanner.id.eq(glannerId)
+                        .and((glannerBoard.title.contains(keyword).or(glannerBoard.content.contains(keyword)))))
                 .orderBy(glannerBoard.createdDate.desc())
                 .offset(offset)
                 .limit(limit)

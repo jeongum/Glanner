@@ -4,10 +4,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.glanner.api.dto.request.AddCommentReqDto;
 import com.glanner.api.dto.request.SaveGroupBoardReqDto;
-import com.glanner.api.dto.response.FindGroupBoardResDto;
+import com.glanner.api.dto.request.SearchBoardReqDto;
+import com.glanner.api.dto.response.FindCommentResDto;
+import com.glanner.api.dto.response.FindGroupBoardWithCommentResDto;
 import com.glanner.api.queryrepository.GroupBoardQueryRepository;
 import com.glanner.api.service.BoardService;
 import com.glanner.api.service.GroupBoardService;
+import com.glanner.core.domain.glanner.GroupBoard;
+import com.glanner.core.domain.user.User;
+import com.glanner.core.domain.user.UserRoleStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,26 +20,22 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
-import java.util.Optional;
+import java.util.List;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * DB에 cherish8513@naver.com 유저가 있는 상황에서
- * NoticeBoard 컨트롤러 접근 테스트
- */
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
 @SpringBootTest
-@WithUserDetails("cherish8514@naver.com")
+@WithMockUser(username = "cherish8514@naver.com", password = "1234")
 public class GroupBoardControllerTest {
 
     @Autowired
@@ -116,16 +117,23 @@ public class GroupBoardControllerTest {
     public void testFindBoardOne() throws Exception{
         //given
         Long boardId = 1L;
-        FindGroupBoardResDto groupBoardResDto = new FindGroupBoardResDto("title", "content", 0, "#휴식#");
+        GroupBoard groupBoard = GroupBoard.boardBuilder()
+                .user(new User("name", "email", "password", "phoneNumber", UserRoleStatus.ROLE_USER))
+                .title("title")
+                .content("content")
+                .interests("interests")
+                .build();
+        List<FindCommentResDto> commentResDtos = new ArrayList<>();
+        FindGroupBoardWithCommentResDto groupBoardResDto = new FindGroupBoardWithCommentResDto(groupBoard, commentResDtos);
 
         //when
-        when(queryRepository.findById(boardId)).thenReturn(Optional.of(groupBoardResDto));
+        when(groupBoardService.getGroupBoard(boardId)).thenReturn(groupBoardResDto);
         mockMvc.perform(get("/api/group-board/{id}", boardId))
 
         //then
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(queryRepository, times(1)).findById(boardId);
+        verify(groupBoardService, times(1)).getGroupBoard(boardId);
     }
 
     @Test
@@ -143,6 +151,24 @@ public class GroupBoardControllerTest {
         verify(queryRepository, times(1)).findPage(page, limit);
     }
 
+    @Test
+    public void testSearchBoardsPage() throws Exception{
+        //given
+        int page = 0;
+        int limit = 25;
+        SearchBoardReqDto reqDto = new SearchBoardReqDto("1");
+
+        //when
+        mockMvc.perform(get("/api/group-board/search/{page}/{limit}", page, limit)
+                        .content(asJsonString(reqDto))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                //then
+                .andDo(print())
+                .andExpect(status().isOk());
+        verify(queryRepository, times(1))
+                .findPageWithKeyword(page, limit, reqDto.getKeyWord());
+    }
 
 
     public static String asJsonString(final Object obj) {

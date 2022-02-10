@@ -5,7 +5,7 @@ import static com.querydsl.core.types.PathMetadataFactory.*;
 import com.querydsl.core.types.dsl.*;
 
 import com.querydsl.core.types.PathMetadata;
-import javax.annotation.processing.Generated;
+import javax.annotation.Generated;
 import com.querydsl.core.types.Path;
 import com.querydsl.core.types.dsl.PathInits;
 
@@ -13,7 +13,7 @@ import com.querydsl.core.types.dsl.PathInits;
 /**
  * QBoard is a Querydsl query type for Board
  */
-@Generated("com.querydsl.codegen.DefaultEntitySerializer")
+@Generated("com.querydsl.codegen.EntitySerializer")
 public class QBoard extends EntityPathBase<Board> {
 
     private static final long serialVersionUID = 1438721905L;

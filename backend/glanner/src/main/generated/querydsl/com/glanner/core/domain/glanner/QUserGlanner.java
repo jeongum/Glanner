@@ -5,7 +5,7 @@ import static com.querydsl.core.types.PathMetadataFactory.*;
 import com.querydsl.core.types.dsl.*;
 
 import com.querydsl.core.types.PathMetadata;
-import javax.annotation.processing.Generated;
+import javax.annotation.Generated;
 import com.querydsl.core.types.Path;
 import com.querydsl.core.types.dsl.PathInits;
 
@@ -13,7 +13,7 @@ import com.querydsl.core.types.dsl.PathInits;
 /**
  * QUserGlanner is a Querydsl query type for UserGlanner
  */
-@Generated("com.querydsl.codegen.DefaultEntitySerializer")
+@Generated("com.querydsl.codegen.EntitySerializer")
 public class QUserGlanner extends EntityPathBase<UserGlanner> {
 
     private static final long serialVersionUID = 464552684L;

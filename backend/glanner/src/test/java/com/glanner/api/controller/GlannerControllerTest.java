@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.glanner.api.dto.request.AddGlannerWorkReqDto;
 import com.glanner.api.dto.request.AddUserToGlannerReqDto;
+import com.glanner.api.dto.request.ChangeGlannerNameReqDto;
 import com.glanner.api.dto.response.FindGlannerWorkResDto;
 import com.glanner.api.queryrepository.DailyWorkGlannerQueryRepository;
 import com.glanner.api.service.GlannerService;
@@ -14,7 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -28,14 +29,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-/**
- * DB에 cherish8514@naver.com 유저가 있는 상황에서
- * Glanner 컨트롤러 접근 테스트
- */
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
 @SpringBootTest
-@WithUserDetails("cherish8514@naver.com")
+@WithMockUser(username = "cherish8514@naver.com", password = "1234")
 public class GlannerControllerTest {
 
     @Autowired
@@ -68,6 +65,22 @@ public class GlannerControllerTest {
         //then
                 .andExpect(status().isOk());
         verify(glannerService, times(1)).deleteGlanner(any(Long.class));
+    }
+
+    @Test
+    public void testChangeGlannerName() throws Exception{
+        //given
+        ChangeGlannerNameReqDto reqDto = new ChangeGlannerNameReqDto(1L, "name");
+
+        //when
+        mockMvc.perform(put("/api/glanner/" )
+                .content(asJsonString(reqDto))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+
+                //then
+                .andExpect(status().isOk());
+        verify(glannerService, times(1)).changeGlannerName(reqDto);
     }
 
     @Test
