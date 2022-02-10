@@ -4,7 +4,8 @@ import com.glanner.api.dto.request.SaveGlannerBoardReqDto;
 import com.glanner.api.dto.request.SearchBoardReqDto;
 import com.glanner.api.dto.response.BaseResponseEntity;
 import com.glanner.api.dto.response.FindGlannerBoardResDto;
-import com.glanner.api.exception.BoardNotFoundException;
+import com.glanner.api.dto.response.FindGlannerBoardWithCommentsResDto;
+import com.glanner.api.exception.UserNotFoundException;
 import com.glanner.api.queryrepository.GlannerBoardQueryRepository;
 import com.glanner.api.service.BoardService;
 import com.glanner.api.service.GlannerBoardService;
@@ -32,7 +33,7 @@ public class GlannerBoardController extends BoardController<SaveGlannerBoardReqD
     @Override
     @PostMapping
     public ResponseEntity<BaseResponseEntity> saveBoard(@RequestBody @Valid SaveGlannerBoardReqDto requestDto) {
-        String userEmail = getUsername(SecurityUtils.getCurrentUsername());
+        String userEmail = SecurityUtils.getCurrentUsername().orElseThrow(UserNotFoundException::new);
         glannerBoardService.saveGlannerBoard(userEmail, requestDto);
         return ResponseEntity.status(200).body(new BaseResponseEntity(200, "Success"));
     }
@@ -50,8 +51,8 @@ public class GlannerBoardController extends BoardController<SaveGlannerBoardReqD
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<FindGlannerBoardResDto> getBoard(@PathVariable Long id){
-        FindGlannerBoardResDto responseDto = queryRepository.findById(id).orElseThrow(BoardNotFoundException::new);
+    public ResponseEntity<FindGlannerBoardWithCommentsResDto> getBoard(@PathVariable Long id){
+        FindGlannerBoardWithCommentsResDto responseDto = glannerBoardService.getGlannerBoard(id);
         return ResponseEntity.status(200).body(responseDto);
     }
 

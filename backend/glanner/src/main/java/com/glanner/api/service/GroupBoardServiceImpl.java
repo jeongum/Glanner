@@ -1,9 +1,11 @@
 package com.glanner.api.service;
 
 import com.glanner.api.dto.request.SaveGroupBoardReqDto;
+import com.glanner.api.dto.response.FindCommentResDto;
+import com.glanner.api.dto.response.FindGroupBoardWithCommentResDto;
 import com.glanner.api.exception.BoardNotFoundException;
-import com.glanner.api.exception.FileNotSavedException;
 import com.glanner.api.exception.UserNotFoundException;
+import com.glanner.api.queryrepository.CommentQueryRepository;
 import com.glanner.core.domain.board.FileInfo;
 import com.glanner.core.domain.glanner.Glanner;
 import com.glanner.core.domain.glanner.GroupBoard;
@@ -32,9 +34,10 @@ public class GroupBoardServiceImpl implements GroupBoardService {
     private final UserRepository userRepository;
     private final GlannerRepository glannerRepository;
     private final GroupBoardRepository groupBoardRepository;
+    private final CommentQueryRepository commentQueryRepository;
 
     @Override
-    public void saveGroupBoard(String userEmail, SaveGroupBoardReqDto reqDto) {
+    public Long saveGroupBoard(String userEmail, SaveGroupBoardReqDto reqDto) {
         User user = userRepository.findByEmail(userEmail).orElseThrow(UserNotFoundException::new);
         List<FileInfo> fileInfos = getFileInfos(reqDto.getFiles());
         GroupBoard groupBoard = reqDto.toEntity(user);
@@ -45,7 +48,7 @@ public class GroupBoardServiceImpl implements GroupBoardService {
         glannerRepository.save(glanner);
 
         groupBoard.changeGlanner(glanner);
-        groupBoardRepository.save(groupBoard);
+        return groupBoardRepository.save(groupBoard).getId();
     }
 
     @Override
@@ -54,6 +57,15 @@ public class GroupBoardServiceImpl implements GroupBoardService {
         board.changeBoard(reqDto.getTitle(), reqDto.getContent(), getFileInfos(reqDto.getFiles()));
         board.changeInterests(reqDto.getInterests());
     }
+
+    @Override
+    public FindGroupBoardWithCommentResDto getGroupBoard(Long boardId) {
+        GroupBoard groupBoard = groupBoardRepository.findRealById(boardId).orElseThrow(BoardNotFoundException::new);
+        groupBoard.addCount();
+        List<FindCommentResDto> commentsByBoardId = commentQueryRepository.findCommentsByBoardId(boardId);
+        return new FindGroupBoardWithCommentResDto(groupBoard, commentsByBoardId);
+    }
+
 
     private List<FileInfo> getFileInfos(List<MultipartFile> files) {
         List<FileInfo> fileInfos = new ArrayList<>();
@@ -78,7 +90,7 @@ public class GroupBoardServiceImpl implements GroupBoardService {
                     try {
                         file.transferTo(new File(folder, saveFileName));
                     } catch (IOException e) {
-                        throw new FileNotSavedException();
+                        e.printStackTrace();
                     }
                 }
                 fileInfos.add(fileInfo);

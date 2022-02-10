@@ -2,6 +2,7 @@ package com.glanner.api.service;
 
 import com.glanner.api.dto.request.AddGlannerWorkReqDto;
 import com.glanner.api.dto.request.AddUserToGlannerReqDto;
+import com.glanner.api.dto.request.ChangeGlannerNameReqDto;
 import com.glanner.api.dto.request.UpdateGlannerWorkReqDto;
 import com.glanner.api.dto.response.FindAttendedGlannerResDto;
 import com.glanner.api.dto.response.FindGlannerResDto;
@@ -23,7 +24,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -38,9 +38,9 @@ public class GlannerServiceImpl implements GlannerService{
     private static final int MAX_PERSONNEL_SIZE = 5;
 
     @Override
-    public void saveGlanner(String hostEmail) {
+    public Long saveGlanner(String hostEmail) {
 
-        User findUser = getUser(userRepository.findByEmail(hostEmail));
+        User findUser = userRepository.findByEmail(hostEmail).orElseThrow(UserNotFoundException::new);
         Glanner glanner = Glanner.builder()
                 .host(findUser)
                 .build();
@@ -51,16 +51,22 @@ public class GlannerServiceImpl implements GlannerService{
 
         glanner.addUserGlanner(userGlanner);
 
-        Glanner savedGlanner = glannerRepository.save(glanner);
+        return glannerRepository.save(glanner).getId();
     }
 
     @Override
     public void deleteGlanner(Long id) {
-        Glanner findGlanner = getGlanner(glannerRepository.findById(id));
+        Glanner findGlanner = glannerRepository.findById(id).orElseThrow(GlannerNotFoundException::new);
 
         glannerRepository.deleteAllWorksById(findGlanner.getId());
         glannerRepository.deleteAllUserGlannerById(findGlanner.getId());
         glannerRepository.delete(findGlanner);
+    }
+
+    @Override
+    public void changeGlannerName(ChangeGlannerNameReqDto reqDto) {
+        Glanner glanner = glannerRepository.findById(reqDto.getGlannerId()).orElseThrow(GlannerNotFoundException::new);
+        glanner.changeGlannerName(reqDto.getGlannerName());
     }
 
     @Override
@@ -80,8 +86,8 @@ public class GlannerServiceImpl implements GlannerService{
     @Override
     public void addUser(AddUserToGlannerReqDto reqDto) {
 
-        User attendingUser = getUser(userRepository.findByEmail(reqDto.getEmail()));
-        Glanner findGlanner = getGlanner(glannerRepository.findRealById(reqDto.getGlannerId()));
+        User attendingUser = userRepository.findByEmail(reqDto.getEmail()).orElseThrow(UserNotFoundException::new);
+        Glanner findGlanner = glannerRepository.findRealById(reqDto.getGlannerId()).orElseThrow(GlannerNotFoundException::new);
         if (findGlanner.getUserGlanners().size() >= MAX_PERSONNEL_SIZE){
             throw new FullUserInGroupException();
         }
@@ -95,7 +101,7 @@ public class GlannerServiceImpl implements GlannerService{
 
     @Override
     public void deleteUser(Long glannerId, Long userId) {
-        Glanner findGlanner = getGlanner(glannerRepository.findById(userId));
+        Glanner findGlanner = glannerRepository.findById(userId).orElseThrow(GlannerNotFoundException::new);
         int size = findGlanner.getUserGlanners().size();
         for (int i = 0; i < size; i++) {
             if(findGlanner.getUserGlanners().get(i).getUser().getId().equals(userId)){
@@ -107,13 +113,13 @@ public class GlannerServiceImpl implements GlannerService{
 
     @Override
     public void addDailyWork(AddGlannerWorkReqDto reqDto) {
-        Glanner glanner = getGlanner(glannerRepository.findById(reqDto.getGlannerId()));
+        Glanner glanner = glannerRepository.findById(reqDto.getGlannerId()).orElseThrow(GlannerNotFoundException::new);
         glanner.addDailyWork(reqDto.toEntity());
     }
 
     @Override
     public void deleteDailyWork(Long glanenrId, Long workId) {
-        Glanner findGlanner = getGlanner(glannerRepository.findById(glanenrId));
+        Glanner findGlanner = glannerRepository.findById(glanenrId).orElseThrow(GlannerNotFoundException::new);
         DailyWorkGlanner deleteWork = dailyWorkGlannerRepository.findById(workId).orElseThrow(DailyWorkNotFoundException::new);
         findGlanner.getWorks().remove(deleteWork);
     }
@@ -122,13 +128,5 @@ public class GlannerServiceImpl implements GlannerService{
     public void updateDailyWork(UpdateGlannerWorkReqDto reqDto) {
         DailyWorkGlanner updateWork = dailyWorkGlannerRepository.findById(reqDto.getWorkId()).orElseThrow(DailyWorkNotFoundException::new);
         updateWork.changeDailyWork(reqDto.getStartTime(), reqDto.getEndTime(), reqDto.getTitle(), reqDto.getContent());
-    }
-
-    public User getUser(Optional<User> user){
-        return user.orElseThrow(UserNotFoundException::new);
-    }
-
-    public Glanner getGlanner(Optional<Glanner> glanner){
-        return glanner.orElseThrow(GlannerNotFoundException::new);
     }
 }

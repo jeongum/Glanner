@@ -1,6 +1,5 @@
 package com.glanner.api.queryrepository;
 
-import com.glanner.api.dto.request.SearchBoardReqDto;
 import com.glanner.api.dto.response.FindNoticeBoardResDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -9,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 import static com.glanner.core.domain.board.QNoticeBoard.noticeBoard;
 
@@ -21,26 +19,11 @@ public class NoticeBoardQueryRepositoryImpl implements NoticeBoardQueryRepositor
     private final JPAQueryFactory query;
 
     @Override
-    public Optional<FindNoticeBoardResDto> findById(Long id) {
-        return Optional.ofNullable(query
-                .select(Projections.constructor(FindNoticeBoardResDto.class,
-                        noticeBoard.id,
-                        noticeBoard.user.email,
-                        noticeBoard.title,
-                        noticeBoard.content,
-                        noticeBoard.count,
-                        noticeBoard.createdDate))
-                .from(noticeBoard)
-                .where(noticeBoard.id.eq(id))
-                .fetchOne());
-    }
-
-    @Override
     public List<FindNoticeBoardResDto> findPage(int offset, int limit) {
         return query
                 .select(Projections.constructor(FindNoticeBoardResDto.class,
                         noticeBoard.id,
-                        noticeBoard.user.email,
+                        noticeBoard.user.name,
                         noticeBoard.title,
                         noticeBoard.content,
                         noticeBoard.count,
@@ -57,7 +40,7 @@ public class NoticeBoardQueryRepositoryImpl implements NoticeBoardQueryRepositor
         return query
                 .select(Projections.constructor(FindNoticeBoardResDto.class,
                         noticeBoard.id,
-                        noticeBoard.user.email,
+                        noticeBoard.user.name,
                         noticeBoard.title,
                         noticeBoard.content,
                         noticeBoard.count,

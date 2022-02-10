@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class FindBoardResDto {
     private Long boardId;
-    private String userEmail;
+    private String userName;
     private String title;
     private String content;
     private int count;
