@@ -3,6 +3,7 @@ package com.glanner.api.controller;
 import com.glanner.api.dto.request.SaveFreeBoardReqDto;
 import com.glanner.api.dto.request.SearchBoardReqDto;
 import com.glanner.api.dto.response.FindFreeBoardResDto;
+import com.glanner.api.exception.BoardNotFoundException;
 import com.glanner.api.queryrepository.FreeBoardQueryRepository;
 import com.glanner.api.service.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,7 @@ public class FreeBoardController extends BoardController<SaveFreeBoardReqDto> {
 
     @GetMapping("/{id}")
     public ResponseEntity<FindFreeBoardResDto> getBoard(@PathVariable Long id){
-        FindFreeBoardResDto responseDto = freeBoardQueryRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        FindFreeBoardResDto responseDto = freeBoardQueryRepository.findById(id).orElseThrow(BoardNotFoundException::new);
         return ResponseEntity.status(200).body(responseDto);
     }
 

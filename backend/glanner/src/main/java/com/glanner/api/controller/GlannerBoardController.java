@@ -4,6 +4,7 @@ import com.glanner.api.dto.request.SaveGlannerBoardReqDto;
 import com.glanner.api.dto.request.SearchBoardReqDto;
 import com.glanner.api.dto.response.BaseResponseEntity;
 import com.glanner.api.dto.response.FindGlannerBoardResDto;
+import com.glanner.api.exception.BoardNotFoundException;
 import com.glanner.api.queryrepository.GlannerBoardQueryRepository;
 import com.glanner.api.service.BoardService;
 import com.glanner.api.service.GlannerBoardService;
@@ -50,7 +51,7 @@ public class GlannerBoardController extends BoardController<SaveGlannerBoardReqD
 
     @GetMapping("/{id}")
     public ResponseEntity<FindGlannerBoardResDto> getBoard(@PathVariable Long id){
-        FindGlannerBoardResDto responseDto = queryRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        FindGlannerBoardResDto responseDto = queryRepository.findById(id).orElseThrow(BoardNotFoundException::new);
         return ResponseEntity.status(200).body(responseDto);
     }
 

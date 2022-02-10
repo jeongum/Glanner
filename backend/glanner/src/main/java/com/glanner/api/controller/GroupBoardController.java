@@ -4,6 +4,7 @@ import com.glanner.api.dto.request.SaveGroupBoardReqDto;
 import com.glanner.api.dto.request.SearchBoardReqDto;
 import com.glanner.api.dto.response.BaseResponseEntity;
 import com.glanner.api.dto.response.FindGroupBoardResDto;
+import com.glanner.api.exception.BoardNotFoundException;
 import com.glanner.api.exception.UserNotFoundException;
 import com.glanner.api.queryrepository.GroupBoardQueryRepository;
 import com.glanner.api.service.BoardService;
@@ -52,7 +53,7 @@ public class GroupBoardController extends BoardController<SaveGroupBoardReqDto> 
 
     @GetMapping("/{id}")
     public ResponseEntity<FindGroupBoardResDto> getBoard(@PathVariable Long id){
-        FindGroupBoardResDto responseDto = queryRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        FindGroupBoardResDto responseDto = queryRepository.findById(id).orElseThrow(BoardNotFoundException::new);
         return ResponseEntity.status(200).body(responseDto);
     }
 

@@ -3,6 +3,7 @@ package com.glanner.api.controller;
 import com.glanner.api.dto.request.SaveBoardReqDto;
 import com.glanner.api.dto.request.SearchBoardReqDto;
 import com.glanner.api.dto.response.FindNoticeBoardResDto;
+import com.glanner.api.exception.BoardNotFoundException;
 import com.glanner.api.queryrepository.NoticeBoardQueryRepository;
 import com.glanner.api.service.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ public class NoticeBoardController extends BoardController<SaveBoardReqDto> {
 
     @GetMapping("/{id}")
     public ResponseEntity<FindNoticeBoardResDto> getBoard(@PathVariable Long id){
-        FindNoticeBoardResDto responseDto = queryRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        FindNoticeBoardResDto responseDto = queryRepository.findById(id).orElseThrow(BoardNotFoundException::new);
         return ResponseEntity.status(200).body(responseDto);
     }
 
