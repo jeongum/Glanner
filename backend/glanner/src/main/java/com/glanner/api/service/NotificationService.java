@@ -11,6 +11,6 @@ import java.security.NoSuchAlgorithmException;
 
 public interface NotificationService {
     public void sendMail(SendMailReqDto reqDto);
-    public void sendSms(SendSmsReqDto reqDto) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, URISyntaxException, JsonProcessingException;
+    public void sendSms(SendSmsReqDto reqDto);
     public void sendScheduledSms();
 }

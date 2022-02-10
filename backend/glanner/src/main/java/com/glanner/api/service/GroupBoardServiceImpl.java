@@ -1,6 +1,8 @@
 package com.glanner.api.service;
 
 import com.glanner.api.dto.request.SaveGroupBoardReqDto;
+import com.glanner.api.exception.BoardNotFoundException;
+import com.glanner.api.exception.FileNotSavedException;
 import com.glanner.api.exception.UserNotFoundException;
 import com.glanner.core.domain.board.FileInfo;
 import com.glanner.core.domain.glanner.Glanner;
@@ -48,7 +50,7 @@ public class GroupBoardServiceImpl implements GroupBoardService {
 
     @Override
     public void modifyGroupBoard(Long boardId, SaveGroupBoardReqDto reqDto) {
-        GroupBoard board = groupBoardRepository.findById(boardId).orElseThrow(IllegalArgumentException::new);
+        GroupBoard board = groupBoardRepository.findById(boardId).orElseThrow(BoardNotFoundException::new);
         board.changeBoard(reqDto.getTitle(), reqDto.getContent(), getFileInfos(reqDto.getFiles()));
         board.changeInterests(reqDto.getInterests());
     }
@@ -76,7 +78,7 @@ public class GroupBoardServiceImpl implements GroupBoardService {
                     try {
                         file.transferTo(new File(folder, saveFileName));
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        throw new FileNotSavedException();
                     }
                 }
                 fileInfos.add(fileInfo);

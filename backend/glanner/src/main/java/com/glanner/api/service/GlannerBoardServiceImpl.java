@@ -1,6 +1,8 @@
 package com.glanner.api.service;
 
 import com.glanner.api.dto.request.SaveGlannerBoardReqDto;
+import com.glanner.api.exception.FileNotSavedException;
+import com.glanner.api.exception.GlannerNotFoundException;
 import com.glanner.api.exception.UserNotFoundException;
 import com.glanner.core.domain.board.FileInfo;
 import com.glanner.core.domain.glanner.Glanner;
@@ -29,7 +31,7 @@ public class GlannerBoardServiceImpl implements GlannerBoardService{
 
     public void saveGlannerBoard(String userEmail, SaveGlannerBoardReqDto requestDto) {
         User user = userRepository.findByEmail(userEmail).orElseThrow(UserNotFoundException::new);
-        Glanner glanner = glannerRepository.findRealById(requestDto.getGlannerId()).orElseThrow(IllegalArgumentException::new);
+        Glanner glanner = glannerRepository.findRealById(requestDto.getGlannerId()).orElseThrow(GlannerNotFoundException::new);
         List<FileInfo> fileInfos = getFileInfos(requestDto.getFiles());
 
         GlannerBoard board = GlannerBoard
@@ -68,7 +70,7 @@ public class GlannerBoardServiceImpl implements GlannerBoardService{
                     try {
                         file.transferTo(new File(folder, saveFileName));
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        throw new FileNotSavedException();
                     }
                 }
                 fileInfos.add(fileInfo);

@@ -3,6 +3,9 @@ package com.glanner.api.service;
 import com.glanner.api.dto.request.AddCommentReqDto;
 import com.glanner.api.dto.request.SaveBoardReqDto;
 import com.glanner.api.dto.request.UpdateCommentReqDto;
+import com.glanner.api.exception.BoardNotFoundException;
+import com.glanner.api.exception.CommentNotFoundException;
+import com.glanner.api.exception.FileNotSavedException;
 import com.glanner.api.exception.UserNotFoundException;
 import com.glanner.core.domain.board.Board;
 import com.glanner.core.domain.board.Comment;
@@ -42,7 +45,7 @@ public class BoardServiceImpl implements BoardService{
 
     @Override
     public void modifyBoard(Long boardId, SaveBoardReqDto requestDto) {
-        Board board = boardRepository.findById(boardId).orElseThrow(IllegalArgumentException::new);
+        Board board = boardRepository.findById(boardId).orElseThrow(BoardNotFoundException::new);
         board.changeBoard(
                 requestDto.getTitle(),
                 requestDto.getContent(),
@@ -51,17 +54,17 @@ public class BoardServiceImpl implements BoardService{
 
     @Override
     public void deleteBoard(Long boardId) {
-        Board board = boardRepository.findById(boardId).orElseThrow(IllegalArgumentException::new);
+        Board board = boardRepository.findById(boardId).orElseThrow(BoardNotFoundException::new);
         boardRepository.delete(board);
     }
 
     @Override
     public void addComment(String userEmail, AddCommentReqDto requestDto) {
         User findUser = userRepository.findByEmail(userEmail).orElseThrow(UserNotFoundException::new);
-        Board board = boardRepository.findById(requestDto.getBoardId()).orElseThrow(IllegalArgumentException::new);
+        Board board = boardRepository.findById(requestDto.getBoardId()).orElseThrow(BoardNotFoundException::new);
         Comment parent = null;
         if(requestDto.getParentId() != null){
-            parent = commentRepository.findById(requestDto.getParentId()).orElseThrow(IllegalArgumentException::new);
+            parent = commentRepository.findById(requestDto.getParentId()).orElseThrow(CommentNotFoundException::new);
         }
         Comment comment = new Comment(requestDto.getContent(), findUser, parent, board);
         board.addComment(comment);
@@ -69,13 +72,13 @@ public class BoardServiceImpl implements BoardService{
 
     @Override
     public void modifyComment(Long commentId, UpdateCommentReqDto requestDto) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow(IllegalArgumentException::new);
+        Comment comment = commentRepository.findById(commentId).orElseThrow(CommentNotFoundException::new);
         comment.changeContent(requestDto.getContent());
     }
 
     @Override
     public void deleteComment(Long commentId) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow(IllegalArgumentException::new);
+        Comment comment = commentRepository.findById(commentId).orElseThrow(CommentNotFoundException::new);
         commentRepository.delete(comment);
     }
 
@@ -101,8 +104,8 @@ public class BoardServiceImpl implements BoardService{
                             .saveFile(saveFileName).build();
                     try {
                         file.transferTo(new File(folder, saveFileName));
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    } catch (Exception e) {
+                        throw new FileNotSavedException();
                     }
                 }
                 fileInfos.add(fileInfo);
