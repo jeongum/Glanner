@@ -11,5 +11,6 @@ import lombok.NoArgsConstructor;
 public class FindWorkByTimeResDto {
     Long dailyWorkId;
     String title;
+    Long userId;
     String phoneNumber;
 }

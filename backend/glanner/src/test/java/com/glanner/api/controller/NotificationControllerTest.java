@@ -11,9 +11,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -26,6 +30,45 @@ class NotificationControllerTest {
 
     @MockBean
     private NotificationService notificationService;
+
+    @Test
+    @WithMockUser(username = "cherish8514@naver.com", password = "1234")
+    public void testFindNotifications() throws Exception{
+        //given
+
+        //when
+        mockMvc.perform(get("/api/notification"))
+
+        //then
+                .andExpect(status().isOk());
+        verify(notificationService, times(1)).findAll("cherish8514@naver.com");
+    }
+
+    @Test
+    @WithMockUser(username = "cherish8514@naver.com", password = "1234")
+    public void testFindUnReadNotifications() throws Exception{
+        //given
+
+        //when
+        mockMvc.perform(get("/api/notification/unread"))
+
+                //then
+                .andExpect(status().isOk());
+        verify(notificationService, times(1)).findUnread("cherish8514@naver.com");
+    }
+
+    @Test
+    @WithMockUser(username = "cherish8514@naver.com", password = "1234")
+    public void testModifyStatus() throws Exception{
+        //given
+
+        //when
+        mockMvc.perform(post("/api/notification/status"))
+
+                //then
+                .andExpect(status().isOk());
+        verify(notificationService, times(1)).modifyStatus("cherish8514@naver.com");
+    }
 
     @Test
     public void testSendMail() throws Exception{

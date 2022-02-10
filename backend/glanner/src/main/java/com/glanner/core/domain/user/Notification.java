@@ -16,9 +16,10 @@ import javax.persistence.*;
 public class Notification extends BaseTimeEntity {
 
     @Builder
-    public Notification(User user, String url, NotificationStatus confirmation, String content) {
+    public Notification(User user, NotificationType type, Long typeId, NotificationStatus confirmation, String content) {
         this.user = user;
-        this.url = url;
+        this.type = type;
+        this.typeId = typeId;
         this.confirmation = confirmation;
         this.content = content;
     }
@@ -31,9 +32,15 @@ public class Notification extends BaseTimeEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    private String url;
+    @Enumerated(EnumType.STRING)
+    private NotificationType type;
+    private Long typeId;
 
     @Enumerated(EnumType.STRING)
     private NotificationStatus confirmation;
     private String content;
+
+    public void changeStatus(){
+        this.confirmation = NotificationStatus.CONFIRM;
+    }
 }

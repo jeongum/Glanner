@@ -5,16 +5,24 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.glanner.api.dto.request.SendMailReqDto;
 import com.glanner.api.dto.request.SendSmsApiReqDto;
 import com.glanner.api.dto.request.SendSmsReqDto;
+import com.glanner.api.dto.response.FindNotificationResDto;
 import com.glanner.api.dto.response.FindWorkByTimeResDto;
 import com.glanner.api.dto.response.SendSmsApiResDto;
 import com.glanner.api.exception.DailyWorkNotFoundException;
 import com.glanner.api.exception.MailNotSentException;
 import com.glanner.api.exception.SMSNotSentException;
+import com.glanner.api.exception.UserNotFoundException;
+
 import com.glanner.api.queryrepository.NotificationQueryRepository;
-import com.glanner.core.domain.user.DailyWorkSchedule;
+import com.glanner.core.domain.glanner.DailyWorkGlanner;
+import com.glanner.core.domain.user.*;
+import com.glanner.core.repository.DailyWorkGlannerRepository;
 import com.glanner.core.repository.DailyWorkScheduleRepository;
+import com.glanner.core.repository.NotificationRepository;
+import com.glanner.core.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.aspectj.weaver.ast.Not;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -40,8 +48,11 @@ import java.util.List;
 public class NotificationServiceImpl implements NotificationService {
 
     private final JavaMailSender javaMailSender;
+    private final UserRepository userRepository;
+    private final NotificationRepository notificationRepository;
     private final NotificationQueryRepository notificationQueryRepository;
     private final DailyWorkScheduleRepository dailyWorkScheduleRepository;
+    private final DailyWorkGlannerRepository dailyWorkGlannerRepository;
 
     @Value("${sms.serviceid}")
     private String serviceId;
@@ -49,6 +60,27 @@ public class NotificationServiceImpl implements NotificationService {
     private String accessKey;
     @Value("${sms.secretkey}")
     private String secretKey;
+
+    @Override
+    public List<FindNotificationResDto> findAll(String userEmail) {
+        User findUser = userRepository.findByEmail(userEmail).orElseThrow(UserNotFoundException::new);
+        return notificationQueryRepository.findNotificationResDtoByUserId(findUser.getId());
+    }
+
+    @Override
+    public List<FindNotificationResDto> findUnread(String userEmail) {
+        User findUser = userRepository.findByEmail(userEmail).orElseThrow(UserNotFoundException::new);
+        return notificationQueryRepository.findUnreadNotificationResDtoByUserId(findUser.getId());
+    }
+
+    @Override
+    public void modifyStatus(String userEmail) {
+        User findUser = userRepository.findByEmail(userEmail).orElseThrow(UserNotFoundException::new);
+        List<Notification> notifications = notificationRepository.findByConfirmation(NotificationStatus.STILL_NOT_CONFIRMED);
+        for(Notification notification : notifications){
+            notification.changeStatus();
+        }
+    }
 
     @Override
     public void sendMail(SendMailReqDto reqDto) {
@@ -72,21 +104,53 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public void sendScheduledSms() {
-        List<FindWorkByTimeResDto> resDtos = notificationQueryRepository.findWorkBySchedule();
-        resDtos.addAll(notificationQueryRepository.findWorkByGlanner());
+    public void sendScheduledNoti() {
+        List<FindWorkByTimeResDto> scheduleResDtos = notificationQueryRepository.findWorkBySchedule();
+        List<FindWorkByTimeResDto> glannerResDtos = notificationQueryRepository.findWorkByGlanner();
 
+        sendNotiByType(scheduleResDtos, "schedule");
+        sendNotiByType(glannerResDtos, "glanner");
+    }
+
+    private void sendNotiByType(List<FindWorkByTimeResDto> resDtos, String type) {
         for(FindWorkByTimeResDto resDto:resDtos){
-
+            /* 메세지 보내기 */
             List<SendSmsReqDto> messages = new ArrayList<>();
             messages.add(new SendSmsReqDto(resDto.getPhoneNumber().replace("-",""), makeContent(resDto.getTitle())));
-
-            DailyWorkSchedule schedule = dailyWorkScheduleRepository.findById(resDto.getDailyWorkId()).orElseThrow(DailyWorkNotFoundException::new);
-
-            schedule.changeNotiStatus();
-
             try { sendSmsServer(messages); }
             catch (Exception e) { throw new SMSNotSentException(); }
+
+            /* 알림 보내기 */
+            if(type.equals("schedule")){
+                User findUser = userRepository.findById(resDto.getUserId()).orElseThrow(UserNotFoundException::new);
+                DailyWorkSchedule schedule = dailyWorkScheduleRepository.findById(resDto.getDailyWorkId()).orElseThrow(DailyWorkNotFoundException::new);
+
+                Notification notification = Notification.builder()
+                        .user(findUser)
+                        .type(NotificationType.DAILY_WORK_SCHEDULE)
+                        .typeId(resDto.getDailyWorkId())
+                        .content(makeContent(schedule.getTitle()))
+                        .confirmation(NotificationStatus.STILL_NOT_CONFIRMED)
+                        .build();
+
+                findUser.addNotification(notification);
+                schedule.changeNotiStatus();
+            }
+            else{
+                User findUser = userRepository.findById(resDto.getUserId()).orElseThrow(UserNotFoundException::new);
+                DailyWorkGlanner schedule = dailyWorkGlannerRepository.findById(resDto.getDailyWorkId()).orElseThrow(DailyWorkNotFoundException::new);
+
+                Notification notification = Notification.builder()
+                        .user(findUser)
+                        .type(NotificationType.DAILY_WORK_GLANNER)
+                        .typeId(resDto.getDailyWorkId())
+                        .content(makeContent(schedule.getTitle()))
+                        .confirmation(NotificationStatus.STILL_NOT_CONFIRMED)
+                        .build();
+
+                findUser.addNotification(notification);
+                schedule.changeNotiStatus();
+            }
         }
     }
 

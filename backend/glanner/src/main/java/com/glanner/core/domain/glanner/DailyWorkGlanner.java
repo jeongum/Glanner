@@ -55,7 +55,9 @@ public class DailyWorkGlanner extends BaseTimeEntity {
         this.title = title;
         this.content = content;
     }
-
+    public void changeNotiStatus(){
+        this.notiStatus = NotificationStatus.CONFIRM;
+    }
     public void cancel(){
         glanner.getWorks().remove(this);
     }

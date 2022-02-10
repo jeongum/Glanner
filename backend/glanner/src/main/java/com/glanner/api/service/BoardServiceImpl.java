@@ -10,9 +10,13 @@ import com.glanner.api.exception.UserNotFoundException;
 import com.glanner.core.domain.board.Board;
 import com.glanner.core.domain.board.Comment;
 import com.glanner.core.domain.board.FileInfo;
+import com.glanner.core.domain.user.Notification;
+import com.glanner.core.domain.user.NotificationStatus;
+import com.glanner.core.domain.user.NotificationType;
 import com.glanner.core.domain.user.User;
 import com.glanner.core.repository.BoardRepository;
 import com.glanner.core.repository.CommentRepository;
+import com.glanner.core.repository.NotificationRepository;
 import com.glanner.core.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,6 +37,7 @@ public class BoardServiceImpl implements BoardService{
     private final UserRepository userRepository;
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
+    private final NotificationRepository notificationRepository;
 
     @Override
     public void saveBoard(String userEmail, SaveBoardReqDto requestDto) {
@@ -68,6 +73,17 @@ public class BoardServiceImpl implements BoardService{
         }
         Comment comment = new Comment(requestDto.getContent(), findUser, parent, board);
         board.addComment(comment);
+
+        if(!findUser.equals(board.getUser())) {
+            Notification notification = Notification.builder()
+                    .user(board.getUser())
+                    .type(NotificationType.BOARD)
+                    .typeId(board.getId())
+                    .content(makeContent(board.getTitle()))
+                    .confirmation(NotificationStatus.STILL_NOT_CONFIRMED)
+                    .build();
+            board.getUser().addNotification(notification);
+        }
     }
 
     @Override
@@ -112,5 +128,9 @@ public class BoardServiceImpl implements BoardService{
             }
         }
         return fileInfos;
+    }
+
+    private String makeContent(String title) {
+        return "["+title+"] 글에 댓글이 작성되었습니다.";
     }
 }

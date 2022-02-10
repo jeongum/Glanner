@@ -8,14 +8,8 @@ import com.glanner.core.domain.board.Board;
 import com.glanner.core.domain.board.Comment;
 import com.glanner.core.domain.board.FreeBoard;
 import com.glanner.core.domain.board.NoticeBoard;
-import com.glanner.core.domain.user.DailyWorkSchedule;
-import com.glanner.core.domain.user.Schedule;
-import com.glanner.core.domain.user.User;
-import com.glanner.core.domain.user.UserRoleStatus;
-import com.glanner.core.repository.BoardRepository;
-import com.glanner.core.repository.CommentRepository;
-import com.glanner.core.repository.FreeBoardRepository;
-import com.glanner.core.repository.UserRepository;
+import com.glanner.core.domain.user.*;
+import com.glanner.core.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +42,9 @@ public class BoardServiceTest {
     CommentRepository commentRepository;
 
     @Autowired
+    NotificationRepository notificationRepository;
+
+    @Autowired
     EntityManager em;
 
     @BeforeEach
@@ -77,7 +74,7 @@ public class BoardServiceTest {
     }
 
     /**
-     * 특정 게시판에 댓글을 추가하는 서비스
+     * 특정 게시판에 댓글을 추가 후, 작성자에게 알림을 보내는 서비스
      */
     @Test
     public void testAddComment() throws Exception{
@@ -97,11 +94,24 @@ public class BoardServiceTest {
         Comment comment = new Comment(addCommentReqDto.getContent(), findUser, parent, board);
         board.addComment(comment);
 
+        Notification notification = Notification.builder()
+                .user(board.getUser())
+                .type(NotificationType.BOARD)
+                .typeId(board.getId())
+                .content("content")
+                .confirmation(NotificationStatus.STILL_NOT_CONFIRMED)
+                .build();
+        board.getUser().addNotification(notification);
+
         //then
         FreeBoard findFreeBoard = freeBoardRepository.findById(savedBoardId).orElseThrow(IllegalAccessError::new);
         assertThat(findFreeBoard.getComments().size()).isEqualTo(1);
         assertThat(findFreeBoard.getComments().get(0).getContent()).isEqualTo("content");
         assertThat(findFreeBoard.getComments().get(0).getParent()).isEqualTo(null);
+
+        assertThat(findFreeBoard.getUser().getNotifications().size()).isEqualTo(1);
+        assertThat(findFreeBoard.getUser().getNotifications().get(0).getContent()).isEqualTo("content");
+        assertThat(findFreeBoard.getUser().getNotifications().get(0).getTypeId()).isEqualTo(findFreeBoard.getId());
     }
 
 
@@ -176,4 +186,5 @@ public class BoardServiceTest {
         em.flush();
         em.clear();
     }
+
 }

@@ -1,18 +1,17 @@
 package com.glanner.api.repository;
 
+import com.glanner.api.dto.response.FindNotificationResDto;
 import com.glanner.api.dto.response.FindWorkByTimeResDto;
 import com.glanner.api.exception.UserNotFoundException;
 import com.glanner.api.queryrepository.NotificationQueryRepository;
 import com.glanner.core.domain.glanner.DailyWorkGlanner;
 import com.glanner.core.domain.glanner.Glanner;
 import com.glanner.core.domain.glanner.UserGlanner;
-import com.glanner.core.domain.user.DailyWorkSchedule;
-import com.glanner.core.domain.user.Schedule;
-import com.glanner.core.domain.user.User;
-import com.glanner.core.domain.user.UserRoleStatus;
+import com.glanner.core.domain.user.*;
 import com.glanner.core.repository.DailyWorkScheduleRepository;
 import com.glanner.core.repository.GlannerRepository;
 import com.glanner.core.repository.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -39,6 +38,45 @@ class NotificationQueryRepositoryImplTest {
     private DailyWorkScheduleRepository dailyWorkGlannerRepository;
     @Autowired
     private GlannerRepository glannerRepository;
+
+    @BeforeEach
+    public void init() {
+        createUser();
+    }
+
+    @Test
+    public void testFindAllByUserId() throws Exception{
+        //given
+        User user = userRepository.findByEmail("cherish8513@naver.com").orElseThrow(UserNotFoundException::new);
+        createNotification("content1");
+        createNotification("content2");
+        createReadNotification("content3");
+
+        //when
+        List<FindNotificationResDto> findNotifications = notificationQueryRepository.findNotificationResDtoByUserId(user.getId());
+
+        //then
+        assertThat(findNotifications.size()).isEqualTo(3);
+        assertThat(findNotifications.get(0).getTypeId()).isEqualTo(user.getNotifications().get(0).getTypeId());
+        assertThat(findNotifications.get(0).getType()).isEqualTo(NotificationType.DAILY_WORK_SCHEDULE);
+    }
+
+    @Test
+    public void testFindUnReadByUserId() throws Exception{
+        //given
+        User user = userRepository.findByEmail("cherish8513@naver.com").orElseThrow(UserNotFoundException::new);
+        createNotification("content1");
+        createNotification("content2");
+        createReadNotification("content3");
+
+        //when
+        List<FindNotificationResDto> findNotifications = notificationQueryRepository.findUnreadNotificationResDtoByUserId(user.getId());
+
+        //then
+        assertThat(findNotifications.size()).isEqualTo(2);
+        assertThat(findNotifications.get(0).getTypeId()).isEqualTo(user.getNotifications().get(0).getTypeId());
+        assertThat(findNotifications.get(0).getType()).isEqualTo(NotificationType.DAILY_WORK_SCHEDULE);
+    }
 
     @Test
     public void testFindValidScheduleWork() throws Exception{
@@ -96,6 +134,28 @@ class NotificationQueryRepositoryImplTest {
         em.clear();
     }
 
+    public void createNotification(String content){
+        User user = userRepository.findByEmail("cherish8513@naver.com").orElseThrow(UserNotFoundException::new);
+        Notification notification = Notification.builder()
+                .user(user)
+                .type(NotificationType.DAILY_WORK_SCHEDULE)
+                .typeId(1L)
+                .content(content)
+                .confirmation(NotificationStatus.STILL_NOT_CONFIRMED)
+                .build();
+        user.addNotification(notification);
+    }
+    public void createReadNotification(String content){
+        User user = userRepository.findByEmail("cherish8513@naver.com").orElseThrow(UserNotFoundException::new);
+        Notification notification = Notification.builder()
+                .user(user)
+                .type(NotificationType.DAILY_WORK_SCHEDULE)
+                .typeId(1L)
+                .content(content)
+                .confirmation(NotificationStatus.CONFIRM)
+                .build();
+        user.addNotification(notification);
+    }
     private void addWorks(LocalDateTime start, LocalDateTime end, LocalDateTime noti) {
         User user = userRepository.findByEmail("cherish8513@naver.com").orElseThrow(UserNotFoundException::new);
         DailyWorkSchedule workSchedule = DailyWorkSchedule.builder()
@@ -157,4 +217,6 @@ class NotificationQueryRepositoryImplTest {
                 .notiDate(noti)
                 .build());
     }
+
+
 }
