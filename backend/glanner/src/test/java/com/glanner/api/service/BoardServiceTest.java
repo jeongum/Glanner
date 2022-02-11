@@ -1,10 +1,7 @@
 package com.glanner.api.service;
 
 import com.glanner.api.dto.request.*;
-import com.glanner.api.dto.response.FindFreeBoardWithCommentsResDto;
-import com.glanner.api.dto.response.FindGlannerBoardWithCommentsResDto;
-import com.glanner.api.dto.response.FindGroupBoardWithCommentResDto;
-import com.glanner.api.dto.response.FindNoticeBoardWithCommentResDto;
+import com.glanner.api.dto.response.*;
 import com.glanner.api.queryrepository.CommentQueryRepository;
 import com.glanner.core.domain.board.FreeBoard;
 import com.glanner.core.domain.board.NoticeBoard;
@@ -20,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,8 +35,6 @@ public class BoardServiceTest {
     GlannerBoardRepository glannerBoardRepository;
     @Autowired
     GroupBoardRepository groupBoardRepository;
-    @Autowired
-    CommentQueryRepository commentQueryRepository;
 
     @Autowired
     GlannerService glannerService;
@@ -194,6 +190,26 @@ public class BoardServiceTest {
     }
 
     /**
+     * 특정 게시판의 대댓글을 다는 서비스
+     */
+    @Test
+    public void testAddChildComment() throws Exception{
+        //given
+        SaveFreeBoardReqDto boardReqDto1 = new SaveFreeBoardReqDto("title", "content", new ArrayList<>());
+        Long freeBoardId = boardService.saveBoard(userEmail, boardReqDto1);
+        AddCommentReqDto addCommentReqDto1 = new AddCommentReqDto(freeBoardId, "content", null);
+        boardService.addComment(userEmail, addCommentReqDto1);
+        Long parentId = freeBoardService.getFreeBoard(freeBoardId).getComments().get(0).getCommentId();
+
+        //when
+        AddCommentReqDto addChildCommentReqDto = new AddCommentReqDto(freeBoardId, "child", parentId);
+        boardService.addComment(userEmail, addChildCommentReqDto);
+
+        //then
+        List<FindCommentResDto> comments = freeBoardService.getFreeBoard(freeBoardId).getComments();
+        assertThat(comments.size()).isEqualTo(2);
+    }
+    /**
      * 특정 게시판의 댓글을 수정하는 서비스
      */
     @Test
@@ -209,18 +225,16 @@ public class BoardServiceTest {
         Long groupBoardId = groupBoardService.saveGroupBoard(userEmail, boardReqDto2);
         Long noticeId = boardService.saveBoard(userEmail, boardReqDto3);
         Long glannerBoardId = glannerBoardService.saveGlannerBoard(userEmail, boardReqDto4);
+
         AddCommentReqDto addCommentReqDto1 = new AddCommentReqDto(freeBoardId, "content", null);
         AddCommentReqDto addCommentReqDto2 = new AddCommentReqDto(groupBoardId, "content", null);
         AddCommentReqDto addCommentReqDto3 = new AddCommentReqDto(noticeId, "content", null);
         AddCommentReqDto addCommentReqDto4 = new AddCommentReqDto(glannerBoardId, "content", null);
-        boardService.addComment(userEmail, addCommentReqDto1);
-        boardService.addComment(userEmail, addCommentReqDto2);
-        boardService.addComment(userEmail, addCommentReqDto3);
-        boardService.addComment(userEmail, addCommentReqDto4);
-        Long commentId1 = commentQueryRepository.findCommentsByBoardId(freeBoardId).get(0).getCommentId();
-        Long commentId2 = commentQueryRepository.findCommentsByBoardId(groupBoardId).get(0).getCommentId();
-        Long commentId3 = commentQueryRepository.findCommentsByBoardId(noticeId).get(0).getCommentId();
-        Long commentId4 = commentQueryRepository.findCommentsByBoardId(glannerBoardId).get(0).getCommentId();
+
+        Long commentId1 = boardService.addComment(userEmail, addCommentReqDto1).getCommentId();
+        Long commentId2 = boardService.addComment(userEmail, addCommentReqDto2).getCommentId();
+        Long commentId3 = boardService.addComment(userEmail, addCommentReqDto3).getCommentId();
+        Long commentId4 = boardService.addComment(userEmail, addCommentReqDto4).getCommentId();
 
         //when
         UpdateCommentReqDto modifyCommentReqDto1 = new UpdateCommentReqDto("modify");
@@ -243,6 +257,7 @@ public class BoardServiceTest {
         assertThat(findNoticeBoard.getComments().get(0).getContent()).isEqualTo("modify");
         assertThat(findGroupBoard.getComments().get(0).getContent()).isEqualTo("modify");
         assertThat(findGlannerBoard.getComments().get(0).getContent()).isEqualTo("modify");
+
     }
 
 

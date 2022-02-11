@@ -3,6 +3,9 @@ package com.glanner.api.service;
 import com.glanner.api.dto.request.AddCommentReqDto;
 import com.glanner.api.dto.request.SaveBoardReqDto;
 import com.glanner.api.dto.request.UpdateCommentReqDto;
+import com.glanner.api.dto.response.FindCommentResDto;
+import com.glanner.api.dto.response.ModifyCommentResDto;
+import com.glanner.api.dto.response.SaveCommentResDto;
 import com.glanner.api.exception.BoardNotFoundException;
 import com.glanner.api.exception.CommentNotFoundException;
 import com.glanner.api.exception.UserNotFoundException;
@@ -65,12 +68,14 @@ public class BoardServiceImpl implements BoardService{
     }
 
     @Override
-    public void addComment(String userEmail, AddCommentReqDto requestDto) {
+    public SaveCommentResDto addComment(String userEmail, AddCommentReqDto requestDto) {
         User findUser = userRepository.findByEmail(userEmail).orElseThrow(UserNotFoundException::new);
         Board board = boardRepository.findById(requestDto.getBoardId()).orElseThrow(BoardNotFoundException::new);
         Comment parent = null;
+        Long parentId = null;
         if(requestDto.getParentId() != null){
             parent = commentRepository.findById(requestDto.getParentId()).orElseThrow(CommentNotFoundException::new);
+            parentId = parent.getId();
         }
         Comment comment = Comment.builder()
                 .user(findUser)
@@ -78,6 +83,8 @@ public class BoardServiceImpl implements BoardService{
                 .content(requestDto.getContent())
                 .build();
         board.addComment(comment);
+
+        commentRepository.save(comment);
 
         if(!findUser.equals(board.getUser())) {
             Notification notification = Notification.builder()
@@ -89,12 +96,18 @@ public class BoardServiceImpl implements BoardService{
                     .build();
             board.getUser().addNotification(notification);
         }
+        return new SaveCommentResDto(comment.getId(), parentId, findUser.getName(), comment.getContent(), comment.getCreatedDate());
     }
 
     @Override
-    public void modifyComment(Long commentId, UpdateCommentReqDto requestDto) {
+    public ModifyCommentResDto modifyComment(Long commentId, UpdateCommentReqDto requestDto) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(CommentNotFoundException::new);
         comment.changeContent(requestDto.getContent());
+        return new ModifyCommentResDto(comment.getId(),
+                comment.getParent() == null ? -1 : comment.getParent().getId(),
+                comment.getUser().getName(),
+                comment.getContent(),
+                comment.getCreatedDate());
     }
 
     @Override
