@@ -5,17 +5,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.glanner.api.dto.request.SendMailReqDto;
 import com.glanner.api.dto.request.SendSmsApiReqDto;
 import com.glanner.api.dto.request.SendSmsReqDto;
+import com.glanner.api.dto.response.FindNotificationResDto;
 import com.glanner.api.dto.response.FindWorkByTimeResDto;
 import com.glanner.api.dto.response.SendSmsApiResDto;
+import com.glanner.api.exception.DailyWorkNotFoundException;
+import com.glanner.api.exception.SMSNotSentException;
 import com.glanner.api.exception.UserNotFoundException;
 import com.glanner.api.queryrepository.NotificationQueryRepository;
-import com.glanner.core.domain.user.DailyWorkSchedule;
-import com.glanner.core.domain.user.Schedule;
-import com.glanner.core.domain.user.User;
-import com.glanner.core.domain.user.UserRoleStatus;
+import com.glanner.core.domain.glanner.DailyWorkGlanner;
+import com.glanner.core.domain.user.*;
 import com.glanner.core.repository.DailyWorkScheduleRepository;
+import com.glanner.core.repository.NotificationRepository;
 import com.glanner.core.repository.UserRepository;
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,11 +43,16 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 @SpringBootTest
 @Transactional
 class NotificationServiceTest {
     @Autowired
     private JavaMailSender javaMailSender;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
 
     @Autowired
     private NotificationQueryRepository notificationQueryRepository;
@@ -61,6 +69,35 @@ class NotificationServiceTest {
     private String accessKey;
     @Value("${sms.secretkey}")
     private String secretKey;
+
+    @BeforeEach
+    public void init() {
+        createUser();
+    }
+
+    @Test
+    public void testModifyStatus() throws Exception{
+        //given
+        User user = userRepository.findByEmail("cherish8513@naver.com").orElseThrow(UserNotFoundException::new);
+        createNotification("content1");
+        createNotification("content2");
+        createReadNotification("content3");
+
+        //when
+        List<Notification> notifications = notificationRepository.findByConfirmation(NotificationStatus.STILL_NOT_CONFIRMED);
+        for(Notification notification : notifications){
+            notification.changeStatus();
+        }
+
+        //then
+        assertThat(user.getNotifications().size()).isEqualTo(3);
+        assertThat(user.getNotifications().get(0).getConfirmation()).isEqualTo(NotificationStatus.CONFIRM);
+        assertThat(user.getNotifications().get(1).getConfirmation()).isEqualTo(NotificationStatus.CONFIRM);
+        assertThat(user.getNotifications().get(2).getConfirmation()).isEqualTo(NotificationStatus.CONFIRM);
+
+        List<FindNotificationResDto> resDtos = notificationQueryRepository.findUnreadNotificationResDtoByUserId(user.getId());
+        assertThat(resDtos.size()).isEqualTo(0);
+    }
 
     @Test
     public void testSendMail() throws Exception{
@@ -85,7 +122,7 @@ class NotificationServiceTest {
         try {
             sendSmsServer(messages);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new SMSNotSentException();
         }
         //then
     }
@@ -93,7 +130,6 @@ class NotificationServiceTest {
     @Test
     public void testSendScheduledSms() throws Exception{
         //given
-        createUser();
         LocalDateTime now = LocalDateTime.now();
 
         addWorks(now.plusMinutes(1), now.plusHours(1), now);            // 알림 O
@@ -104,17 +140,32 @@ class NotificationServiceTest {
         List<FindWorkByTimeResDto> resDtos = notificationQueryRepository.findWorkBySchedule();
 
         for(FindWorkByTimeResDto resDto:resDtos){
-
+            /* 메세지 보내기 */
             List<SendSmsReqDto> messages = new ArrayList<>();
             messages.add(new SendSmsReqDto(resDto.getPhoneNumber().replace("-",""), makeContent(resDto.getTitle())));
+            try { sendSmsServer(messages); }
+            catch (Exception e) { throw new SMSNotSentException(); }
 
-            DailyWorkSchedule schedule = dailyWorkScheduleRepository.findById(resDto.getDailyWorkId()).orElseThrow(IllegalArgumentException::new);
+            /* 알림 보내기 */
+            User findUser = userRepository.findById(resDto.getUserId()).orElseThrow(UserNotFoundException::new);
+            DailyWorkSchedule schedule = dailyWorkScheduleRepository.findById(resDto.getDailyWorkId()).orElseThrow(DailyWorkNotFoundException::new);
 
+            Notification notification = Notification.builder()
+                    .user(findUser)
+                    .type(NotificationType.DAILY_WORK_SCHEDULE)
+                    .typeId(resDto.getDailyWorkId())
+                    .content(makeContent(schedule.getTitle()))
+                    .confirmation(NotificationStatus.STILL_NOT_CONFIRMED)
+                    .build();
+
+            findUser.addNotification(notification);
             schedule.changeNotiStatus();
-
-            sendSmsServer(messages);
         }
         //then
+        User findUser = userRepository.findByEmail("cherish8513@naver.com").orElseThrow(UserNotFoundException::new);
+        assertThat(findUser.getNotifications().size()).isEqualTo(2);
+        assertThat(findUser.getNotifications().get(0).getType()).isEqualTo(NotificationType.DAILY_WORK_SCHEDULE);
+        assertThat(findUser.getNotifications().get(0).getTypeId()).isEqualTo(resDtos.get(0).getDailyWorkId());
     }
 
     private String makeContent(String title) {
@@ -199,5 +250,27 @@ class NotificationServiceTest {
                 .notiDate(noti)
                 .build();
         user.getSchedule().addDailyWork(workSchedule);
+    }
+    public void createNotification(String content){
+        User user = userRepository.findByEmail("cherish8513@naver.com").orElseThrow(UserNotFoundException::new);
+        Notification notification = Notification.builder()
+                .user(user)
+                .type(NotificationType.DAILY_WORK_SCHEDULE)
+                .typeId(1L)
+                .content(content)
+                .confirmation(NotificationStatus.STILL_NOT_CONFIRMED)
+                .build();
+        user.addNotification(notification);
+    }
+    public void createReadNotification(String content){
+        User user = userRepository.findByEmail("cherish8513@naver.com").orElseThrow(UserNotFoundException::new);
+        Notification notification = Notification.builder()
+                .user(user)
+                .type(NotificationType.DAILY_WORK_SCHEDULE)
+                .typeId(1L)
+                .content(content)
+                .confirmation(NotificationStatus.CONFIRM)
+                .build();
+        user.addNotification(notification);
     }
 }

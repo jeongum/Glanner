@@ -8,12 +8,9 @@ import com.glanner.api.dto.response.FindNoticeBoardWithCommentResDto;
 import com.glanner.api.queryrepository.CommentQueryRepository;
 import com.glanner.core.domain.board.FreeBoard;
 import com.glanner.core.domain.board.NoticeBoard;
+import com.glanner.core.domain.user.*;
 import com.glanner.core.domain.glanner.GlannerBoard;
 import com.glanner.core.domain.glanner.GroupBoard;
-import com.glanner.core.domain.user.DailyWorkSchedule;
-import com.glanner.core.domain.user.Schedule;
-import com.glanner.core.domain.user.User;
-import com.glanner.core.domain.user.UserRoleStatus;
 import com.glanner.core.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,6 +52,8 @@ public class BoardServiceTest {
     NoticeBoardService noticeBoardService;
     @Autowired
     BoardService boardService;
+    @Autowired
+    NotificationRepository notificationRepository;
 
     private final String userEmail = "test@test.com";
 
@@ -190,6 +189,8 @@ public class BoardServiceTest {
         assertThat(findGlannerBoard.getComments().size()).isEqualTo(1);
         assertThat(findGlannerBoard.getComments().get(0).getContent()).isEqualTo("content");
         assertThat(findGlannerBoard.getComments().get(0).getParent()).isEqualTo(null);
+
+        assertThat(findFreeBoard.getUser().getNotifications().size()).isEqualTo(0);
     }
 
     /**

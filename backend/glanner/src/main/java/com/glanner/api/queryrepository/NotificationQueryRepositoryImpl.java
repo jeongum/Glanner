@@ -1,6 +1,8 @@
 package com.glanner.api.queryrepository;
 
+import com.glanner.api.dto.response.FindNotificationResDto;
 import com.glanner.api.dto.response.FindWorkByTimeResDto;
+import com.glanner.core.domain.user.Notification;
 import com.glanner.core.domain.user.NotificationStatus;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -14,6 +16,7 @@ import java.util.List;
 import static com.glanner.core.domain.glanner.QDailyWorkGlanner.dailyWorkGlanner;
 import static com.glanner.core.domain.glanner.QUserGlanner.userGlanner;
 import static com.glanner.core.domain.user.QDailyWorkSchedule.dailyWorkSchedule;
+import static com.glanner.core.domain.user.QNotification.notification;
 import static com.glanner.core.domain.user.QUser.user;
 
 @Repository
@@ -24,6 +27,36 @@ public class NotificationQueryRepositoryImpl implements NotificationQueryReposit
     private final JPAQueryFactory query;
 
     @Override
+    public List<FindNotificationResDto> findNotificationResDtoByUserId(Long userId){
+        return query
+                .select(Projections.constructor(FindNotificationResDto.class,
+                        notification.type,
+                        notification.typeId,
+                        notification.confirmation,
+                        notification.content,
+                        notification.createdDate))
+                .from(notification)
+                .where(notification.user.id.eq(userId))
+                .fetch();
+    }
+
+    @Override
+    public List<FindNotificationResDto> findUnreadNotificationResDtoByUserId(Long userId) {
+        return query
+                .select(Projections.constructor(FindNotificationResDto.class,
+                        notification.type,
+                        notification.typeId,
+                        notification.confirmation,
+                        notification.content,
+                        notification.createdDate))
+                .from(notification)
+                .where(notification.user.id.eq(userId)
+                        .and(notification.confirmation.eq(NotificationStatus.STILL_NOT_CONFIRMED)))
+                .fetch();
+    }
+
+
+    @Override
     public List<FindWorkByTimeResDto> findWorkBySchedule() {
         LocalDateTime now = LocalDateTime.now();
 
@@ -31,6 +64,7 @@ public class NotificationQueryRepositoryImpl implements NotificationQueryReposit
                 .select(Projections.constructor(FindWorkByTimeResDto.class,
                         dailyWorkSchedule.id,
                         dailyWorkSchedule.title,
+                        user.id,
                         user.phoneNumber))
                 .from(dailyWorkSchedule)
                 .innerJoin(user)
@@ -48,6 +82,7 @@ public class NotificationQueryRepositoryImpl implements NotificationQueryReposit
                 .select(Projections.constructor(FindWorkByTimeResDto.class,
                         dailyWorkGlanner.id,
                         dailyWorkGlanner.title,
+                        user.id,
                         user.phoneNumber))
                 .from(user)
                 .join(userGlanner).on(userGlanner.user.eq(user))

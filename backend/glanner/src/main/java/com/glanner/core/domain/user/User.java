@@ -45,6 +45,9 @@ public class User extends BaseTimeEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
     List<UserGlanner> userGlanners = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
+    List<Notification> notifications = new ArrayList<>();
+
 
     public void changeSchedule(Schedule schedule){
         this.schedule = schedule;
@@ -56,5 +59,8 @@ public class User extends BaseTimeEntity {
     }
     public void addUserGlanner(UserGlanner userGlanner){
         this.userGlanners.add(userGlanner);
+    }
+    public void addNotification(Notification notification){
+        this.notifications.add(notification);
     }
 }
