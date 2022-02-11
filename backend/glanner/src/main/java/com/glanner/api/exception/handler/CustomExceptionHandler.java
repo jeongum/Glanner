@@ -47,6 +47,12 @@ public class CustomExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(ConferenceNotFoundException.class)
+    public ResponseEntity<ErrorResponseEntity> handleNotFoundConference(Exception ex){
+        ErrorResponseEntity response = new ErrorResponseEntity(ErrorCode.CONFERENCE_NOT_FOUND);
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(DuplicateMemberException.class)
     public ResponseEntity<ErrorResponseEntity> handleDuplicatedMember(Exception ex){
         ErrorResponseEntity response = new ErrorResponseEntity(ErrorCode.DUPLICATE_MEMBER);

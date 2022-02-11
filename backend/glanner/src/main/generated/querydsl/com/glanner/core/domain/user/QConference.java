@@ -24,6 +24,8 @@ public class QConference extends EntityPathBase<Conference> {
 
     public final com.glanner.core.domain.base.QBaseTimeEntity _super = new com.glanner.core.domain.base.QBaseTimeEntity(this);
 
+    public final NumberPath<Integer> attendLimit = createNumber("attendLimit", Integer.class);
+
     public final DateTimePath<java.time.LocalDateTime> callEndTime = createDateTime("callEndTime", java.time.LocalDateTime.class);
 
     public final DateTimePath<java.time.LocalDateTime> callStartTime = createDateTime("callStartTime", java.time.LocalDateTime.class);
@@ -31,7 +33,7 @@ public class QConference extends EntityPathBase<Conference> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdDate = _super.createdDate;
 
-    public final StringPath description = createString("description");
+    public final com.glanner.core.domain.glanner.QGlanner glanner;
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
@@ -41,10 +43,6 @@ public class QConference extends EntityPathBase<Conference> {
     public final DateTimePath<java.time.LocalDateTime> modifiedDate = _super.modifiedDate;
 
     public final QUser owner;
-
-    public final StringPath thumbnailUrl = createString("thumbnailUrl");
-
-    public final StringPath title = createString("title");
 
     public QConference(String variable) {
         this(Conference.class, forVariable(variable), INITS);
@@ -64,6 +62,7 @@ public class QConference extends EntityPathBase<Conference> {
 
     public QConference(Class<? extends Conference> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
+        this.glanner = inits.isInitialized("glanner") ? new com.glanner.core.domain.glanner.QGlanner(forProperty("glanner"), inits.get("glanner")) : null;
         this.owner = inits.isInitialized("owner") ? new QUser(forProperty("owner"), inits.get("owner")) : null;
     }
 

@@ -12,6 +12,7 @@ public enum ErrorCode {
     COMMENT_NOT_FOUND(404, "404 - ERROR", "Comment not found"),
     GlANNER_NOT_FOUND(404, "404 - ERROR", "Glanner not found"),
     DAILY_WORK_NOT_FOUND(404, "404 - ERROR", "Daily work not found"),
+    CONFERENCE_NOT_FOUND(404, "404 - ERROR", "Conference work not found"),
 
     DUPLICATE_MEMBER(500, "501 - ERROR", "Duplicated member"),
     METHOD_ARGUMENT_NOT_VALID(500, "502 - ERROR", "Method argument not valid"),
