@@ -10,6 +10,7 @@ import com.glanner.api.queryrepository.GlannerBoardQueryRepository;
 import com.glanner.api.service.BoardService;
 import com.glanner.api.service.GlannerBoardService;
 import com.glanner.security.SecurityUtils;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +33,7 @@ public class GlannerBoardController extends BoardController<SaveGlannerBoardReqD
 
     @Override
     @PostMapping
+    @ApiOperation(value = "게시판 저장")
     public ResponseEntity<BaseResponseEntity> saveBoard(@RequestBody @Valid SaveGlannerBoardReqDto requestDto) {
         String userEmail = SecurityUtils.getCurrentUsername().orElseThrow(UserNotFoundException::new);
         glannerBoardService.saveGlannerBoard(userEmail, requestDto);
@@ -45,18 +47,21 @@ public class GlannerBoardController extends BoardController<SaveGlannerBoardReqD
      * @return : 글래너 게시판 데이터의 정보를 Dto List 로 반환한다.
      */
     @GetMapping("{glannerId}/{page}/{limit}")
+    @ApiOperation(value = "게시판 리스트 가져오기", notes = "page는 0부터 시작하며, limit은 가져올 게시판의 개수")
     public ResponseEntity<List<FindGlannerBoardResDto>> getBoards(@PathVariable Long glannerId, @PathVariable int page, @PathVariable int limit){
         List<FindGlannerBoardResDto> responseDto = queryRepository.findPage(glannerId, page, limit);
         return ResponseEntity.status(200).body(responseDto);
     }
 
     @GetMapping("/{id}")
+    @ApiOperation(value = "특정 게시판 가져오기", notes = "게시판의 정보 및 해당 게시판의 모든 댓글을 가져온다.")
     public ResponseEntity<FindGlannerBoardWithCommentsResDto> getBoard(@PathVariable Long id){
         FindGlannerBoardWithCommentsResDto responseDto = glannerBoardService.getGlannerBoard(id);
         return ResponseEntity.status(200).body(responseDto);
     }
 
     @GetMapping("{glannerId}/search/{page}/{limit}")
+    @ApiOperation(value = "검색 게시판 리스트 가져오기", notes = "keyword가 제목 + 내용에 포함되어있는 게시판들을 가져온다.")
     public ResponseEntity<List<FindGlannerBoardResDto>> searchBoards(@PathVariable Long glannerId, @PathVariable int page, @PathVariable int limit, @RequestBody @Valid SearchBoardReqDto reqDto){
         List<FindGlannerBoardResDto> responseDto = queryRepository.findPageWithKeyword(glannerId, page, limit, reqDto.getKeyWord());
         return ResponseEntity.status(200).body(responseDto);

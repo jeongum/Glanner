@@ -13,6 +13,7 @@ import com.glanner.api.queryrepository.DailyWorkGlannerQueryRepository;
 import com.glanner.api.queryrepository.GlannerQueryRepository;
 import com.glanner.api.service.GlannerService;
 import com.glanner.security.SecurityUtils;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +37,7 @@ public class GlannerController {
     private final GlannerQueryRepository glannerQueryRepository;
 
     @PostMapping
+    @ApiOperation(value = "글래너 저장")
     public ResponseEntity<BaseResponseEntity> createGlanner(){
         String hostEmail = getUsername(SecurityUtils.getCurrentUsername());
         glannerService.saveGlanner(hostEmail);
@@ -43,16 +45,19 @@ public class GlannerController {
     }
 
     @DeleteMapping("/{id}")
+    @ApiOperation(value = "글래너 삭제")
     public ResponseEntity<BaseResponseEntity> deleteGlanner(@PathVariable Long id){
         glannerService.deleteGlanner(id);
         return ResponseEntity.status(200).body(new BaseResponseEntity(200, "Success"));
     }
     @PutMapping
+    @ApiOperation(value = "글래너 이름 변경")
     public ResponseEntity<BaseResponseEntity> changeGlannerName(@RequestBody @Valid ChangeGlannerNameReqDto reqDto){
         glannerService.changeGlannerName(reqDto);
         return ResponseEntity.status(200).body(new BaseResponseEntity(200, "Success"));
     }
     @GetMapping
+    @ApiOperation(value = "글래너 리스트 가져오기", notes = "로그인한 회원이 속해있는 모든 글래너들을 가져온다.")
     public ResponseEntity<List<FindAttendedGlannerResDto>> findGlannerList(){
         String userEmail = getUsername(SecurityUtils.getCurrentUsername());
         List<FindAttendedGlannerResDto> responseDto = glannerService.findAttendedGlanners(userEmail);
@@ -60,6 +65,7 @@ public class GlannerController {
     }
 
     @GetMapping("/{id}")
+    @ApiOperation(value = "특정 글래너 가져오기", notes = "글래너에 속한 모든 회원의 이름, 인원을 가져온다")
     public ResponseEntity<FindGlannerResDto> findGlannerDetail(@PathVariable Long id){
         FindGlannerResDto responseDto = glannerService.findGlannerDetail(id);
         return ResponseEntity.status(200).body(responseDto);
@@ -72,6 +78,7 @@ public class GlannerController {
      * @return : 해당 달의 모든 일정 정보를 List Dto로 반환한다.
      */
     @GetMapping("/{id}/{date}")
+    @ApiOperation(value = "특정 글래너의 일정 가져오기", notes = "'yyyy-mm-01'의 양식으로 mm + 1의 모든 일정을 가져온다. ex) 2022-02-01 ~ 2022-03-01")
     public ResponseEntity<List<FindGlannerWorkResDto>> findGlannerWorks(@PathVariable Long id, @PathVariable @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate date){
         LocalDateTime dateTimeStart = date.atStartOfDay();
         LocalDateTime dateTimeEnd = dateTimeStart.plusMonths(1);
@@ -80,30 +87,35 @@ public class GlannerController {
     }
 
     @PostMapping("/user")
+    @ApiOperation(value = "특정 글래너에 유저 추가")
     public ResponseEntity<BaseResponseEntity> addUser(@RequestBody @Valid AddUserToGlannerReqDto reqDto){
         glannerService.addUser(reqDto);
         return ResponseEntity.status(200).body(new BaseResponseEntity(200, "Success"));
     }
 
     @DeleteMapping("/user/{glannerId}/{userId}")
+    @ApiOperation(value = "특정 글래너의 참여 유저 삭제")
     public ResponseEntity<BaseResponseEntity> deleteUser(@PathVariable Long glannerId, @PathVariable Long userId){
         glannerService.deleteUser(glannerId, userId);
         return ResponseEntity.status(200).body(new BaseResponseEntity(200, "Success"));
     }
 
     @PostMapping("/work")
+    @ApiOperation(value = "특정 글래너의 일정 추가")
     public ResponseEntity<BaseResponseEntity> addWork(@RequestBody @Valid AddGlannerWorkReqDto reqDto){
         glannerService.addDailyWork(reqDto);
         return ResponseEntity.status(200).body(new BaseResponseEntity(200, "Success"));
     }
 
     @DeleteMapping("/work/{glannerId}/{workId}")
+    @ApiOperation(value = "특정 글래너의 일정 삭제")
     public ResponseEntity<BaseResponseEntity> deleteWork(@PathVariable Long glannerId, @PathVariable Long workId){
         glannerService.deleteDailyWork(glannerId, workId);
         return ResponseEntity.status(200).body(new BaseResponseEntity(200, "Success"));
     }
 
     @PutMapping("/work")
+    @ApiOperation(value = "특정 글래너의 일정 변경")
     public ResponseEntity<BaseResponseEntity> updateWork(@RequestBody @Valid UpdateGlannerWorkReqDto reqDto){
         glannerService.updateDailyWork(reqDto);
         return ResponseEntity.status(200).body(new BaseResponseEntity(200, "Success"));
@@ -116,6 +128,7 @@ public class GlannerController {
      * @param endTime : 검색할 일정의 최대 일정 시간 (언제 까지)
      * @return 찾아온 데이터의 Dto를 리스트로 반환
      */
+    @ApiOperation(value = "특정 글래너의 일정 검색", notes = "일정 시작 시간이 yyyy-mm-dd'T'HH:mm의 양식으로 받은 두 시간 사이에 속하는 일정을 가져온다.")
     @GetMapping("/work/{glannerId}/{startTime}/{endTime}")
     public ResponseEntity<List<FindGlannerWorkResDto>> findWork(@PathVariable  Long glannerId,
                                                                 @PathVariable @DateTimeFormat(pattern="yyyy-MM-dd'T'HH:mm") LocalDateTime startTime,

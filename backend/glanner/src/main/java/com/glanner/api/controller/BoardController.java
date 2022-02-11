@@ -9,6 +9,7 @@ import com.glanner.api.dto.response.SaveCommentResDto;
 import com.glanner.api.exception.UserNotFoundException;
 import com.glanner.api.service.BoardService;
 import com.glanner.security.SecurityUtils;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,7 @@ public class BoardController<Q extends SaveBoardReqDto> {
     private final BoardService boardService;
 
     @PostMapping
+    @ApiOperation(value = "게시판 저장")
     public ResponseEntity<BaseResponseEntity> saveBoard(@RequestBody @Valid Q requestDto){
         String userEmail = SecurityUtils.getCurrentUsername().orElseThrow(UserNotFoundException::new);
         boardService.saveBoard(userEmail, requestDto);
@@ -31,18 +33,21 @@ public class BoardController<Q extends SaveBoardReqDto> {
     }
 
     @PutMapping("/{id}")
+    @ApiOperation(value = "게시판 수정")
     public ResponseEntity<BaseResponseEntity> modifyBoard(@PathVariable Long id, @RequestBody @Valid Q requestDto){
         boardService.modifyBoard(id, requestDto);
         return ResponseEntity.status(200).body(new BaseResponseEntity(200, "Success"));
     }
 
     @DeleteMapping("/{id}")
+    @ApiOperation(value = "게시판 삭제")
     public ResponseEntity<BaseResponseEntity> deleteBoard(@PathVariable Long id){
         boardService.deleteBoard(id);
         return ResponseEntity.status(200).body(new BaseResponseEntity(200, "Success"));
     }
 
     @PostMapping("/comment")
+    @ApiOperation(value = "댓글 추가", notes = "응답값으로 추가한 댓글을 반환한다.")
     public ResponseEntity<SaveCommentResDto> addComment(@RequestBody @Valid AddCommentReqDto reqDto){
         String userEmail = SecurityUtils.getCurrentUsername().orElseThrow(UserNotFoundException::new);
         SaveCommentResDto responseDto = boardService.addComment(userEmail, reqDto);
@@ -50,12 +55,14 @@ public class BoardController<Q extends SaveBoardReqDto> {
     }
 
     @PutMapping("/comment/{id}")
+    @ApiOperation(value = "댓글 수정", notes = "응답값으로 수정한 댓글을 반환한다.")
     public ResponseEntity<ModifyCommentResDto> modifyComment(@PathVariable Long id, @RequestBody @Valid UpdateCommentReqDto reqDto){
         ModifyCommentResDto responseDto = boardService.modifyComment(id, reqDto);
         return ResponseEntity.status(200).body(responseDto);
     }
 
     @DeleteMapping("/comment/{commentId}")
+    @ApiOperation(value = "댓글 삭제")
     public ResponseEntity<BaseResponseEntity> deleteComment(@PathVariable Long commentId){
         boardService.deleteComment(commentId);
         return ResponseEntity.status(200).body(new BaseResponseEntity(200, "Success"));
