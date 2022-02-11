@@ -71,21 +71,21 @@ export default function MoreBtn({ editData, type, comments, setComments, setOpen
     if (pathname.includes('/notice/')) {
       setPath('latestNoticeList')
     } else if (pathname.includes('/free/')) {
-      setPath('boardList')
+      setPath('free-board')
     } else if (pathname.includes('/group/')) {
-      setPath('groupBoardList')
+      setPath('group-board')
     }
   }, [pathname])
 
 // 게시글 && 댓글 삭제
-  const deleteItem = (id, type) => {
+  const deleteItem = (item, type) => {
     console.log(type)
     const ok = window.confirm('삭제하겠습니까?')
     if (ok) {
       // 게시글인 경우
       if (type.includes('body')) {
         axios({
-          url: `http://localhost:8000/${path}/${id}`,
+          url: `/api/${path}/${item.boardId}`,
           method: 'DELETE'})
           .then(res => {        
             alert('삭제되었습니다.')
@@ -104,12 +104,12 @@ export default function MoreBtn({ editData, type, comments, setComments, setOpen
       } else {
         if (type === '/free/comment') {
           axios({
-            url: `http://localhost:8000/comments/${id}`,
+            url: `api/free-board/comment/${item.id}`,
             method: 'DELETE'})
             .then(res => {        
               // alert('삭제되었습니다.')
               const newComments = comments.filter(comment => {
-                return comment.id !== id
+                return comment.id !== item.id
               })
               setComments(newComments)            
             })
@@ -118,12 +118,12 @@ export default function MoreBtn({ editData, type, comments, setComments, setOpen
             })
         } else {
           axios({
-            url: `http://localhost:8000/groupComments/${id}`,
+            url: `api/group-board/comment/${item.id}`,
             method: 'DELETE'})
             .then(res => {        
               // alert('삭제되었습니다.')
               const newComments = comments.filter(comment => {
-                return comment.id !== id
+                return comment.id !== item.id
               })
               setComments(newComments)            
             })
@@ -177,7 +177,7 @@ export default function MoreBtn({ editData, type, comments, setComments, setOpen
           <EditIcon />
           수정
         </MenuItem>        
-        <MenuItem onClick={() => deleteItem(editData.id, type)} disableRipple>
+        <MenuItem onClick={() => deleteItem(editData, type)} disableRipple>
           <DeleteIcon />
           삭제
         </MenuItem>

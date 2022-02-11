@@ -14,7 +14,7 @@ export default function NoticeListPageContainer () {
     // 백엔드 REST API 구축되면 지울 예정
 
     const fetchLatestNoticeList = () => {
-      axios('http://localhost:8000/LatestNoticeList', {method: 'GET'})
+      axios(`/api/notice/${page}/10`, {method: 'GET'})
       .then(res => {
         setLatestNoticeList(res.data) 
         setLoading(false)

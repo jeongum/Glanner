@@ -9,15 +9,17 @@ export const GroupFormPageContainer = () => {
   const [data, setData] = useState({
     title: "",
     content: "",
-    date: "",
-    writer: "테스트 유저",
-    count: 0,
-    like: 0,
-    comments: [],
-    attachment: "",
-    tags: [],
-    present: 1,
-    full: 4,    
+    files: [],
+    interests: "",
+    // date: "",
+    // writer: "테스트 유저",
+    // count: 0,
+    // like: 0,
+    // comments: [],
+    // attachment: "",
+    // tags: [],
+    // present: 1,
+    // full: 4,    
   })
   const [tagItems, setTagItems] = useState([]);
   const [titleError, setTitleError] = useState(false);
@@ -38,16 +40,25 @@ export const GroupFormPageContainer = () => {
     setContentError(false)
     if (data.title === '') {
       setTitleError(true)
+      alert('제목을 입력해주세요.')
+      return
     }
 
     if (data.content === '') {
       setContentError(true)
+      alert('내용을 입력해주세요.')
+      return
+    }
+
+    if (tagItems === []) {
+      alert('관심사를 입력해주세요.')
+      return
     }
     // 기존 글을 수정하는 로직
     if (state) {
       const today = new Date(new Date().getTime()).toISOString()
       axios({
-        url: `http://localhost:8000/groupBoardList/${state.id}`,
+        url: `/api/group-board/${state.id}`,
         method: 'PUT',
         data: {
           title: data.title,
@@ -74,26 +85,29 @@ export const GroupFormPageContainer = () => {
       // 새로운 글 작성하는 로직
       const today = new Date(new Date().getTime()).toISOString()
       axios({
-        url: 'http://localhost:8000/groupBoardList',
+        url: '/api/group-board',
         method: 'POST',
         data: {
           title: data.title,
           content: data.content,
-          date: today,      
-          writer: data.writer,
-          count: data.count,
-          like: data.like,
-          comments: data.comments,
-          attachment: data.attachment,
-          tags: tagItems,
-          present: data.present,
-          full: data.full,
+          files: [],
+          interests: tagItems[0]
+          // date: today,      
+          // writer: data.writer,
+          // count: data.count,
+          // like: data.like,
+          // comments: data.comments,
+          // attachment: data.attachment,
+          // interests: tagItems,
+          // present: data.present,
+          // full: data.full,
         }
       })
         .then(res => {
           alert('작성 성공!')
           console.log(res.data)
-          navigate(`/board/group/${res.data.id}`)
+          // navigate(`/board/group/${res.data.id}`)
+          navigate(`/community/group`)
         })
         .catch(err => alert('작성 실패!'))
     }
@@ -120,7 +134,9 @@ export const GroupFormPageContainer = () => {
     setData(newData)
   };
   function handleSelecetedTags(items) {
-    setTagItems(items)    
+    setTagItems(items)
+    console.log(tagItems)
+            
   }  
   const deleteFile = () => {
     setAttachment("")

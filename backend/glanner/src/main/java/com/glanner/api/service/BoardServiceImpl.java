@@ -5,7 +5,6 @@ import com.glanner.api.dto.request.SaveBoardReqDto;
 import com.glanner.api.dto.request.UpdateCommentReqDto;
 import com.glanner.api.exception.BoardNotFoundException;
 import com.glanner.api.exception.CommentNotFoundException;
-import com.glanner.api.exception.FileNotSavedException;
 import com.glanner.api.exception.UserNotFoundException;
 import com.glanner.core.domain.board.Board;
 import com.glanner.core.domain.board.Comment;
@@ -20,6 +19,7 @@ import com.glanner.core.repository.NotificationRepository;
 import com.glanner.core.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
+@Transactional
 @Service
 public class BoardServiceImpl implements BoardService{
 
@@ -40,12 +41,12 @@ public class BoardServiceImpl implements BoardService{
     private final NotificationRepository notificationRepository;
 
     @Override
-    public void saveBoard(String userEmail, SaveBoardReqDto requestDto) {
+    public Long saveBoard(String userEmail, SaveBoardReqDto requestDto) {
         User user = userRepository.findByEmail(userEmail).orElseThrow(UserNotFoundException::new);
         Board board = requestDto.toEntity(user);
         List<FileInfo> fileInfos = getFileInfos(requestDto.getFiles());
         board.changeFileInfo(fileInfos);
-        boardRepository.save(board);
+        return boardRepository.save(board).getId();
     }
 
     @Override
@@ -71,7 +72,11 @@ public class BoardServiceImpl implements BoardService{
         if(requestDto.getParentId() != null){
             parent = commentRepository.findById(requestDto.getParentId()).orElseThrow(CommentNotFoundException::new);
         }
-        Comment comment = new Comment(requestDto.getContent(), findUser, parent, board);
+        Comment comment = Comment.builder()
+                .user(findUser)
+                .parent(parent)
+                .content(requestDto.getContent())
+                .build();
         board.addComment(comment);
 
         if(!findUser.equals(board.getUser())) {
@@ -120,8 +125,8 @@ public class BoardServiceImpl implements BoardService{
                             .saveFile(saveFileName).build();
                     try {
                         file.transferTo(new File(folder, saveFileName));
-                    } catch (Exception e) {
-                        throw new FileNotSavedException();
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 }
                 fileInfos.add(fileInfo);

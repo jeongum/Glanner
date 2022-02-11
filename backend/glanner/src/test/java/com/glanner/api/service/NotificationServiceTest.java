@@ -33,7 +33,6 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -60,9 +59,6 @@ class NotificationServiceTest {
 
     @Autowired
     private DailyWorkScheduleRepository dailyWorkScheduleRepository;
-
-    @Autowired
-    private EntityManager em;
 
     @Autowired
     private UserRepository userRepository;
@@ -242,8 +238,6 @@ class NotificationServiceTest {
                 .build();
         user.changeSchedule(schedule);
         userRepository.save(user);
-        em.flush();
-        em.clear();
     }
 
     private void addWorks(LocalDateTime start, LocalDateTime end, LocalDateTime noti) {

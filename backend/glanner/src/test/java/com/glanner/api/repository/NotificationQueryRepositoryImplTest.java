@@ -16,7 +16,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,8 +25,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @Transactional
 class NotificationQueryRepositoryImplTest {
-    @Autowired
-    private EntityManager em;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -81,7 +78,6 @@ class NotificationQueryRepositoryImplTest {
     @Test
     public void testFindValidScheduleWork() throws Exception{
         //given
-        createUser();
         LocalDateTime now = LocalDateTime.now();
 
         addWorks(now.plusMinutes(1), now.plusHours(1), now);            // 알림 O
@@ -101,7 +97,6 @@ class NotificationQueryRepositoryImplTest {
     @Test
     public void testFindValidGlannerWork() throws Exception{
         //given
-        createUser();
         Long savedGlannerId = createGlanner();
         LocalDateTime now = LocalDateTime.now();
 
@@ -130,8 +125,6 @@ class NotificationQueryRepositoryImplTest {
                 .build();
         user.changeSchedule(schedule);
         userRepository.save(user);
-        em.flush();
-        em.clear();
     }
 
     public void createNotification(String content){

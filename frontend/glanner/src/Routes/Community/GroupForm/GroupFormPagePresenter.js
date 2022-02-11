@@ -34,7 +34,7 @@ export const GroupFormPagePresenter = ({
               // label="제목"
               id="title" 
               fullWidth
-              required
+              // required
               // error={titleError}
               className={[classes.smallInput, classes.field].join(' ')}
               sx={{flexGrow: 2}}
