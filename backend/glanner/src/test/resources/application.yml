@@ -1,16 +1,10 @@
 spring:
   profiles:
     active: test
-  datasource:
-    url: jdbc:h2:tcp://localhost/~/glannerTest
-    username: admin
-    password:
-    driver-class-name: org.h2.Driver
-
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
@@ -44,3 +38,8 @@ jwt:
     authentication:
       path: auth
       refresh: refresh
+
+sms:
+  serviceid: ncp:sms:kr:279856777501:glanner
+  accesskey: vqCrek0X5afBgKemOtdP
+  secretkey: oJBNw9bRz0aSQ1ZAERXwRckGVF3McVHQc9q79ICE

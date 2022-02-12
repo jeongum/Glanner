@@ -1,6 +1,10 @@
 import GlobalStyles from "./GlobalStyles";
 import styled from "styled-components";
 import Router from "../Components/Router";
+import SignupComponent from "../Routes/Signup/SignupComponent";
+import LoginComponent from "../Routes/Signup/LoginComponent";
+
+import { useState } from "react";
 
 const MainContainer = styled.div`
   text-align: center;
@@ -22,8 +26,13 @@ const RouterContainer = styled.div`
 `;
 
 function App() {
+  const token = localStorage.getItem('token')
+  const [signupPage, setSignupPage] = useState(true);
+  if (!token) {
+    return signupPage ? <SignupComponent signupPage={signupPage} setSignupPage={setSignupPage} /> : <LoginComponent signupPage={signupPage} setSignupPage={setSignupPage} />
+  }
   return (
-    <MainContainer>
+    <MainContainer>      
       <RouterContainer>
         <Router />
       </RouterContainer>

@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class FindGlannerWorkResDto {
-
+    Long glannerWorkId;
     String title;
     String content;
     LocalDateTime startTime;

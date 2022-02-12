@@ -5,5 +5,7 @@ import com.glanner.core.domain.glanner.Glanner;
 import java.util.Optional;
 
 public interface GlannerCustomRepository {
-    public Optional<Glanner> findRealById(Long id);
+    Optional<Glanner> findRealById(Long id);
+    void deleteAllWorksById(Long id);
+    void deleteAllUserGlannerById(Long id);
 }

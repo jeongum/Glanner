@@ -3,6 +3,7 @@ import { alpha, styled } from '@mui/material/styles';
 import { Box, Grid, InputLabel, Link, TextField, Typography } from "@mui/material";
 import logo from "./logo.png";
 
+
 // 회원가입, 연락처 인증 버튼 
 export const SignupPageButton = styled(Button)({
   height: 38,
@@ -52,6 +53,9 @@ export const SignupInput = styled(TextField)({
   borderRadius: '10px',
   '& .MuiInputBase-input': {
     height: 5
+  },
+  '& legend': {
+    width: 0
   }
 });
 
@@ -59,10 +63,10 @@ export const SignupInput = styled(TextField)({
 export const Copyright = () => {
   return (
     <>
-      <Box sx={{ position: 'relative', top: 50, right: 10}}>
+      <Box sx={{ position: 'absolute', bottom: 10, right: 10}}>
         <Grid container direction="column" alignItems="end">
           <Grid item>
-            <img src={logo} alt='logo' />
+            <img src={logo} alt='logo' style={{width: 130}} />
           </Grid>
           {/* <Grid item>
             <Typography variant="body2" color="text.secondary" align="center">          

@@ -1,10 +1,7 @@
 package com.glanner.api.queryrepository;
 
-import com.glanner.core.domain.glanner.QUserGlanner;
-import com.glanner.core.domain.user.QDailyWorkSchedule;
-import com.glanner.core.domain.user.QSchedule;
-import com.glanner.core.domain.user.QUser;
-import com.glanner.core.domain.user.User;
+import com.glanner.api.dto.response.FindPlannerWorkResDto;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -12,7 +9,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+
+import static com.glanner.core.domain.user.QDailyWorkSchedule.dailyWorkSchedule;
+import static com.glanner.core.domain.user.QUser.user;
 
 
 @Repository
@@ -20,11 +22,6 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public class UserQueryRepositoryImpl implements UserQueryRepository{
     private final JPAQueryFactory query;
-
-    private QUser user = new QUser("user1");
-    private QSchedule schedule = new QSchedule("schedule1");
-    private QUserGlanner userGlanner = new QUserGlanner("userGlanner1");
-    private QDailyWorkSchedule dailyWorkSchedule = new QDailyWorkSchedule("dailyWorkSchedule1");
 
     @Override
     public void deleteAllWorksByScheduleId(Long scheduleId){
@@ -37,6 +34,36 @@ public class UserQueryRepositoryImpl implements UserQueryRepository{
                                 .where(dailyWorkSchedule.schedule.id.eq(scheduleId))
                 ))
                 .execute();
+    }
+
+    @Override
+    public List<FindPlannerWorkResDto> findDailyWorksWithPeriod(Long scheduleId, LocalDateTime start, LocalDateTime end) {
+        return query
+                .select(Projections.constructor(FindPlannerWorkResDto.class,
+                        dailyWorkSchedule.id,
+                        dailyWorkSchedule.title,
+                        dailyWorkSchedule.content,
+                        dailyWorkSchedule.startDate,
+                        dailyWorkSchedule.endDate))
+                .from(dailyWorkSchedule)
+                .where(dailyWorkSchedule.schedule.id.eq(scheduleId),
+                        dailyWorkSchedule.startDate.after(start),
+                        dailyWorkSchedule.startDate.before(end))
+                .fetch();
+    }
+
+    @Override
+    public Optional<FindPlannerWorkResDto> findDailyWork(Long workId) {
+        return Optional.ofNullable(query
+                .select(Projections.constructor(FindPlannerWorkResDto.class,
+                        dailyWorkSchedule.id,
+                        dailyWorkSchedule.title,
+                        dailyWorkSchedule.content,
+                        dailyWorkSchedule.startDate,
+                        dailyWorkSchedule.endDate))
+                .from(dailyWorkSchedule)
+                .where(dailyWorkSchedule.id.eq(workId))
+                .fetchOne());
     }
 
     private BooleanExpression userEmailEq(String userEmail) {

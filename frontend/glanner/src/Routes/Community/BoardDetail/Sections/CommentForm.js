@@ -1,4 +1,4 @@
-import { Button, Grid, TextField } from "@mui/material"
+import { Button, Grid, TextField, Typography } from "@mui/material"
 import { makeStyles } from '@mui/styles';
 import { boardStyles } from "../../Board.styles";
 
@@ -37,14 +37,21 @@ export const CommentForm = ({
         { comment && 
           <Button type="button"
             onClick={() => {
-              console.log('취소')
               setUpdateFlag(false)
               setContent("")
               setOpenForm(false)
             }} 
-            className={classes.btn} sx={{my: 1, mx: 1}}>취소</Button>
+            className={classes.btn} sx={{my: 1, mx: 0.5}}>
+            <Typography className={classes.btnText}>
+              취소
+            </Typography>
+          </Button>
         }
-        <Button type="submit" className={classes.btn} sx={{my: 1}}>작성</Button>
+        <Button type="submit" className={classes.btn} sx={{my: 1}}>
+          <Typography className={classes.btnText}>
+            작성하기
+          </Typography>
+        </Button>
         <Grid item xs={0.2} />
       </Grid>
     </form>  

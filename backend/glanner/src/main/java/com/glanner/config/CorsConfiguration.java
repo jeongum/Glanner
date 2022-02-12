@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-import javax.xml.transform.Templates;
 
 @Configuration
 public class CorsConfiguration {
@@ -18,7 +17,8 @@ public class CorsConfiguration {
       config.addAllowedOrigin("*");
       config.addAllowedHeader("*");
       config.addAllowedMethod("*");
-
+      config.addExposedHeader("Authorization");
+      config.setMaxAge(3600L);
       source.registerCorsConfiguration("/api/**", config);
       return new CorsFilter(source);
    }

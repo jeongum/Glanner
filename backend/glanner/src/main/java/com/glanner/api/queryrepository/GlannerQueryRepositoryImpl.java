@@ -1,18 +1,20 @@
 package com.glanner.api.queryrepository;
 
-import com.glanner.core.domain.glanner.*;
-import com.glanner.core.domain.glanner.QDailyWorkGlanner;
-import com.glanner.core.domain.glanner.QGlanner;
-import com.glanner.core.domain.glanner.QGlannerBoard;
-import com.glanner.core.domain.glanner.QUserGlanner;
-import com.glanner.core.domain.user.QUser;
-import com.querydsl.jpa.JPAExpressions;
+import com.glanner.api.dto.response.FindAttendedGlannerResDto;
+import com.glanner.api.dto.response.FindGlannerWorkResDto;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static com.glanner.core.domain.glanner.QDailyWorkGlanner.dailyWorkGlanner;
+import static com.glanner.core.domain.glanner.QGlanner.glanner;
+import static com.glanner.core.domain.glanner.QUserGlanner.userGlanner;
+import static com.glanner.core.domain.user.QUser.user;
 
 @Repository
 @RequiredArgsConstructor
@@ -20,36 +22,35 @@ import java.util.Optional;
 public class GlannerQueryRepositoryImpl implements GlannerQueryRepository{
 
     private final JPAQueryFactory query;
-    QUser user = new QUser("user1");
-    QGlanner glanner = new QGlanner("glanner1");
-    QUserGlanner userGlanner = new QUserGlanner("userGlanner1");
-    QGlannerBoard glannerBoard = new QGlannerBoard("glannerBoard1");
-    QDailyWorkGlanner dailyWorkGlanner = new QDailyWorkGlanner("dailyWorkGlanner1");
 
     @Override
-    public void deleteAllWorksById(Long id) {
-        query
-                .delete(dailyWorkGlanner)
-                .where(dailyWorkGlanner.in(
-                        JPAExpressions
-                                .select(dailyWorkGlanner)
-                                .from(dailyWorkGlanner)
-                                .where(dailyWorkGlanner.glanner.id.eq(id))
-                ))
-                .execute();
+    public List<FindGlannerWorkResDto> findDailyWorksDtoWithPeriod(Long id, LocalDateTime dateTimeStart, LocalDateTime dateTimeEnd) {
+        return query
+                .select(Projections.constructor(FindGlannerWorkResDto.class,
+                        dailyWorkGlanner.id,
+                        dailyWorkGlanner.title,
+                        dailyWorkGlanner.content,
+                        dailyWorkGlanner.startDate,
+                        dailyWorkGlanner.endDate))
+                .from(dailyWorkGlanner)
+                .where(dailyWorkGlanner.glanner.id.eq(id),
+                        dailyWorkGlanner.startDate.after(dateTimeStart),
+                        dailyWorkGlanner.startDate.before(dateTimeEnd))
+                .fetch();
     }
 
     @Override
-    public void deleteAllUserGlannerById(Long id) {
-        query
-                .delete(userGlanner)
-                .where(userGlanner.in(
-                        JPAExpressions
-                                .select(userGlanner)
-                                .from(userGlanner)
-                                .where(userGlanner.glanner.id.eq(id))
-                ))
-                .execute();
+    public List<FindAttendedGlannerResDto> findAttendedGlannersDtoByUserId(Long userId) {
+        return query
+                .select(Projections.constructor(FindAttendedGlannerResDto.class,
+                        glanner.id,
+                        glanner.name,
+                        user.email))
+                .from(glanner)
+                .join(glanner.userGlanners, userGlanner)
+                .join(glanner.host, user)
+                .where(userGlanner.user.id.eq(userId))
+                .fetch();
     }
 
 

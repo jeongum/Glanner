@@ -1,20 +1,29 @@
 package com.glanner.api.service;
 
-import com.glanner.api.dto.request.*;
+import com.glanner.api.dto.request.AddGlannerWorkReqDto;
+import com.glanner.api.dto.request.AddUserToGlannerReqDto;
+import com.glanner.api.dto.request.ChangeGlannerNameReqDto;
+import com.glanner.api.dto.request.UpdateGlannerWorkReqDto;
+import com.glanner.api.dto.response.FindAttendedGlannerResDto;
+import com.glanner.api.dto.response.FindGlannerResDto;
+import com.glanner.api.exception.DailyWorkNotFoundException;
+import com.glanner.api.exception.FullUserInGroupException;
+import com.glanner.api.exception.GlannerNotFoundException;
+import com.glanner.api.exception.UserNotFoundException;
 import com.glanner.api.queryrepository.GlannerQueryRepository;
-import com.glanner.api.queryrepository.UserQueryRepository;
 import com.glanner.core.domain.glanner.DailyWorkGlanner;
 import com.glanner.core.domain.glanner.Glanner;
 import com.glanner.core.domain.glanner.UserGlanner;
 import com.glanner.core.domain.user.User;
 import com.glanner.core.repository.DailyWorkGlannerRepository;
 import com.glanner.core.repository.GlannerRepository;
+import com.glanner.core.repository.UserGlannerRepository;
 import com.glanner.core.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,14 +33,16 @@ public class GlannerServiceImpl implements GlannerService{
     private final GlannerRepository glannerRepository;
     private final GlannerQueryRepository glannerQueryRepository;
     private final DailyWorkGlannerRepository dailyWorkGlannerRepository;
+    private final UserGlannerRepository userGlannerRepository;
 
     private static final int MAX_PERSONNEL_SIZE = 5;
 
     @Override
-    public void saveGlanner(String hostEmail) {
+    public Long saveGlanner(String hostEmail) {
 
-        User findUser = getUser(userRepository.findByEmail(hostEmail));
+        User findUser = userRepository.findByEmail(hostEmail).orElseThrow(UserNotFoundException::new);
         Glanner glanner = Glanner.builder()
+                .name(findUser.getName() + "님의 글래너")
                 .host(findUser)
                 .build();
 
@@ -41,26 +52,45 @@ public class GlannerServiceImpl implements GlannerService{
 
         glanner.addUserGlanner(userGlanner);
 
-        Glanner savedGlanner = glannerRepository.save(glanner);
+        return glannerRepository.save(glanner).getId();
     }
 
     @Override
     public void deleteGlanner(Long id) {
-        Glanner findGlanner = getGlanner(glannerRepository.findById(id));
+        Glanner findGlanner = glannerRepository.findById(id).orElseThrow(GlannerNotFoundException::new);
 
-        glannerQueryRepository.deleteAllWorksById(findGlanner.getId());
-        glannerQueryRepository.deleteAllUserGlannerById(findGlanner.getId());
+        glannerRepository.deleteAllWorksById(findGlanner.getId());
+        glannerRepository.deleteAllUserGlannerById(findGlanner.getId());
         glannerRepository.delete(findGlanner);
     }
 
     @Override
-    public void addUser(AddUserToGlannerReqDto reqDto, String hostEmail) {
+    public void changeGlannerName(ChangeGlannerNameReqDto reqDto) {
+        Glanner glanner = glannerRepository.findById(reqDto.getGlannerId()).orElseThrow(GlannerNotFoundException::new);
+        glanner.changeGlannerName(reqDto.getGlannerName());
+    }
 
-        User host = getUser(userRepository.findByEmail(hostEmail));
-        User attendingUser = getUser(userRepository.findByEmail(reqDto.getEmail()));
-        Glanner findGlanner = getGlanner(glannerRepository.findById(host.getId()));
+    @Override
+    @Transactional(readOnly = true)
+    public List<FindAttendedGlannerResDto> findAttendedGlanners(String userEmail) {
+        User user = userRepository.findByEmail(userEmail).orElseThrow(UserNotFoundException::new);
+        return glannerQueryRepository.findAttendedGlannersDtoByUserId(user.getId());
+    }
+
+    @Override
+    public FindGlannerResDto findGlannerDetail(Long id) {
+        Glanner findGlanner = glannerRepository.findRealById(id).orElseThrow(GlannerNotFoundException::new);
+        List<UserGlanner> findUserGlanners = userGlannerRepository.findByGlannerId(id);
+        return new FindGlannerResDto(findGlanner, findUserGlanners);
+    }
+
+    @Override
+    public void addUser(AddUserToGlannerReqDto reqDto) {
+
+        User attendingUser = userRepository.findByEmail(reqDto.getEmail()).orElseThrow(UserNotFoundException::new);
+        Glanner findGlanner = glannerRepository.findRealById(reqDto.getGlannerId()).orElseThrow(GlannerNotFoundException::new);
         if (findGlanner.getUserGlanners().size() >= MAX_PERSONNEL_SIZE){
-            throw new IllegalStateException("회원 수가 가득 찼습니다.");
+            throw new FullUserInGroupException();
         }
         UserGlanner userGlanner = UserGlanner
                 .builder()
@@ -72,7 +102,7 @@ public class GlannerServiceImpl implements GlannerService{
 
     @Override
     public void deleteUser(Long glannerId, Long userId) {
-        Glanner findGlanner = getGlanner(glannerRepository.findById(userId));
+        Glanner findGlanner = glannerRepository.findById(userId).orElseThrow(GlannerNotFoundException::new);
         int size = findGlanner.getUserGlanners().size();
         for (int i = 0; i < size; i++) {
             if(findGlanner.getUserGlanners().get(i).getUser().getId().equals(userId)){
@@ -84,28 +114,20 @@ public class GlannerServiceImpl implements GlannerService{
 
     @Override
     public void addDailyWork(AddGlannerWorkReqDto reqDto) {
-        Glanner glanner = getGlanner(glannerRepository.findById(reqDto.getGlannerId()));
+        Glanner glanner = glannerRepository.findById(reqDto.getGlannerId()).orElseThrow(GlannerNotFoundException::new);
         glanner.addDailyWork(reqDto.toEntity());
     }
 
     @Override
     public void deleteDailyWork(Long glanenrId, Long workId) {
-        Glanner findGlanner = getGlanner(glannerRepository.findById(glanenrId));
-        DailyWorkGlanner deleteWork = dailyWorkGlannerRepository.findById(workId).orElseThrow(IllegalArgumentException::new);
+        Glanner findGlanner = glannerRepository.findById(glanenrId).orElseThrow(GlannerNotFoundException::new);
+        DailyWorkGlanner deleteWork = dailyWorkGlannerRepository.findById(workId).orElseThrow(DailyWorkNotFoundException::new);
         findGlanner.getWorks().remove(deleteWork);
     }
 
     @Override
     public void updateDailyWork(UpdateGlannerWorkReqDto reqDto) {
-        DailyWorkGlanner updateWork = dailyWorkGlannerRepository.findById(reqDto.getWorkId()).orElseThrow(IllegalArgumentException::new);
+        DailyWorkGlanner updateWork = dailyWorkGlannerRepository.findById(reqDto.getWorkId()).orElseThrow(DailyWorkNotFoundException::new);
         updateWork.changeDailyWork(reqDto.getStartTime(), reqDto.getEndTime(), reqDto.getTitle(), reqDto.getContent());
-    }
-
-    public User getUser(Optional<User> user){
-        return user.orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
-    }
-
-    public Glanner getGlanner(Optional<Glanner> glanner){
-        return glanner.orElseThrow(() -> new IllegalArgumentException("글래너가 존재하지 않습니다."));
     }
 }

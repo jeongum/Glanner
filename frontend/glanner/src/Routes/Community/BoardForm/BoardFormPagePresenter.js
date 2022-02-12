@@ -13,7 +13,8 @@ export const BoardFormPagePresenter = ({
   onFileChange, 
   deleteFile, 
   attachment,  
-  data}) => {
+  data
+}) => {
   const classes = useStyles();    
   return (
     // <Paper style={{ padding: "20px, 5px", width: 'auto', height: '100%'}}>
@@ -22,7 +23,7 @@ export const BoardFormPagePresenter = ({
           <Grid item xs={1.2}>
             <Typography className={classes.label}>제목</Typography>
           </Grid>
-          <Grid item xs={10}>            
+          <Grid item xs={10}>    
             <TextField
               onChange={(e) => {
                 // if (data.title) {setTitleError(false)}
@@ -58,7 +59,7 @@ export const BoardFormPagePresenter = ({
               multiline={true}
               rows={15}
               // error={contentError}
-              className={classes.field}
+              className={classes.field}              
             />
           </Grid>
         </Grid>
@@ -124,12 +125,20 @@ export const BoardFormPagePresenter = ({
         <Grid container sx={{mt: 2, justifyContent: 'space-between'}}>
           {/* <Grid item xs={2}/> */}
           <Grid item>
-            <Link to={'/community'}>
-              <Button className={classes.btn} >목록으로</Button>
+            <Link to={'/community/free/'}>
+              <Button className={classes.btn}>
+                <Typography className={classes.btnText}>
+                  목록으로
+                </Typography>
+              </Button>
             </Link>
           </Grid>
           <Grid item sx={{ ml: 1}}>
-            <Button className={classes.btn} type="submit" >작성하기</Button>
+            <Button className={classes.btn} type="submit">
+              <Typography className={classes.btnText}>
+                작성하기
+              </Typography>
+            </Button>
           </Grid>
         </Grid>
       </form>

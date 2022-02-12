@@ -1,23 +1,29 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { BoardFormPagePresenter } from "./BoardFormPagePresenter"
 
-export const BoardFormPageContainer = () => {
+export const BoardFormPageContainer = () => {  
   const navigate = useNavigate();
-  const { state } = useLocation();
+  const { state, pathname } = useLocation();
+  const [path, setPath] = useState();
+
   const [data, setData] = useState({
     title: "",
     content: "",
-    date: "",
-    writer: "테스트 유저",
-    count: 0,
-    like: 0,
-    comments: [],
-    attachment: ""
+    // date: "",
+    // writer: "테스트 유저",
+    // count: 0,
+    dislikeCount: 0,
+    files: [
+    ],
+    likeCount: 0
+    // comments: [],
+    // attachment: ""
   })
-
+  
   const [titleError, setTitleError] = useState(false);
   const [contentError, setContentError] = useState(false);
   const [attachment, setAttachment] = useState("");
@@ -26,8 +32,13 @@ export const BoardFormPageContainer = () => {
   useEffect(() => {
     if (state) {
       setData(state)
-    }       
-  }, [])
+    }
+    if (pathname.includes('notice-form')) {
+      setPath('notice')
+    } else if (pathname.includes('board-form')) {
+      setPath('free-board')
+    }
+  }, [pathname, state])
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -36,57 +47,86 @@ export const BoardFormPageContainer = () => {
     setContentError(false)
     if (data.title === '') {
       setTitleError(true)
+      alert('제목을 작성해주세요')
+      return
     }
 
     if (data.content === '') {
       setContentError(true)
+      alert('내용을 작성해주세요')
+      return
     }
     // 기존 글을 수정하는 로직
     if (state) {
-      const today = new Date(new Date().getTime()).toISOString()
       axios({
-        url: `http://localhost:8000/boardList/${state.id}`,
+        url: `/api/${path}/${state.boardId}`,
         method: 'PUT',
         data: {
           title: data.title,
           content: data.content,
-          date: today,
-          // date: `${dateData.slice(0, 10)} ${dateData.slice(11, 19)}`,
-          writer: data.writer,
-          count: data.count,
-          like: data.like,
-          comments: data.comments,
-          attachment: data.attachment
+          files: [],
+          likeCount: data.likeCount,
+          dislikeCount: data.dislikeCount
         }
       })
         .then(res => {
           alert('수정 성공!')
-          console.log(res.data)
-          navigate(`/board/${res.data.id}`)
+          switch (path) {
+            case 'free-board':
+              // navigate(`/board/free/${res.data.id}`)
+              navigate('/community/free')
+              break
+            case 'notice':
+              // navigate(`/board/notice/${res.data.id}`)
+              navigate('/community/notice')
+              break
+            case 'group-board':
+              // navigate(`/board/notice/${res.data.id}`)
+              navigate('/community/group')
+                break             
+            default:
+              console.log('err')
+          } 
         })
         .catch(err => alert('수정 실패!'))    
     
     } else {
       // 새로운 글 작성하는 로직
-      const today = new Date(new Date().getTime()).toISOString()
       axios({
-        url: 'http://localhost:8000/boardList',
+        url: `/api/${path}`,
         method: 'POST',
         data: {
           title: data.title,
           content: data.content,
-          date: today,      
-          writer: data.writer,
-          count: data.count,
-          like: data.like,
-          comments: data.comments,
-          attachment: data.attachment
+          // date: today,      
+          // // writer: data.writer,
+          // count: data.count,
+          // like: data.like,
+          // comments: data.comments,
+          files: [],
+          likeCount: 0,
+          dislikeCount: 0
         }
       })
         .then(res => {
-          alert('작성 성공!')
-          console.log(res.data)
-          navigate(`/board/${res.data.id}`)
+          alert('작성 성공!')          
+          switch (path) {
+            case 'free-board':
+              // navigate(`/board/free/${res.data.id}`)
+              navigate('/community/free')
+              break
+            case 'notice':
+              // navigate(`/board/notice/${res.data.id}`)
+              navigate('/community/notice')
+              break
+            case 'group-board':
+              // navigate(`/board/group/${res.data.id}`)
+              navigate('/community/group')
+              break              
+            default:
+              console.log('err')
+          } 
+          
         })
         .catch(err => alert('작성 실패!'))
     }
@@ -110,6 +150,7 @@ export const BoardFormPageContainer = () => {
     const newData = {...data}
     newData[e.target.id] = e.target.value
     setData(newData)
+    console.log(data)
   };
 
   const deleteFile = () => {
@@ -120,10 +161,10 @@ export const BoardFormPageContainer = () => {
       handleSubmit={handleSubmit}
       handle={handle}
       onFileChange={onFileChange}
-      state={state}
       data={data}
-      attachment={attachment}
+      // attachment={attachment}
       deleteFile={deleteFile}
+
     />
   )
   

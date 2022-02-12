@@ -8,7 +8,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 
 
@@ -25,6 +28,10 @@ public class GlannerBoard extends Board {
     @Builder(builderMethodName = "boardBuilder")
     public GlannerBoard(String title, String content, User user, Glanner glanner) {
         super(title, content, user);
+        this.glanner = glanner;
+    }
+
+    public void changeGlanner(Glanner glanner){
         this.glanner = glanner;
     }
 }

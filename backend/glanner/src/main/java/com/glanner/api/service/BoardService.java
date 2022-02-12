@@ -1,15 +1,17 @@
 package com.glanner.api.service;
 
-import com.glanner.api.dto.request.*;
-import com.glanner.api.dto.response.FindBoardResDto;
+import com.glanner.api.dto.request.AddCommentReqDto;
+import com.glanner.api.dto.request.SaveBoardReqDto;
+import com.glanner.api.dto.request.UpdateCommentReqDto;
+import com.glanner.api.dto.response.ModifyCommentResDto;
+import com.glanner.api.dto.response.SaveCommentResDto;
 
-import java.util.List;
 
 public interface BoardService {
-    public void saveBoard(String userEmail, SaveBoardReqDto requestDto);
-    public void modifyBoard(Long boardId, SaveBoardReqDto requestDto);
-    public void deleteBoard(Long boardId);
-    public void addComment(String userEmail, AddCommentReqDto requestDto);
-    public void modifyComment(Long commentId, UpdateCommentReqDto requestDto);
-    public void deleteComment(Long commentId);
+    Long saveBoard(String userEmail, SaveBoardReqDto requestDto);
+    void modifyBoard(Long boardId, SaveBoardReqDto requestDto);
+    void deleteBoard(Long boardId);
+    SaveCommentResDto addComment(String userEmail, AddCommentReqDto requestDto);
+    ModifyCommentResDto modifyComment(Long commentId, UpdateCommentReqDto requestDto);
+    void deleteComment(Long commentId);
 }

@@ -13,5 +13,8 @@ import javax.validation.constraints.NotNull;
 public class AddUserToGlannerReqDto {
 
     @NotNull
+    public Long glannerId;
+
+    @NotNull
     public String email;
 }

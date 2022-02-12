@@ -6,7 +6,7 @@ import { useState } from "react";
 import { CommentForm } from "./CommentForm";
 import { boardStyles } from "../../Board.styles";
 import MoreBtn from "../../../../Components/MoreBtn";
-import getTime from "../../helper";
+import { getTime } from "../../helper";
 
 const useStyles = makeStyles(boardStyles)
 
@@ -16,7 +16,9 @@ export const SingleComment = ({
   comment,
   addComment, 
   addCommentLike, 
-  updateComment}) => {
+  updateComment,
+  pathname
+}) => {
   const classes = useStyles();
 
   const [openForm, setOpenForm] = useState(false);
@@ -52,7 +54,7 @@ export const SingleComment = ({
         action={
           <MoreBtn
             editData={comment} 
-            type="comment" 
+            type={`${pathname}comment`}
             comments={comments} 
             setComments={setComments} 
             setOpenForm={setOpenForm} 
@@ -66,7 +68,8 @@ export const SingleComment = ({
         sx={ comment.responseTo !== -1 ? {'& .MuiCardHeader-content': {position: 'relative', right: '25px'}} : null }
       />
       <CardContent>
-        <p className={classes.commentContent}>
+        <p className={classes.commentContent} style={{ whiteSpace: 'normal', overflow: 'hidden', wordWrap: 'break-word'
+	 }}>
           {comment.content}
         </p>
       </CardContent>

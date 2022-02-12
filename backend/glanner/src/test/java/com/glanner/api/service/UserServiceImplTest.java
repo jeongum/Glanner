@@ -1,6 +1,8 @@
 package com.glanner.api.service;
 
+import com.glanner.api.dto.request.AddPlannerWorkReqDto;
 import com.glanner.api.dto.request.SaveUserReqDto;
+import com.glanner.api.exception.UserNotFoundException;
 import com.glanner.core.domain.user.DailyWorkSchedule;
 import com.glanner.core.domain.user.Schedule;
 import com.glanner.core.domain.user.User;
@@ -12,12 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
-
 import java.time.LocalDateTime;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
@@ -29,9 +29,6 @@ class UserServiceImplTest {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private EntityManager em;
-
     @BeforeEach
     public void init(){
         createUser();
@@ -41,7 +38,7 @@ class UserServiceImplTest {
     public void testJoin() throws Exception{
         //given
         SaveUserReqDto reqDto = SaveUserReqDto.builder()
-                .email("cherish8513@naver.com")
+                .email("cherish8515@naver.com")
                 .name("싸피")
                 .password("1234")
                 .phoneNumber("010-1234-5678")
@@ -61,6 +58,25 @@ class UserServiceImplTest {
 
         //then
         assertThat(savedUser.getSchedule()).isEqualTo(schedule);
+    }
+
+    @Test
+    public void testAddWork() throws Exception{
+        //given
+        LocalDateTime now = LocalDateTime.now();
+        AddPlannerWorkReqDto reqDto = new AddPlannerWorkReqDto("title", "content", now, now.plusDays(3), null);
+
+        //when
+        User findUser = userRepository.findByEmail("cherish8513@naver.com").orElseThrow(UserNotFoundException::new);
+        int workSize = findUser.getSchedule().getWorks().size();
+        findUser.getSchedule().addDailyWork(reqDto.toEntity());
+
+        //then
+        assertThat(findUser.getSchedule().getWorks().size()).isEqualTo(workSize + 1);
+        assertThat(findUser.getSchedule().getWorks().get(workSize).getTitle()).isEqualTo("title");
+        assertThat(findUser.getSchedule().getWorks().get(workSize).getContent()).isEqualTo("content");
+        assertThat(findUser.getSchedule().getWorks().get(workSize).getStartDate()).isEqualTo(now);
+
     }
 
     private void validateDuplicateMember(User user) {
@@ -90,8 +106,6 @@ class UserServiceImplTest {
         schedule.addDailyWork(workSchedule);
         user.changeSchedule(schedule);
         userRepository.save(user);
-        em.flush();
-        em.clear();
     }
 
 }

@@ -17,11 +17,13 @@ import java.time.LocalDateTime;
 public class DailyWorkSchedule extends BaseTimeEntity {
 
     @Builder
-    public DailyWorkSchedule(LocalDateTime startDate, LocalDateTime endDate, String title, String content) {
+    public DailyWorkSchedule(LocalDateTime startDate, LocalDateTime endDate, LocalDateTime notiDate, String title, String content) {
         this.startDate = startDate;
         this.endDate = endDate;
+        this.notiDate = notiDate;
         this.title = title;
         this.content = content;
+        this.notiStatus = NotificationStatus.STILL_NOT_CONFIRMED;
     }
 
     @Id @GeneratedValue
@@ -33,18 +35,27 @@ public class DailyWorkSchedule extends BaseTimeEntity {
     private Schedule schedule;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
+    private LocalDateTime notiDate;
     private String title;
     private String content;
+
+    @Enumerated(EnumType.STRING)
+    private NotificationStatus notiStatus;
 
     public void changeSchedule(Schedule schedule){
         this.schedule = schedule;
     }
 
-    public void changeDailyWork(LocalDateTime startDate, LocalDateTime endDate, String title, String content){
+    public void changeDailyWork(LocalDateTime startDate, LocalDateTime endDate, LocalDateTime notiDate, String title, String content){
         this.startDate = startDate;
         this.endDate = endDate;
+        this.notiDate = notiDate;
         this.title = title;
         this.content = content;
+    }
+
+    public void changeNotiStatus(){
+        this.notiStatus = NotificationStatus.CONFIRM;
     }
 
     public void cancel(){

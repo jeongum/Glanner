@@ -7,8 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-import java.util.List;
+import javax.persistence.Entity;
 
 @Entity
 @QueryEntity
@@ -19,7 +18,6 @@ public class NoticeBoard extends Board {
     public NoticeBoard(String title, String content, User user) {
         super(title, content, user);
     }
-
 
 }
 

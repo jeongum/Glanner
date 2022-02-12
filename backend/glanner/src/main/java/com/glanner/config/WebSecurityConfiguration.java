@@ -29,6 +29,9 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
    private final JwtAuthenticationEntryPoint authenticationErrorHandler;
    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
+   public static String[] SWAGGER_URL_PATHS = new String[] { "/swagger-ui.html**", "/swagger-resources/**",
+           "/v2/api-docs**", "/webjars/**" };
+
    @Bean
    public PasswordEncoder passwordEncoder() {
       return new BCryptPasswordEncoder();
@@ -75,7 +78,10 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
          .and()
          .authorizeRequests()
-         .antMatchers("/api/auth", "/api/mail/**").permitAll()
+         .antMatchers("/api/auth").permitAll()
+         .antMatchers("/api/user", "/api/user/password/**").permitAll()
+         .antMatchers("/api/notification/mail", "/api/notification/sms").permitAll()
+         .antMatchers(SWAGGER_URL_PATHS).permitAll()
 
          .antMatchers("/api/**").hasAuthority(UserRoleStatus.ROLE_USER.name())
          .antMatchers("/api/notice/**").hasAuthority(UserRoleStatus.ROLE_ADMIN.name())

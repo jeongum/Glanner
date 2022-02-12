@@ -8,7 +8,8 @@ export const boardStyles = {
     border: '2px solid #E5E5E5',
     boxSizing: 'border-box',
     boxShadow: '0px 2px 6px rgba(0, 0, 0, 0.1)',
-    borderRadius: '10px'    
+    borderRadius: '10px',
+    '& legend': { width: 0}
   },
   smallInput: {
     '& .MuiOutlinedInput-root': {
@@ -27,25 +28,40 @@ export const boardStyles = {
     // textAlign: 'right',
     color: '#5F5F5F'
   },
-  btn: {
-    background: 'rgba(149, 149, 149, 0.1)',
-    border: '2px solid #959595',
-    boxSsizing: 'border-box',
-    borderRadius: '10px',
+  groupLabel: {
+    // paddingTop: 20,    
+    marginRight: 20,
+    textAlign: 'end',
     fontFamily: 'Noto Sans CJK KR',
     fontStyle: 'normal',
-    fontWeight: 'bold',
-    fontSize: '16px',
-    lineHeight: '16px',    
-    /* identical to box height */
+    fontWeight: 600,
+    fontSize: '18px',
+    lineHeight: '44px',
+    // textAlign: 'right',
+    color: '#5F5F5F',
+    marginBottom: '23px',
+  
+  },
+  btn: {   
+    background: 'rgba(149, 149, 149, 0.1)',
+    border: '1px solid #959595',
     width: '100px',
-    height: '35px',
-    display: 'flex',
-    alignItems: 'center',
-    color: '#959595',
-    '&:hover': {
-      backgroundColor: '#F6F6F6'
+    height: '40px',
+    fontFamily: 'Noto Sans CJK KR',
+    fontWeight: 'medium',
+    color: "#8C7B80",          
+    padding: 0,
+    borderRadius: "10px",
+    "&:hover": {
+      color: "#FFFFFF",
+      backgroundColor: "#8C7B80",
+      borderColor: "#8C7B80",
+      boxShadow: "none",
     }
+  },
+  btnText: {
+    fontFamily: 'Noto Sans CJK KR', 
+    fontWeight: 'medium'
   },
   attBtn: {
     background: '#FFFFFF',
@@ -57,7 +73,6 @@ export const boardStyles = {
     position: "relative",
     display: "inline-block",
     width: '110px',
-    // float: 'right'
   },
   attBtnText: {
     fontFamily: 'Noto Sans CJK KR',
@@ -74,7 +89,6 @@ export const boardStyles = {
     
   },
   card: {
-    // width: 'auto',
     height: '100%',    
     padding: '50px 100px',
     textAlign: 'start',    

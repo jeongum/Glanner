@@ -2,10 +2,8 @@ package com.glanner.api.dto.request;
 
 import com.glanner.core.domain.board.Board;
 import com.glanner.core.domain.user.User;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotNull;

@@ -40,14 +40,14 @@ export default () => (
           }}
         />
         <Routes>
-          <Route path="*" element={<MainPage />} />
-          <Route path="/" element={<MainPage />} />
+          <Route path="*" element={<MainPage />}/>
+          <Route path="/" element={<MainPage />}
+          />
           <Route path="/community/free" element={<BoardList />} />
           <Route path="/community/notice" element={<NoticeList />} />
           <Route path="/community/group" element={<GroupBoardList />} />
           {/* <Route path="/community/:type" element={<BoardList />} /> */}
           <Route path="/home" />
-          <Route path="/group/:id" element={<GroupPlanner />}/>
           <Route path="/board/free/:id" element={<BoardDetail />} />
           <Route path="/board/notice/:id" element={<BoardDetail />} />
           <Route path="/board/group/:id" element={<BoardDetail />} />

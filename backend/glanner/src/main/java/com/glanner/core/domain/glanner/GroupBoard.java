@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 
 @Entity
 @QueryEntity
@@ -17,6 +19,11 @@ import javax.persistence.Entity;
 public class GroupBoard extends Board {
 
     private String interests;
+
+    @OneToOne
+    @JoinColumn(name = "glanner_id")
+    Glanner glanner;
+
     @Builder(builderMethodName = "boardBuilder")
     public GroupBoard(User user, String title, String content, String interests) {
         super(title, content, user);
@@ -25,5 +32,13 @@ public class GroupBoard extends Board {
 
     public void changeGroupBoard(String title, String content, String interests, String fileUrls){
         this.interests = interests;
+    }
+
+    public void changeInterests(String interests){
+        this.interests = interests;
+    }
+
+    public void changeGlanner(Glanner glanner){
+        this.glanner = glanner;
     }
 }

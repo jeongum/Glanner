@@ -1,17 +1,21 @@
 package com.glanner.api.service;
 
-import com.glanner.api.dto.request.SaveBoardReqDto;
 import com.glanner.api.dto.request.SaveGlannerBoardReqDto;
+import com.glanner.api.dto.response.FindCommentResDto;
+import com.glanner.api.dto.response.FindGlannerBoardWithCommentsResDto;
+import com.glanner.api.exception.GlannerNotFoundException;
 import com.glanner.api.exception.UserNotFoundException;
-import com.glanner.core.domain.board.Board;
+import com.glanner.api.queryrepository.CommentQueryRepository;
 import com.glanner.core.domain.board.FileInfo;
 import com.glanner.core.domain.glanner.Glanner;
 import com.glanner.core.domain.glanner.GlannerBoard;
 import com.glanner.core.domain.user.User;
-import com.glanner.core.repository.*;
+import com.glanner.core.repository.GlannerBoardRepository;
+import com.glanner.core.repository.GlannerRepository;
+import com.glanner.core.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -24,15 +28,25 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class GlannerBoardServiceImpl implements GlannerBoardService{
 
     private final UserRepository userRepository;
-    private final BoardRepository boardRepository;
     private final GlannerRepository glannerRepository;
+    private final GlannerBoardRepository glannerBoardRepository;
+    private final CommentQueryRepository commentQueryRepository;
 
-    public void saveGlannerBoard(String userEmail, SaveGlannerBoardReqDto requestDto) {
+    @Override
+    public FindGlannerBoardWithCommentsResDto getGlannerBoard(Long boardId) {
+        GlannerBoard glannerBoard = glannerBoardRepository.findRealById(boardId).orElseThrow(GlannerNotFoundException::new);
+        glannerBoard.addCount();
+        List<FindCommentResDto> commentsByBoardId = commentQueryRepository.findCommentsByBoardId(boardId);
+        return new FindGlannerBoardWithCommentsResDto(glannerBoard, commentsByBoardId);
+    }
+
+    public Long saveGlannerBoard(String userEmail, SaveGlannerBoardReqDto requestDto) {
         User user = userRepository.findByEmail(userEmail).orElseThrow(UserNotFoundException::new);
-        Glanner glanner = glannerRepository.findById(requestDto.getGlannerId()).orElseThrow(IllegalArgumentException::new);
+        Glanner glanner = glannerRepository.findRealById(requestDto.getGlannerId()).orElseThrow(GlannerNotFoundException::new);
         List<FileInfo> fileInfos = getFileInfos(requestDto.getFiles());
 
         GlannerBoard board = GlannerBoard
@@ -45,7 +59,8 @@ public class GlannerBoardServiceImpl implements GlannerBoardService{
 
         board.changeFileInfo(fileInfos);
 
-        boardRepository.save(board);
+        glanner.addGlannerBoard(board);
+        return glannerBoardRepository.save(board).getId();
     }
 
     protected List<FileInfo> getFileInfos(List<MultipartFile> files) {
