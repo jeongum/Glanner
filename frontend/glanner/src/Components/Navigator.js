@@ -20,6 +20,11 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ReactComponent as Logout } from "../assets/arrow-right-from-bracket-solid.svg";
 import logo from "../assets/glannerLogo1.png";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { addGlanner, removeGlanner } from "../redux/planners";
+import { deleteGlanner, fetchGlanner } from "../redux/apiCalls";
 
 const GroupPlannerList = styled.div`
   background-color: #ffffff;
@@ -41,59 +46,59 @@ const groupPlanners = [
   "독서 모임",
   "00대 16학번 모임",
 ]; // useState, useRedux 들어갈 자리
-
-const categories = [
-  {
-    id: "내 플래너",
-    children: [
-      {
-        id: myPlanners[0],
-        active: true,
-      },
-      {
-        id: myPlanners[1],
-        active: false,
-      },
-      {
-        id: "개인 플래너2",
-        active: false,
-      },
-      {
-        id: "개인 플래너3",
-        active: false,
-      },
-      {
-        id: "개인 플래너4",
-        active: false,
-      },
-    ],
-  },
-  {
-    id: "그룹 플래너",
-    children: [
-      {
-        id: groupPlanners[0],
-        active: false,
-      },
-      {
-        id: groupPlanners[1],
-        active: false,
-      },
-      {
-        id: groupPlanners[2],
-        active: false,
-      },
-      {
-        id: groupPlanners[3],
-        active: false,
-      },
-      {
-        id: "축구",
-        active: false,
-      },
-    ],
-  },
-];
+// const categories = [
+//   {
+//     id: "내 플래너",
+//     children: [
+//       {
+//         id: myPlanners[0],
+//         active: true,
+//       },
+//       {
+//         id: myPlanners[1],
+//         active: false,
+//       },
+//       {
+//         id: "개인 플래너2",
+//         active: false,
+//       },
+//       {
+//         id: "개인 플래너3",
+//         active: false,
+//       },
+//       {
+//         id: "개인 플래너4",
+//         active: false,
+//       },
+//     ],
+//   },
+//   {
+//     id: "그룹 플래너",
+//     children:
+//     [
+//       {
+//         id: groupPlanners[0],
+//         active: false,
+//       },
+//       {
+//         id: groupPlanners[1],
+//         active: false,
+//       },
+//       {
+//         id: groupPlanners[2],
+//         active: false,
+//       },
+//       {
+//         id: groupPlanners[3],
+//         active: false,
+//       },
+//       {
+//         id: "축구",
+//         active: false,
+//       },
+//     ],
+//   },
+// ];
 
 const boards = [
   {
@@ -178,7 +183,14 @@ const settingItem = {
 
 function Navigator(props) {
   const { ...other } = props;
-
+  const dispatch = useDispatch();
+  // redux에서 불러오기
+  const categories = useSelector(state => state.planner.plannerList)
+  console.log(categories)
+  useEffect(() => {
+    fetchGlanner(dispatch)
+    console.log(categories)
+  }, [])
   // ! 아래와 같은 css 방식을 inline css라고 하는데, 이는 렌더링될 때마다 스타일 객체를 다시 계산해서 전체 앱의 성능이 저하될 수 있다.
   // ! 따라서 좀 고민해야 할 방향인 것 같긴 함....
   return (
@@ -215,17 +227,18 @@ function Navigator(props) {
                 overflow: "scroll",
               }}
             >
-              {children.map(({ id: childId, active }) => (
-                <ListItem key={childId} sx={{ pb: 0 }}>
+              {children.map(({ glannerId, glannerName, active }) => (
+                <ListItem key={glannerId} sx={{ pb: 0 }}>
                   <GroupPlannerList>
                     <ListItemButton
                       selected={active}
                       sx={item}
-                      onClick={() => {
-                        console.log(
-                          categories[id == "내 플래너" ? 0 : 1].children
-                        );
-                      }}
+                      // onClick={() => {
+                      //   console.log(
+                      //     categories[id == "내 플래너" ? 0 : 1].children
+                      //   );
+                      // }}
+                      onClick={() => deleteGlanner(glannerId, dispatch)}
                     >
                       <ListItemText>
                         {id === "그룹 플래너" ? (
@@ -238,11 +251,11 @@ function Navigator(props) {
                           <FontAwesomeIcon
                             icon={faCircle}
                             className="circle"
-                            style={{ width: 12 + "px", color: "#FFABAB" }}
+                            style={{ width: 12 + "px", color: "#FFABAB" }}                            
                           />
                         )}
                         {"  "}
-                        {childId}
+                        {glannerName}
                         {active ? (
                           <FontAwesomeIcon
                             icon={faAngleRight}
