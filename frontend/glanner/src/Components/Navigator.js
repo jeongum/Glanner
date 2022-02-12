@@ -186,10 +186,8 @@ function Navigator(props) {
   const dispatch = useDispatch();
   // redux에서 불러오기
   const categories = useSelector(state => state.planner.plannerList)
-  console.log(categories)
   useEffect(() => {
     fetchGlanner(dispatch)
-    console.log(categories)
   }, [])
   // ! 아래와 같은 css 방식을 inline css라고 하는데, 이는 렌더링될 때마다 스타일 객체를 다시 계산해서 전체 앱의 성능이 저하될 수 있다.
   // ! 따라서 좀 고민해야 할 방향인 것 같긴 함....

@@ -15,7 +15,8 @@ export const GroupFormPagePresenter = ({
   deleteFile, 
   attachment,  
   data,
-  handleSelecetedTags
+  handleSelecetedTags,
+  state
 }) => {
   const classes = useStyles();    
   return (
@@ -24,17 +25,23 @@ export const GroupFormPagePresenter = ({
           <Grid item xs={1.2}>
             <Typography className={classes.groupLabel}>제목</Typography>
           </Grid>
-          <Grid item xs={10}>            
+          <Grid item xs={10}> 
+            <input hidden="hidden" />           
             <TextField
               onChange={(e) => {
                 // if (data.title) {setTitleError(false)}
                 handle(e)
               }}
+              onKeyDown={e => {
+                if (e.key === 'Enter') {
+                  e.preventDefault()
+                }
+              }}
               value={data.title}              
               // label="제목"
               id="title" 
               fullWidth
-              // required
+              required
               // error={titleError}
               className={[classes.smallInput, classes.field].join(' ')}
               sx={{flexGrow: 2}}
@@ -75,14 +82,15 @@ export const GroupFormPagePresenter = ({
           <Grid item xs={7}>
             <TagsInput
               className={[classes.smallInput, classes.field].join(' ')}
-              onChange={(e) => handle(e)}  
+              onChange={(e) => handle(e)}              
               selectedTags={handleSelecetedTags}
               fullWidth
               variant="outlined"
               id="tags"
               name="tags"
               placeholder="Add Category"
-              // label="tags"
+              // label="tags
+              state={state}
             />            
           </Grid>
         </Grid>
@@ -170,6 +178,7 @@ export const GroupFormPagePresenter = ({
         <Grid container sx={{mt: 2, justifyContent: 'space-between'}}>
           {/* <Grid item xs={2}/> */}
           <Grid item>
+            {!state ?
             <Link to={'/community/group'}>
               <Button className={classes.btn}>
                 <Typography className={classes.btnText}>
@@ -177,6 +186,14 @@ export const GroupFormPagePresenter = ({
                 </Typography>
               </Button>
             </Link>
+            :
+            <Link to={-1}>
+              <Button className={classes.btn}>
+                <Typography className={classes.btnText}>
+                  본문으로
+                </Typography>
+              </Button>
+            </Link>}
           </Grid>
           <Grid item sx={{ ml: 1}}>
               <Button type="submit" className={classes.btn}>

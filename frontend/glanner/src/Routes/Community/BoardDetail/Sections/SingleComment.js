@@ -35,10 +35,10 @@ export const SingleComment = ({
   };
   
   return (
-    <Box className={comment.responseTo === -1 ? classes.comments : classes.nestedComment} key={comment.id}>
+    <Box className={comment.parentId === -1 ? classes.comments : classes.nestedComment} key={comment.boardId}>
       <CardHeader
         avatar={
-          comment.responseTo === -1 ? 
+          comment.parentId === -1 ? 
           <Avatar sx={{ bgcolor: grey[500] }} aria-label="recipe">              
           </Avatar>
           :
@@ -62,10 +62,10 @@ export const SingleComment = ({
             setUpdateFlag={setUpdateFlag} 
           />
         }
-        title={comment.writer}
-        subheader={getTime(comment.date)}
+        title={comment.userName}
+        subheader={getTime(comment.createdDate)}
         className={classes.commentDateText}
-        sx={ comment.responseTo !== -1 ? {'& .MuiCardHeader-content': {position: 'relative', right: '25px'}} : null }
+        sx={ comment.parentId !== -1 ? {'& .MuiCardHeader-content': {position: 'relative', right: '25px'}} : null }
       />
       <CardContent>
         <p className={classes.commentContent} style={{ whiteSpace: 'normal', overflow: 'hidden', wordWrap: 'break-word'
@@ -75,8 +75,8 @@ export const SingleComment = ({
       </CardContent>
       <CardActions disableSpacing sx={{display: 'flex', justifyContent: 'space-between'}}>
         <span>
-          {comment.responseTo === -1 && <Button className={classes.botText} onClick={openCommentForm} component="span">답글쓰기</Button>}
-          <Button className={classes.botText} onClick={() => addCommentLike(comment)} component="span"> 좋아요 {comment.like}</Button>
+          {comment.parentId === -1 && <Button className={classes.botText} onClick={openCommentForm} component="span">답글쓰기</Button>}
+          <Button className={classes.botText} onClick={() => addCommentLike(comment)} component="span"> 좋아요 {comment.likeCount}</Button>
         </span>            
       </CardActions>      
       <Divider />

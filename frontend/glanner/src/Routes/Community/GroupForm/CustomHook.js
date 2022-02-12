@@ -92,6 +92,11 @@ export default function TagsInput({ ...props }) {
               <TextField                
                 style={{height: '40px', maxLength: 5}}
                 InputProps={{
+                  onKeyDown: event => {
+                    if (event.keyCode === 13) {
+                      event.preventDefault()
+                    }
+                  },
                   maxLength: 5,
                   // startAdornment: selectedItem.map(item => (
                   //   <Chip

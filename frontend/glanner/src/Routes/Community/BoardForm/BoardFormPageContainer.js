@@ -164,7 +164,7 @@ export const BoardFormPageContainer = () => {
       data={data}
       // attachment={attachment}
       deleteFile={deleteFile}
-
+      state={state}
     />
   )
   

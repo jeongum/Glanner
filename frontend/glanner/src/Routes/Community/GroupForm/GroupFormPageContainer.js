@@ -25,12 +25,13 @@ export const GroupFormPageContainer = () => {
   const [titleError, setTitleError] = useState(false);
   const [contentError, setContentError] = useState(false);
   const [attachment, setAttachment] = useState("");
-  
+
   // 글 수정인 경우, 기존 데이터를 입력창에 채워주기
   useEffect(() => {
     if (state) {
       setData(state)
-    }       
+      setTagItems(state.interests.split('#').slice(1))
+    }
   }, [state])
 
   const handleSubmit = (e) => {
@@ -49,41 +50,49 @@ export const GroupFormPageContainer = () => {
       alert('내용을 입력해주세요.')
       return
     }
-
     if (tagItems === []) {
-      alert('관심사를 입력해주세요.')
+      alert('관심사를 입력해주세요,')
       return
-    }
+    }    
     // 기존 글을 수정하는 로직
     if (state) {
-      const today = new Date(new Date().getTime()).toISOString()
+      let tagString = ''
+      tagItems.map(item => {
+        tagString += `#${item}`
+      })
       axios({
-        url: `/api/group-board/${state.id}`,
+        url: `/api/group-board/${state.boardId}`,
         method: 'PUT',
         data: {
           title: data.title,
           content: data.content,
-          date: today,      
-          writer: data.writer,
-          count: data.count,
-          like: data.like,
-          comments: data.comments,
-          attachment: data.attachment,
-          tags: tagItems,
-          present: data.present,
-          full: data.full,
+          files: [],
+          interests: tagString
+          // date: today,      
+          // writer: data.writer,
+          // count: data.count,
+          // like: data.like,
+          // comments: data.comments,
+          // attachment: data.attachment,
+          // tags: tagItems,
+          // present: data.present,
+          // full: data.full,
         }
       })
         .then(res => {
           alert('수정 성공!')
           console.log(res.data)
-          navigate(`/board/group/${res.data.id}`)
+          // navigate(`/board/group/${res.data.boardId}`)
+          navigate(`/community/group`)
         })
         .catch(err => alert('수정 실패!'))    
     
     } else {
       // 새로운 글 작성하는 로직
-      const today = new Date(new Date().getTime()).toISOString()
+      let tagString = ''
+      tagItems.map(item => {
+        tagString += `#${item}`
+      })
       axios({
         url: '/api/group-board',
         method: 'POST',
@@ -91,7 +100,7 @@ export const GroupFormPageContainer = () => {
           title: data.title,
           content: data.content,
           files: [],
-          interests: tagItems[0]
+          interests: tagString
           // date: today,      
           // writer: data.writer,
           // count: data.count,
@@ -135,7 +144,6 @@ export const GroupFormPageContainer = () => {
   };
   function handleSelecetedTags(items) {
     setTagItems(items)
-    console.log(tagItems)
             
   }  
   const deleteFile = () => {
@@ -151,6 +159,7 @@ export const GroupFormPageContainer = () => {
       attachment={attachment}
       deleteFile={deleteFile}
       handleSelecetedTags={handleSelecetedTags}
+      state={state}
     />
   )
 }
