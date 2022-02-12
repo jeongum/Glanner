@@ -1,14 +1,26 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
+
 import styled from "styled-components";
+import {
+  faCircle,
+  faAngleDown,
+  faFilter,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import FullCalendar from "@fullcalendar/react"; // must go before plugins
 import dayGridPlugin from "@fullcalendar/daygrid"; // a plugin!
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 
+// import DatePicker from "react-date-picker";
+
 import "bootstrap/dist/css/bootstrap.css";
 import "@fortawesome/fontawesome-free/css/all.css";
-import bootstrapPlugin from "@fullcalendar/bootstrap";
+
+import monthName from "../../../../store/monthName";
+import AddEventModal from "../../Modal/AddEventModal";
+import { Modal, Typography } from "@mui/material";
 
 const CalendarDiv = styled.div`
   width: 100%;
@@ -17,6 +29,8 @@ const CalendarDiv = styled.div`
   margin-left: auto;
   margin-right: auto;
   color: #5f5f5f;
+  font-size: 20px;
+  font-family: "Noto Sans KR", sans-serif;
   .fc-button-group > button {
     background-color: #f2d0d9;
     color: #5f5f5f;
@@ -28,32 +42,73 @@ const CalendarDiv = styled.div`
     }
   }
 
-  td, th {
-    border: 2px solid #E5E5E5;
+  td,
+  th {
+    border: 1px solid #e5e5e5;
   }
   .fc-header-toolbar {
-    margin: 10px 40px;
+    margin: 0 25px;
+    margin-bottom: 0 !important;
+    height: 50px;
   }
   .fc-toolbar-title {
-    font-size: 24px;
-  }
-
-  .fc-scrollgrid {
     font-size: 20px;
     color: #000000;
   }
+  .fc-toolbar-chunk {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .fc-gotoDate-button {
+      margin: 0 !important;
+    }
+  }
+
+  .fc-scrollgrid {
+    font-size: 16px;
+    color: #000000;
+  }
+  thead {
+    height: 30px;
+    line-height: 30px;
+    color: #5f5f5f;
+    .fc-scrollgrid-sync-inner {
+      text-align: left;
+      padding-left: 10px;
+    }
+  }
+  .fc-daygrid-day-top {
+    text-align: left;
+    padding-left: 10px;
+  }
+
   .fc-daygrid-day-top {
     flex-direction: row;
   }
+  .fc-daygrid-day-number {
+    width: 100%;
+  }
 
-  .fc .fc-daygrid-day.fc-day-today {
+  .fc-today-button {
     background-color: #f2d0d9;
+    border: 0px solid #f2d0d9;
+    height: 50px;
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+  }
+  .fc .fc-daygrid-day.fc-day-today {
+    background-color: #e5e5e5;
+  }
+
+  .fc-daygrid-day-events {
+    margin: 0 10px;
+    margin-bottom: 5px;
   }
   .fc-h-event {
     background-color: #f6f6f6;
-    font-size: 20px;
-    color: black;
-    vertical-align: middle;
+    height: 25px;
+    color: #5f5f5f;
     border-radius: 5px;
     border: 0px solid rgba(255, 255, 255, 0);
     box-shadow: 0.5px 1px 2px 0.5px rgba(130, 130, 130, 0.3);
@@ -61,14 +116,62 @@ const CalendarDiv = styled.div`
       background-color: rgba(0, 0, 0, 0.08);
     }
   }
+  .fc-event-main {
+    color: #5f5f5f;
+    font-size: 14px;
+  }
+  .fc-daygrid-block-event {
+    padding: 5px 10px;
+  }
+
+  .fc-day-today > div > div.fc-daygrid-day-top {
+    border-top: 5px solid #f2d0d9;
+  }
+
+  .fc-button {
+    background-color: #ffffff;
+    color: #8c7b80;
+    font-size: 18px;
+    line-height: 14px;
+    border: 0px solid #8c7b80;
+    border-radius: 8px;
+    height: 35px;
+    &:hover {
+      color: #ffffff;
+      background-color: #8c7b8066;
+      border: 0px solid #8c7b8066;
+    }
+  }
 `;
 
-function renderEventContent(eventInfo) {
+function renderEventContent(events) {
+  //console.log(events);
   return (
-    <>
-      <b>{eventInfo.timeText}</b>
-      <i>{eventInfo.event.title}</i>
-    </>
+    <div>
+      {events.event._def.extendedProps.type === "groupPlanner" ? (
+        <FontAwesomeIcon
+          icon={faCircle}
+          className="circle"
+          style={{ width: 14 + "px", color: "#ABC3FF" }}
+        />
+      ) : (
+        <FontAwesomeIcon
+          icon={faCircle}
+          className="circle"
+          style={{ width: 14 + "px", color: "#FFABAB" }}
+        />
+      )}
+      {"  "}
+      {events.event._def.title}
+    </div>
+  );
+}
+
+function DatePickerDiv(date, setDate, pickerOpen, handleClose) {
+  return (
+    <Modal open={pickerOpen} onClose={handleClose}>
+      {/* <DatePicker onChange={setDate} value={date} /> */}
+    </Modal>
   );
 }
 
@@ -91,85 +194,124 @@ const events = [
 ];
 
 export default function Calendar(props) {
-  //const segs = sliceEvents(props, true);
+  const [date, setDate] = useState(new Date());
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const handleOpen = () => setPickerOpen(true);
+  const handleClose = () => setPickerOpen(false);
+
+  const calendarRef = useRef();
+
+  useEffect(() => {
+    changeDate(date);
+  });
+
+  const getApi = () => {
+    const calendarDom = calendarRef.current;
+    return calendarDom ? calendarDom.getApi() : null;
+  };
+
+  const changeDate = (date) => {
+    const API = getApi();
+    API.gotoDate(date);
+  };
 
   return (
     <CalendarDiv>
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         initialView="dayGridMonth"
+        ref={calendarRef}
         headerToolbar={{
-          center: "dayGridMonth,timeGridWeek,timeGridDay",
+          start: "title gotoDate",
+          center: "",
+          end: "filtering today prev next",
         }}
-        customButtons={
-          {
-            new: {
-              text: "new",
-              click: () => console.log("new event"),
+        customButtons={{
+          gotoDate: {
+            text: (
+              <FontAwesomeIcon
+                icon={faAngleDown}
+                className="angleDown"
+                style={{ width: 14 + "px", color: "#000000" }}
+              />
+            ),
+            click: () => {
+              if (pickerOpen) {
+                handleClose();
+              } else {
+                handleOpen();
+              }
+              console.log(pickerOpen);
             },
-          }
-        }
+          },
+          filtering: {
+            text: (
+              <div style={{ color: "#5F5F5F" }}>
+                <FontAwesomeIcon
+                  icon={faFilter}
+                  className="filter"
+                  style={{
+                    width: 14 + "px",
+                    color: "#5F5F5F",
+                    marginRight: "5px",
+                  }}
+                />
+                Filter
+              </div>
+            ),
+            click: () => {},
+          },
+        }}
         locale={"ko"}
+        initialDate={date}
         events={events}
         eventColor={"#F6F6F6"}
         eventTextColor={"#5F5F5F"}
         eventDisplay="block"
-        nowIndicator
         dateClick={(e) => console.log(e.dateStr)}
         eventClick={function (info) {
           alert(info.event.title);
         }}
         height={780}
-        handleWindowResize
-        expandRows={true}
-      />
-      {/* <FullCalendar
-        plugins={[
-          dayGridPlugin,
-          timeGridPlugin,
-          interactionPlugin,
-          bootstrapPlugin,
-        ]}
-        themeSystem="bootstrap"
-        initialView="dayGridMonth"
-        headerToolbar={{
-          center: "dayGridMonth,timeGridWeek,timeGridDay new",
+        expandRows={false}
+        titleFormat={function (date) {
+          //console.log(date)
+          return (
+            <div>
+              <Typography style={{ fontSize: "20px", fontFamily: "Noto Sans KR" }}>
+                {date.date.year} {monthName[date.date.month]} {new Date().getDate()}
+              </Typography>
+            </div>
+          );
         }}
-        weekends={true}
-        navLinks={true} // can click day/week names to navigate views
-        editable={true}
-        buttonText={{
-          today: "오늘",
-          month: "month",
-          week: "week",
-          day: "day",
-          list: "list",
+        dayCellContent={function (date) {
+          return (
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+                marginTop: "5px",
+              }}
+            >
+              <div style={{ float: "left", width: "50%" }}>
+                {String(date.date).substring(8, 10)}
+              </div>
+              <div
+                style={{
+                  width: "50%",
+                  textAlign: "right",
+                  marginRight: "20px",
+                }}
+              >
+                <AddEventModal date={date.date} />
+              </div>
+            </div>
+          );
         }}
-        dayNames={[
-          "일요일",
-          "월요일",
-          "화요일",
-          "수요일",
-          "목요일",
-          "금요일",
-          "토요일",
-        ]}
-        eventTextColor={"#5F5F5F"}
-        eventDisplay="block"
-        dayMaxEvents={true}
-        events={[
-          // ! 나중에 이벤트 목록 받아오면 넣어줄 곳
-          { title: "event 1", date: "2022-01-01" },
-          { title: "event 2", date: "2022-01-27" },
-        ]}
         eventContent={renderEventContent}
-        height={"auto"}
-        handleWindowResize
-        expandRows={true}
-        eventClick={function (info) {
-          alert(info.event.title);
-        }}
-      /> */}
+        editable={true}
+      />
     </CalendarDiv>
   );
 }

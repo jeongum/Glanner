@@ -1,5 +1,8 @@
 import * as React from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
+
+import axios from "axios";
 
 import Drawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
@@ -135,6 +138,12 @@ const boards = [
     ],
   },
 ];
+
+// const onLogout = () => {
+//   sessionStorage.removeItem("token");
+//   document.location.href = "";
+// };
+
 const settings = [
   {
     id: "",
@@ -149,7 +158,11 @@ const settings = [
           />
         ),
       },
-      { id: "로그아웃", icon: <Logout style={{ width: 15 + "px" }} /> },
+      {
+        id: "로그아웃",
+        icon: <Logout style={{ width: 15 + "px" }} />,
+        // func: onLogout(),
+      },
     ],
   },
 ];
@@ -176,11 +189,43 @@ const settingItem = {
   fontSize: "16px",
 };
 
+const onClickPlanner = (e) => {
+  categories.map(({ id, children }) => {
+    children.map(({ id: childId, active }) => {
+      if (e.currentTarget.id == childId) {
+        active = true;
+      } else {
+        active = false;
+      }
+    });
+  });
+};
+
 function Navigator(props) {
   const { ...other } = props;
 
-  // ! 아래와 같은 css 방식을 inline css라고 하는데, 이는 렌더링될 때마다 스타일 객체를 다시 계산해서 전체 앱의 성능이 저하될 수 있다.
-  // ! 따라서 좀 고민해야 할 방향인 것 같긴 함....
+  const [groupPList, setGroupPList] = useState([]);
+
+  const bodyParams = {
+    id: "test001@naver.com",
+  };
+  const fetchGroupList = () => {
+    axios
+      .get(
+        `/api/glanner`,
+        bodyParams
+      )
+      .then((res) => {
+        setGroupPList(res.data);
+        console.log(res.data);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  React.useEffect(() => {
+    fetchGroupList();
+  }, []);
+
   return (
     <Drawer variant="persistent" {...other} open={true} varient="no">
       <List disablePadding sx={{ display: "inline-block" }}>
@@ -193,7 +238,7 @@ function Navigator(props) {
             fontFamily: "Rozha One",
           }}
         >
-          <Link to = {``}>
+          <Link to={``}>
             <img src={logo} style={{ height: 40 + "px" }} />
           </Link>
         </ListItem>
@@ -215,49 +260,48 @@ function Navigator(props) {
                 overflow: "scroll",
               }}
             >
-              {children.map(({ id: childId, active }) => (
+              {groupPList.map(({ id: childId, active }) => (
                 <ListItem key={childId} sx={{ pb: 0 }}>
                   <GroupPlannerList>
-                    <ListItemButton
-                      selected={active}
-                      sx={item}
-                      onClick={() => {
-                        console.log(
-                          categories[id == "내 플래너" ? 0 : 1].children
-                        );
-                      }}
-                    >
-                      <ListItemText>
-                        {id === "그룹 플래너" ? (
-                          <FontAwesomeIcon
-                            icon={faCircle}
-                            className="circle"
-                            style={{ width: 12 + "px", color: "#ABC3FF" }}
-                          />
-                        ) : (
-                          <FontAwesomeIcon
-                            icon={faCircle}
-                            className="circle"
-                            style={{ width: 12 + "px", color: "#FFABAB" }}
-                          />
-                        )}
-                        {"  "}
-                        {childId}
-                        {active ? (
-                          <FontAwesomeIcon
-                            icon={faAngleRight}
-                            className="arrowRight"
-                            style={{
-                              width: 15 + "px",
-                              color: "#959595",
-                              marginLeft: 10 + "px",
-                            }}
-                          />
-                        ) : (
-                          ""
-                        )}
-                      </ListItemText>
-                    </ListItemButton>
+                    <Link to={`/group/${childId}`}>
+                      <ListItemButton
+                        selected={active}
+                        sx={item}
+                        onClick={onClickPlanner}
+                        id={childId}
+                      >
+                        <ListItemText>
+                          {id === "그룹 플래너" ? (
+                            <FontAwesomeIcon
+                              icon={faCircle}
+                              className="circle"
+                              style={{ width: 12 + "px", color: "#ABC3FF" }}
+                            />
+                          ) : (
+                            <FontAwesomeIcon
+                              icon={faCircle}
+                              className="circle"
+                              style={{ width: 12 + "px", color: "#FFABAB" }}
+                            />
+                          )}
+                          {"  "}
+                          {childId}
+                          {active ? (
+                            <FontAwesomeIcon
+                              icon={faAngleRight}
+                              className="arrowRight"
+                              style={{
+                                width: 15 + "px",
+                                color: "#959595",
+                                marginLeft: 10 + "px",
+                              }}
+                            />
+                          ) : (
+                            ""
+                          )}
+                        </ListItemText>
+                      </ListItemButton>
+                    </Link>
                   </GroupPlannerList>
                 </ListItem>
               ))}
@@ -297,9 +341,13 @@ function Navigator(props) {
         {/* ! 설정&로그아웃 부분 */}
         {settings.map(({ id, children }) => (
           <Box key={id} sx={settingItem}>
-            {children.map(({ id: childId, icon }) => (
+            {children.map(({ id: childId, icon, func }) => (
               <ListItem key={childId} sx={{ p: 0 }}>
-                <ListItemButton sx={{ m: 0, height: "30px" }} components="a">
+                <ListItemButton
+                  sx={{ m: 0, height: "30px" }}
+                  components="a"
+                  //onClick={func}
+                >
                   <ListItemText>
                     {icon} {childId}
                   </ListItemText>
