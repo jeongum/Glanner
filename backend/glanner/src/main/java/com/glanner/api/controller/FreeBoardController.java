@@ -29,17 +29,17 @@ public class FreeBoardController extends BoardController<SaveFreeBoardReqDto> {
         this.freeBoardService = freeBoardService;
     }
 
-    @PutMapping("/like/{id}")
+    @PutMapping("/like/{boardId}")
     @ApiOperation(value = "좋아요 증가")
-    public ResponseEntity<BaseResponseEntity> addLikeBoards(@PathVariable Long id){
-        freeBoardService.addLike(id);
+    public ResponseEntity<BaseResponseEntity> addLikeBoards(@PathVariable Long boardId){
+        freeBoardService.addLike(boardId);
         return ResponseEntity.status(200).body(new BaseResponseEntity(200, "Success"));
     }
 
-    @PutMapping("/dislike/{id}")
+    @PutMapping("/dislike/{boardId}")
     @ApiOperation(value = "싫어요 증가")
-    public ResponseEntity<BaseResponseEntity> addDislikeBoard(@PathVariable Long id){
-        freeBoardService.addDislike(id);
+    public ResponseEntity<BaseResponseEntity> addDislikeBoard(@PathVariable Long boardId){
+        freeBoardService.addDislike(boardId);
         return ResponseEntity.status(200).body(new BaseResponseEntity(200, "Success"));
     }
 
@@ -56,10 +56,10 @@ public class FreeBoardController extends BoardController<SaveFreeBoardReqDto> {
         return ResponseEntity.status(200).body(responseDto);
     }
 
-    @GetMapping("/{id}")
-    @ApiOperation(value = "특정 게시판 가져오기", notes = "게시판의 정보 및 해당 게시판의 모든 댓글을 가져온다.")
-    public ResponseEntity<FindFreeBoardWithCommentsResDto> getBoard(@PathVariable Long id){
-        FindFreeBoardWithCommentsResDto responseDto = freeBoardService.getFreeBoard(id);
+    @GetMapping("/{boardId}")
+    @ApiOperation(value = "자유 게시판 가져오기", notes = "게시판의 정보 및 해당 게시판의 모든 댓글을 가져온다.")
+    public ResponseEntity<FindFreeBoardWithCommentsResDto> getBoard(@PathVariable Long boardId){
+        FindFreeBoardWithCommentsResDto responseDto = freeBoardService.getFreeBoard(boardId);
         return ResponseEntity.status(200).body(responseDto);
     }
 

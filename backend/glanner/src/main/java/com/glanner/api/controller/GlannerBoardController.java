@@ -53,10 +53,10 @@ public class GlannerBoardController extends BoardController<SaveGlannerBoardReqD
         return ResponseEntity.status(200).body(responseDto);
     }
 
-    @GetMapping("/{id}")
-    @ApiOperation(value = "특정 게시판 가져오기", notes = "게시판의 정보 및 해당 게시판의 모든 댓글을 가져온다.")
-    public ResponseEntity<FindGlannerBoardWithCommentsResDto> getBoard(@PathVariable Long id){
-        FindGlannerBoardWithCommentsResDto responseDto = glannerBoardService.getGlannerBoard(id);
+    @GetMapping("/{boardId}")
+    @ApiOperation(value = "글래너 게시판 가져오기", notes = "게시판의 정보 및 해당 게시판의 모든 댓글을 가져온다.")
+    public ResponseEntity<FindGlannerBoardWithCommentsResDto> getBoard(@PathVariable Long boardId){
+        FindGlannerBoardWithCommentsResDto responseDto = glannerBoardService.getGlannerBoard(boardId);
         return ResponseEntity.status(200).body(responseDto);
     }
 

@@ -32,17 +32,17 @@ public class BoardController<Q extends SaveBoardReqDto> {
         return ResponseEntity.status(200).body(new BaseResponseEntity(200, "Success"));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{boardId}")
     @ApiOperation(value = "게시판 수정")
-    public ResponseEntity<BaseResponseEntity> modifyBoard(@PathVariable Long id, @RequestBody @Valid Q requestDto){
-        boardService.modifyBoard(id, requestDto);
+    public ResponseEntity<BaseResponseEntity> modifyBoard(@PathVariable Long boardId, @RequestBody @Valid Q requestDto){
+        boardService.modifyBoard(boardId, requestDto);
         return ResponseEntity.status(200).body(new BaseResponseEntity(200, "Success"));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{boardId}")
     @ApiOperation(value = "게시판 삭제")
-    public ResponseEntity<BaseResponseEntity> deleteBoard(@PathVariable Long id){
-        boardService.deleteBoard(id);
+    public ResponseEntity<BaseResponseEntity> deleteBoard(@PathVariable Long boardId){
+        boardService.deleteBoard(boardId);
         return ResponseEntity.status(200).body(new BaseResponseEntity(200, "Success"));
     }
 
@@ -54,10 +54,10 @@ public class BoardController<Q extends SaveBoardReqDto> {
         return ResponseEntity.status(200).body(responseDto);
     }
 
-    @PutMapping("/comment/{id}")
+    @PutMapping("/comment/{commentId}")
     @ApiOperation(value = "댓글 수정", notes = "응답값으로 수정한 댓글을 반환한다.")
-    public ResponseEntity<ModifyCommentResDto> modifyComment(@PathVariable Long id, @RequestBody @Valid UpdateCommentReqDto reqDto){
-        ModifyCommentResDto responseDto = boardService.modifyComment(id, reqDto);
+    public ResponseEntity<ModifyCommentResDto> modifyComment(@PathVariable Long commentId, @RequestBody @Valid UpdateCommentReqDto reqDto){
+        ModifyCommentResDto responseDto = boardService.modifyComment(commentId, reqDto);
         return ResponseEntity.status(200).body(responseDto);
     }
 

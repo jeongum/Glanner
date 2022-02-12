@@ -1,6 +1,7 @@
 package com.glanner.api.service;
 
 import com.glanner.api.dto.request.SaveGroupBoardReqDto;
+import com.glanner.api.dto.response.FindGlannerResDto;
 import com.glanner.api.exception.UserNotFoundException;
 import com.glanner.core.domain.board.FileInfo;
 import com.glanner.core.domain.glanner.Glanner;
@@ -39,6 +40,8 @@ public class GroupBoardServiceTest {
     private GlannerRepository glannerRepository;
     @Autowired
     private GroupBoardRepository groupBoardRepository;
+    @Autowired
+    private GroupBoardService groupBoardService;
 
     @BeforeEach
     public void init(){
@@ -90,6 +93,20 @@ public class GroupBoardServiceTest {
         //then
         GroupBoard findBoard = groupBoardRepository.findById(groupBoardId).orElseThrow(IllegalArgumentException::new);
         assertThat(findBoard.getTitle()).isEqualTo("t");
+    }
+
+    @Test
+    public void testGetGlannerDetail() throws Exception{
+        //given
+        Long boardId = groupBoardService.saveGroupBoard("cherish8513@naver.com", new SaveGroupBoardReqDto("title", "content", new ArrayList<>(), "interests"));
+
+
+        //when
+        FindGlannerResDto resDto = groupBoardService.getGlannerDetail(boardId);
+
+        //then
+        assertThat(resDto.getNumOfMember()).isEqualTo(1);
+        assertThat(resDto.getHostEmail()).isEqualTo("cherish8513@naver.com");
     }
 
     public void createUser(){

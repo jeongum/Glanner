@@ -36,7 +36,7 @@ public class NoticeBoardController extends BoardController<SaveBoardReqDto> {
     }
 
     @GetMapping("/{id}")
-    @ApiOperation(value = "특정 게시판 가져오기", notes = "게시판의 정보 및 해당 게시판의 모든 댓글을 가져온다.")
+    @ApiOperation(value = "공지 게시판 가져오기", notes = "게시판의 정보 및 해당 게시판의 모든 댓글을 가져온다.")
     public ResponseEntity<FindNoticeBoardWithCommentResDto> getBoard(@PathVariable Long id){
         FindNoticeBoardWithCommentResDto responseDto = noticeBoardService.getNotice(id);
         return ResponseEntity.status(200).body(responseDto);
