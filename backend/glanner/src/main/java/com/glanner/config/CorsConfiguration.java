@@ -17,7 +17,7 @@ public class CorsConfiguration {
       config.addAllowedOrigin("*");
       config.addAllowedHeader("*");
       config.addAllowedMethod("*");
-      config.addExposedHeader("Authorization");
+      config.addExposedHeader("*");
       config.setMaxAge(3600L);
       source.registerCorsConfiguration("/api/**", config);
       return new CorsFilter(source);

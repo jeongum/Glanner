@@ -50,7 +50,7 @@ export default function Header({ title }) {
           alignItems: "center"
         }}
       >
-        <Grid container colSpacing={2} direction="row">
+        <Grid container direction="row">
           <Grid item xs={5} sx={headerStyle} >
             <CalendarIcon
               style={{

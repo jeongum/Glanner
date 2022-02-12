@@ -8,7 +8,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 public class FindGlannerBoardResDto extends FindBoardResDto {
-    public FindGlannerBoardResDto(Long boardId, String userEmail, String title, String content, int count, LocalDateTime createdDate) {
-        super(boardId, userEmail, title, content, count, createdDate);
+    private int commentCount;
+
+    public FindGlannerBoardResDto(Long boardId, String userName, String title, String content, int count, LocalDateTime createdDate, int commentCount) {
+        super(boardId, userName, title, content, count, createdDate);
+        this.commentCount = commentCount;
     }
 }

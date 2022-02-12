@@ -281,7 +281,9 @@ public class GlannerServiceTest {
         assertThat(findGlannerResDto.getGlannerId()).isEqualTo(savedGlannerId);
         assertThat(findGlannerResDto.getHostEmail()).isEqualTo(findGlanner.getHost().getEmail());
         assertThat(findGlannerResDto.getNumOfMember()).isEqualTo(1);
-        assertThat(findGlannerResDto.getMembersEmail().get(0)).isEqualTo("cherish8513@naver.com");
+        assertThat(findGlannerResDto.getMembersInfos().size()).isEqualTo(1);
+        assertThat(findGlannerResDto.getMembersInfos().get(0).getUserEmail()).isEqualTo("cherish8513@naver.com");
+        assertThat(findGlannerResDto.getMembersInfos().get(0).getUserName()).isEqualTo("JeongJooHeon");
     }
 
     public void createUser(){

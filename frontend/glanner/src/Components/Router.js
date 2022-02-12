@@ -15,6 +15,7 @@ import NoticeList from "../Routes/Community/NoticeList";
 import GroupBoardList from "../Routes/Community/GroupBoardList";
 import FloatingActionButtons from "../Routes/Community/BoardDetail/Sections/FloatingActionButton";
 import DailyPlanner from '../Routes/Planner/DailyPlanner/DailyPlanerContainer';
+import GroupPlanner from '../Routes/Planner/GroupPlanner/GroupPlannerContainer';
 
 const HeaderDiv = styled.div`
   border-bottom: 2px solid #e5e5e5;
@@ -22,7 +23,7 @@ const HeaderDiv = styled.div`
 const isLogin = localStorage.getItem('token')
 export default () => (
   <>
-    <Paper elevation={2} sx={{width: "1200px", minWidth:"900px", minHeight:"100%"}}>
+    <Paper elevation={2} sx={{width: "100%", minWidth:"900px", minHeight:"100%"}}>
       <Router>
       <HeaderDiv>
         <Header title="글래너님의 플래너" />

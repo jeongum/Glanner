@@ -36,7 +36,9 @@ public class QNotification extends EntityPathBase<Notification> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> modifiedDate = _super.modifiedDate;
 
-    public final StringPath url = createString("url");
+    public final EnumPath<NotificationType> type = createEnum("type", NotificationType.class);
+
+    public final NumberPath<Long> typeId = createNumber("typeId", Long.class);
 
     public final QUser user;
 

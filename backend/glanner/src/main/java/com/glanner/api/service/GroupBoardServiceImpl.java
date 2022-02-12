@@ -2,16 +2,20 @@ package com.glanner.api.service;
 
 import com.glanner.api.dto.request.SaveGroupBoardReqDto;
 import com.glanner.api.dto.response.FindCommentResDto;
+import com.glanner.api.dto.response.FindGlannerResDto;
 import com.glanner.api.dto.response.FindGroupBoardWithCommentResDto;
 import com.glanner.api.exception.BoardNotFoundException;
+import com.glanner.api.exception.GlannerNotFoundException;
 import com.glanner.api.exception.UserNotFoundException;
 import com.glanner.api.queryrepository.CommentQueryRepository;
 import com.glanner.core.domain.board.FileInfo;
 import com.glanner.core.domain.glanner.Glanner;
 import com.glanner.core.domain.glanner.GroupBoard;
+import com.glanner.core.domain.glanner.UserGlanner;
 import com.glanner.core.domain.user.User;
 import com.glanner.core.repository.GlannerRepository;
 import com.glanner.core.repository.GroupBoardRepository;
+import com.glanner.core.repository.UserGlannerRepository;
 import com.glanner.core.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,9 +36,10 @@ import java.util.UUID;
 public class GroupBoardServiceImpl implements GroupBoardService {
 
     private final UserRepository userRepository;
-    private final GlannerRepository glannerRepository;
     private final GroupBoardRepository groupBoardRepository;
     private final CommentQueryRepository commentQueryRepository;
+    private final GlannerRepository glannerRepository;
+    private final UserGlannerRepository userGlannerRepository;
 
     @Override
     public Long saveGroupBoard(String userEmail, SaveGroupBoardReqDto reqDto) {
@@ -42,9 +47,17 @@ public class GroupBoardServiceImpl implements GroupBoardService {
         List<FileInfo> fileInfos = getFileInfos(reqDto.getFiles());
         GroupBoard groupBoard = reqDto.toEntity(user);
         groupBoard.changeFileInfo(fileInfos);
+
         Glanner glanner = Glanner.builder()
+                .name(user.getName() + "님의 글래너")
                 .host(user)
                 .build();
+
+        UserGlanner userGlanner = UserGlanner.builder()
+                .user(user)
+                .build();
+
+        glanner.addUserGlanner(userGlanner);
         glannerRepository.save(glanner);
 
         groupBoard.changeGlanner(glanner);
@@ -64,6 +77,15 @@ public class GroupBoardServiceImpl implements GroupBoardService {
         groupBoard.addCount();
         List<FindCommentResDto> commentsByBoardId = commentQueryRepository.findCommentsByBoardId(boardId);
         return new FindGroupBoardWithCommentResDto(groupBoard, commentsByBoardId);
+    }
+
+    @Override
+    public FindGlannerResDto getGlannerDetail(Long boardId) {
+        GroupBoard board = groupBoardRepository.findById(boardId).orElseThrow(BoardNotFoundException::new);
+        Long id = board.getGlanner().getId();
+        Glanner findGlanner = glannerRepository.findRealById(id).orElseThrow(GlannerNotFoundException::new);
+        List<UserGlanner> findUserGlanners = userGlannerRepository.findByGlannerId(id);
+        return new FindGlannerResDto(findGlanner, findUserGlanners);
     }
 
 
