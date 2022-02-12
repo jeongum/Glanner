@@ -11,9 +11,11 @@ import java.time.LocalDateTime;
 @Getter
 public class FindGroupBoardResDto extends FindBoardResDto {
     private String interests;
+    private int commentCount;
 
-    public FindGroupBoardResDto(Long boardId, String userEmail, String title, String content, int count, LocalDateTime createdDate, String interests) {
-        super(boardId, userEmail, title, content, count, createdDate);
+    public FindGroupBoardResDto(Long boardId, String userName, String title, String content, int count, LocalDateTime createdDate, String interests, int commentCount) {
+        super(boardId, userName, title, content, count, createdDate);
         this.interests = interests;
+        this.commentCount = commentCount;
     }
 }

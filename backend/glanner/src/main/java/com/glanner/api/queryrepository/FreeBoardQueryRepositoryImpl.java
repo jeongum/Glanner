@@ -29,7 +29,8 @@ public class FreeBoardQueryRepositoryImpl implements FreeBoardQueryRepository{
                         freeBoard.count,
                         freeBoard.createdDate,
                         freeBoard.likeCount,
-                        freeBoard.dislikeCount))
+                        freeBoard.dislikeCount,
+                        freeBoard.comments.size()))
                 .from(freeBoard)
                 .orderBy(freeBoard.createdDate.desc())
                 .offset(offset)
@@ -48,7 +49,8 @@ public class FreeBoardQueryRepositoryImpl implements FreeBoardQueryRepository{
                         freeBoard.count,
                         freeBoard.createdDate,
                         freeBoard.likeCount,
-                        freeBoard.dislikeCount))
+                        freeBoard.dislikeCount,
+                        freeBoard.comments.size()))
                 .from(freeBoard)
                 .where(freeBoard.title.contains(keyword)
                         .or(freeBoard.content.contains(keyword)))

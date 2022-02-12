@@ -27,7 +27,8 @@ public class GlannerBoardQueryRepositoryImpl implements GlannerBoardQueryReposit
                         glannerBoard.title,
                         glannerBoard.content,
                         glannerBoard.count,
-                        glannerBoard.createdDate))
+                        glannerBoard.createdDate,
+                        glannerBoard.comments.size()))
                 .from(glannerBoard)
                 .where(glannerBoard.glanner.id.eq(glannerId))
                 .orderBy(glannerBoard.createdDate.desc())
@@ -45,7 +46,8 @@ public class GlannerBoardQueryRepositoryImpl implements GlannerBoardQueryReposit
                         glannerBoard.title,
                         glannerBoard.content,
                         glannerBoard.count,
-                        glannerBoard.createdDate))
+                        glannerBoard.createdDate,
+                        glannerBoard.comments.size()))
                 .from(glannerBoard)
                 .where(glannerBoard.glanner.id.eq(glannerId)
                         .and((glannerBoard.title.contains(keyword).or(glannerBoard.content.contains(keyword)))))
