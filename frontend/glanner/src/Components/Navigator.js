@@ -211,10 +211,7 @@ function Navigator(props) {
   };
   const fetchGroupList = () => {
     axios
-      .get(
-        `/api/glanner`,
-        bodyParams
-      )
+      .get(`/api/glanner`, bodyParams)
       .then((res) => {
         setGroupPList(res.data);
         console.log(res.data);
