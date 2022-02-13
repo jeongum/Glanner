@@ -28,7 +28,8 @@ public class GroupBoardQueryRepositoryImpl implements GroupBoardQueryRepository{
                         groupBoard.content,
                         groupBoard.count,
                         groupBoard.createdDate,
-                        groupBoard.interests))
+                        groupBoard.interests,
+                        groupBoard.comments.size()))
                 .from(groupBoard)
                 .orderBy(groupBoard.createdDate.desc())
                 .offset(offset)
@@ -46,7 +47,8 @@ public class GroupBoardQueryRepositoryImpl implements GroupBoardQueryRepository{
                         groupBoard.content,
                         groupBoard.count,
                         groupBoard.createdDate,
-                        groupBoard.interests))
+                        groupBoard.interests,
+                        groupBoard.comments.size()))
                 .from(groupBoard)
                 .where(groupBoard.title.contains(keyword)
                         .or(groupBoard.content.contains(keyword)))

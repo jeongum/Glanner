@@ -27,7 +27,8 @@ public class NoticeBoardQueryRepositoryImpl implements NoticeBoardQueryRepositor
                         noticeBoard.title,
                         noticeBoard.content,
                         noticeBoard.count,
-                        noticeBoard.createdDate))
+                        noticeBoard.createdDate,
+                        noticeBoard.comments.size()))
                 .from(noticeBoard)
                 .orderBy(noticeBoard.createdDate.desc())
                 .offset(offset)
@@ -44,7 +45,8 @@ public class NoticeBoardQueryRepositoryImpl implements NoticeBoardQueryRepositor
                         noticeBoard.title,
                         noticeBoard.content,
                         noticeBoard.count,
-                        noticeBoard.createdDate))
+                        noticeBoard.createdDate,
+                        noticeBoard.comments.size()))
                 .from(noticeBoard)
                 .where(noticeBoard.title.contains(keyword)
                         .or(noticeBoard.content.contains(keyword)))
