@@ -72,15 +72,15 @@ public class GroupBoardController extends BoardController<SaveGroupBoardReqDto> 
 
     @GetMapping("/search/{page}/{limit}")
     @ApiOperation(value = "검색 게시판 리스트 가져오기", notes = "keyword가 제목 + 내용에 포함되어있는 게시판들을 가져온다.")
-    public ResponseEntity<List<FindGroupBoardResDto>> searchBoardsWithKeyword(@PathVariable int page, @PathVariable int limit, @RequestBody @Valid SearchBoardReqDto reqDto){
-        List<FindGroupBoardResDto> responseDto = queryRepository.findPageWithKeyword(page, limit, reqDto.getKeyWord());
+    public ResponseEntity<List<FindGroupBoardResDto>> searchBoardsWithKeyword(@PathVariable int page, @PathVariable int limit,  @RequestParam("keyword") String keyWord){
+        List<FindGroupBoardResDto> responseDto = queryRepository.findPageWithKeyword(page, limit, keyWord);
         return ResponseEntity.status(200).body(responseDto);
     }
 
     @GetMapping("/interest/{page}/{limit}")
     @ApiOperation(value = "검색 게시판 리스트 가져오기", notes = "interest가 그룹 게시판 관심사에 포함되어있는 게시판들을 가져온다.")
-    public ResponseEntity<List<FindGroupBoardResDto>> searchBoardsWithInterest(@PathVariable int page, @PathVariable int limit, @RequestBody @Valid SearchBoardReqDto reqDto){
-        List<FindGroupBoardResDto> responseDto = queryRepository.findPageWithInterest(page, limit, reqDto.getKeyWord());
+    public ResponseEntity<List<FindGroupBoardResDto>> searchBoardsWithInterest(@PathVariable int page, @PathVariable int limit,  @RequestParam("keyword") String keyWord){
+        List<FindGroupBoardResDto> responseDto = queryRepository.findPageWithInterest(page, limit, keyWord);
         return ResponseEntity.status(200).body(responseDto);
     }
 }
