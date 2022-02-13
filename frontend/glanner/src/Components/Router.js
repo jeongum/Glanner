@@ -57,6 +57,11 @@ export default () => (
           <Route path="/board/:id" element={<BoardDetail />} />
           <Route path="/daily" element={<DailyPlanner />} />
 
+          <Route path="/group/:id" element={<GroupPlanner />} />
+          
+          {/* 화상회의 페이지 */}
+          <Route path="/conference/:id" />
+
         </Routes>
         <FloatingActionButtons />
       </Router>
