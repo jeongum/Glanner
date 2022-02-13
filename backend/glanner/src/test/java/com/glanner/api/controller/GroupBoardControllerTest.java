@@ -160,14 +160,12 @@ public class GroupBoardControllerTest {
 
         //when
         mockMvc.perform(get("/api/group-board/search/{page}/{limit}", page, limit)
-                        .content(asJsonString(reqDto))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
+                        .param("keyword", "키워드"))
                 //then
                 .andDo(print())
                 .andExpect(status().isOk());
         verify(queryRepository, times(1))
-                .findPageWithKeyword(page, limit, reqDto.getKeyWord());
+                .findPageWithKeyword(page, limit, "키워드");
     }
 
 
