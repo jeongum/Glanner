@@ -109,7 +109,7 @@ public class GlannerBoardControllerTest {
 
                 //then
                 .andExpect(status().isOk());
-        verify(queryRepository, times(1)).findPage(glannerId, page, limit);
+        verify(glannerBoardService, times(1)).getGlannerBoards(glannerId, page, limit);
     }
 
     @Test

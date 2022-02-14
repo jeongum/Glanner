@@ -47,8 +47,8 @@ public class GlannerBoardController extends BoardController<SaveGlannerBoardReqD
      */
     @GetMapping("{glannerId}/{page}/{limit}")
     @ApiOperation(value = "게시판 리스트 가져오기", notes = "page는 0부터 시작하며, limit은 가져올 게시판의 개수")
-    public ResponseEntity<List<FindGlannerBoardResDto>> getBoards(@PathVariable Long glannerId, @PathVariable int page, @PathVariable int limit){
-        List<FindGlannerBoardResDto> responseDto = queryRepository.findPage(glannerId, page, limit);
+    public ResponseEntity<List<FindGlannerBoardWithCommentsResDto>> getBoards(@PathVariable Long glannerId, @PathVariable int page, @PathVariable int limit){
+        List<FindGlannerBoardWithCommentsResDto> responseDto = glannerBoardService.getGlannerBoards(glannerId, page, limit);
         return ResponseEntity.status(200).body(responseDto);
     }
 
