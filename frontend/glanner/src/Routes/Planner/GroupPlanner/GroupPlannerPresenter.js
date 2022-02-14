@@ -292,7 +292,7 @@ function Dday(date) {
   return <DdayDiv>D{diff < 0 ? "+" + diff * -1 : "-" + diff}</DdayDiv>;
 }
 
-export default function GroupPlannerPresenter() {
+export default function GroupPlannerPresenter(groupPlannerId) {
   const [date, setDate] = useState(new Date());
   const emptyPlans = [];
   const emptyWrite = [];
@@ -432,7 +432,7 @@ export default function GroupPlannerPresenter() {
           {intendedPlans.map(({ id, title, start, end, content }) => {
             // console.log("그룹 플래너 파트" + id);
             return (
-              <Link to="">
+              <Link to={`/conference/${groupPlannerId.groupPlannerId}`}>
                 <Paper
                   elevation={0}
                   sx={{
@@ -521,7 +521,7 @@ export default function GroupPlannerPresenter() {
           >
             {latestWrite.map(({ id, title, author, writeDate, content }) => {
               return (
-                <Link to="">
+                <Link to={``}>
                   <Paper
                     elevation={0}
                     sx={{

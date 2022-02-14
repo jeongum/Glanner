@@ -44,8 +44,8 @@ public class NoticeBoardController extends BoardController<SaveBoardReqDto> {
 
     @GetMapping("/search/{page}/{limit}")
     @ApiOperation(value = "검색 게시판 리스트 가져오기", notes = "keyword가 제목 + 내용에 포함되어있는 게시판들을 가져온다.")
-    public ResponseEntity<List<FindNoticeBoardResDto>> searchBoards(@PathVariable int page, @PathVariable int limit, @RequestBody @Valid SearchBoardReqDto reqDto){
-        List<FindNoticeBoardResDto> responseDto =queryRepository.findPageWithKeyword(page, limit, reqDto.getKeyWord());
+    public ResponseEntity<List<FindNoticeBoardResDto>> searchBoards(@PathVariable int page, @PathVariable int limit,  @RequestParam("keyword") String keyWord){
+        List<FindNoticeBoardResDto> responseDto =queryRepository.findPageWithKeyword(page, limit, keyWord);
         return ResponseEntity.status(200).body(responseDto);
     }
 }
