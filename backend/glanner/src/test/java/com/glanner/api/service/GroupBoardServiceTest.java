@@ -2,10 +2,12 @@ package com.glanner.api.service;
 
 import com.glanner.api.dto.request.SaveGroupBoardReqDto;
 import com.glanner.api.dto.response.FindGlannerResDto;
+import com.glanner.api.dto.response.SaveGroupBoardResDto;
 import com.glanner.api.exception.UserNotFoundException;
 import com.glanner.core.domain.board.FileInfo;
 import com.glanner.core.domain.glanner.Glanner;
 import com.glanner.core.domain.glanner.GroupBoard;
+import com.glanner.core.domain.glanner.UserGlanner;
 import com.glanner.core.domain.user.DailyWorkSchedule;
 import com.glanner.core.domain.user.Schedule;
 import com.glanner.core.domain.user.User;
@@ -98,11 +100,11 @@ public class GroupBoardServiceTest {
     @Test
     public void testGetGlannerDetail() throws Exception{
         //given
-        Long boardId = groupBoardService.saveGroupBoard("cherish8513@naver.com", new SaveGroupBoardReqDto("title", "content", new ArrayList<>(), "interests"));
+        SaveGroupBoardResDto groupBoardResDto = groupBoardService.saveGroupBoard("cherish8513@naver.com", new SaveGroupBoardReqDto("title", "content", new ArrayList<>(), "interests"));
 
 
         //when
-        FindGlannerResDto resDto = groupBoardService.getGlannerDetail(boardId);
+        FindGlannerResDto resDto = groupBoardService.getGlannerDetail(groupBoardResDto.getGroupBoardId());
 
         //then
         assertThat(resDto.getNumOfMember()).isEqualTo(1);

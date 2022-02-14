@@ -114,9 +114,10 @@ public class BoardServiceTest {
         SaveGlannerBoardReqDto glannerBoardReqDto = new SaveGlannerBoardReqDto("title", "content", new ArrayList<>(), savedGlannerId);
         SaveNoticeBoardReqDto noticeBoardReqDto = new SaveNoticeBoardReqDto("title", "content", new ArrayList<>());
         Long freeBoardId = boardService.saveBoard(userEmail, freeBoardReqDto);
-        Long groupBoardId = groupBoardService.saveGroupBoard(userEmail, groupBoardReqDto);
         Long glannerBoardId = glannerBoardService.saveGlannerBoard(userEmail, glannerBoardReqDto);
         Long noticeId = boardService.saveBoard(userEmail, noticeBoardReqDto);
+
+        SaveGroupBoardResDto groupBoardResDto = groupBoardService.saveGroupBoard(userEmail, groupBoardReqDto);
 
         SaveFreeBoardReqDto freeBoardModifyReqDto = new SaveFreeBoardReqDto("modify", "content", new ArrayList<>());
         SaveGroupBoardReqDto groupBoardModifyReqDto = new SaveGroupBoardReqDto("title", "modify", new ArrayList<>(), "interests");
@@ -125,7 +126,7 @@ public class BoardServiceTest {
 
         //when
         boardService.modifyBoard(freeBoardId, freeBoardModifyReqDto);
-        boardService.modifyBoard(groupBoardId, groupBoardModifyReqDto);
+        boardService.modifyBoard(groupBoardResDto.getGroupBoardId(), groupBoardModifyReqDto);
         boardService.modifyBoard(glannerBoardId, glannerBoardModifyReqDto);
         boardService.modifyBoard(noticeId, noticeBoardModifyReqDto);
 
@@ -133,7 +134,7 @@ public class BoardServiceTest {
         FreeBoard findFreeBoard = freeBoardRepository.findById(freeBoardId).orElseThrow(IllegalAccessError::new);
         NoticeBoard findNotice = noticeBoardRepository.findById(noticeId).orElseThrow(IllegalAccessError::new);
         GlannerBoard findGlannerBoard = glannerBoardRepository.findById(glannerBoardId).orElseThrow(IllegalAccessError::new);
-        GroupBoard findGroupBoard = groupBoardRepository.findById(groupBoardId).orElseThrow(IllegalAccessError::new);
+        GroupBoard findGroupBoard = groupBoardRepository.findById(groupBoardResDto.getGroupBoardId()).orElseThrow(IllegalAccessError::new);
         assertThat(findFreeBoard.getTitle()).isEqualTo("modify");
         assertThat(findNotice.getContent()).isEqualTo("cc");
         assertThat(findGlannerBoard.getTitle()).isEqualTo("tt");
@@ -154,11 +155,11 @@ public class BoardServiceTest {
         SaveGlannerBoardReqDto boardReqDto4 = new SaveGlannerBoardReqDto("title", "content", new ArrayList<>(), savedGlannerId);
 
         Long freeBoardId = boardService.saveBoard(userEmail, boardReqDto1);
-        Long groupBoardId = groupBoardService.saveGroupBoard(userEmail, boardReqDto2);
+        SaveGroupBoardResDto groupBoardResDto = groupBoardService.saveGroupBoard(userEmail, boardReqDto2);
         Long noticeId = boardService.saveBoard(userEmail, boardReqDto3);
         Long glannerBoardId = glannerBoardService.saveGlannerBoard(userEmail, boardReqDto4);
         AddCommentReqDto addCommentReqDto1 = new AddCommentReqDto(freeBoardId, "content", null);
-        AddCommentReqDto addCommentReqDto2 = new AddCommentReqDto(groupBoardId, "content", null);
+        AddCommentReqDto addCommentReqDto2 = new AddCommentReqDto(groupBoardResDto.getGroupBoardId(), "content", null);
         AddCommentReqDto addCommentReqDto3 = new AddCommentReqDto(noticeId, "content", null);
         AddCommentReqDto addCommentReqDto4 = new AddCommentReqDto(glannerBoardId, "content", null);
 
@@ -170,7 +171,7 @@ public class BoardServiceTest {
         //then
         FreeBoard findFreeBoard = freeBoardRepository.findById(freeBoardId).orElseThrow(IllegalAccessError::new);
         NoticeBoard findNoticeBoard = noticeBoardRepository.findById(noticeId).orElseThrow(IllegalAccessError::new);
-        GroupBoard findGroupBoard = groupBoardRepository.findById(groupBoardId).orElseThrow(IllegalAccessError::new);
+        GroupBoard findGroupBoard = groupBoardRepository.findById(groupBoardResDto.getGroupBoardId()).orElseThrow(IllegalAccessError::new);
         GlannerBoard findGlannerBoard = glannerBoardRepository.findById(glannerBoardId).orElseThrow(IllegalAccessError::new);
 
         assertThat(findFreeBoard.getComments().size()).isEqualTo(1);
@@ -222,12 +223,12 @@ public class BoardServiceTest {
         SaveGlannerBoardReqDto boardReqDto4 = new SaveGlannerBoardReqDto("title", "content", new ArrayList<>(), savedGlannerId);
 
         Long freeBoardId = boardService.saveBoard(userEmail, boardReqDto1);
-        Long groupBoardId = groupBoardService.saveGroupBoard(userEmail, boardReqDto2);
+        SaveGroupBoardResDto groupBoardResDto = groupBoardService.saveGroupBoard(userEmail, boardReqDto2);
         Long noticeId = boardService.saveBoard(userEmail, boardReqDto3);
         Long glannerBoardId = glannerBoardService.saveGlannerBoard(userEmail, boardReqDto4);
 
         AddCommentReqDto addCommentReqDto1 = new AddCommentReqDto(freeBoardId, "content", null);
-        AddCommentReqDto addCommentReqDto2 = new AddCommentReqDto(groupBoardId, "content", null);
+        AddCommentReqDto addCommentReqDto2 = new AddCommentReqDto(groupBoardResDto.getGroupBoardId(), "content", null);
         AddCommentReqDto addCommentReqDto3 = new AddCommentReqDto(noticeId, "content", null);
         AddCommentReqDto addCommentReqDto4 = new AddCommentReqDto(glannerBoardId, "content", null);
 
@@ -250,7 +251,7 @@ public class BoardServiceTest {
         //then
         FreeBoard findFreeBoard = freeBoardRepository.findById(freeBoardId).orElseThrow(IllegalAccessError::new);
         NoticeBoard findNoticeBoard = noticeBoardRepository.findById(noticeId).orElseThrow(IllegalAccessError::new);
-        GroupBoard findGroupBoard = groupBoardRepository.findById(groupBoardId).orElseThrow(IllegalAccessError::new);
+        GroupBoard findGroupBoard = groupBoardRepository.findById(groupBoardResDto.getGroupBoardId()).orElseThrow(IllegalAccessError::new);
         GlannerBoard findGlannerBoard = glannerBoardRepository.findById(glannerBoardId).orElseThrow(IllegalAccessError::new);
 
         assertThat(findFreeBoard.getComments().get(0).getContent()).isEqualTo("modify");

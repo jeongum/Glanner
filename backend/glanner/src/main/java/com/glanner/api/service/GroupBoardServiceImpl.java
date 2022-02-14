@@ -4,6 +4,7 @@ import com.glanner.api.dto.request.SaveGroupBoardReqDto;
 import com.glanner.api.dto.response.FindCommentResDto;
 import com.glanner.api.dto.response.FindGlannerResDto;
 import com.glanner.api.dto.response.FindGroupBoardWithCommentResDto;
+import com.glanner.api.dto.response.SaveGroupBoardResDto;
 import com.glanner.api.exception.BoardNotFoundException;
 import com.glanner.api.exception.GlannerNotFoundException;
 import com.glanner.api.exception.UserNotFoundException;
@@ -41,8 +42,7 @@ public class GroupBoardServiceImpl implements GroupBoardService {
     private final GlannerRepository glannerRepository;
     private final UserGlannerRepository userGlannerRepository;
 
-    @Override
-    public Long saveGroupBoard(String userEmail, SaveGroupBoardReqDto reqDto) {
+    public SaveGroupBoardResDto saveGroupBoard(String userEmail, SaveGroupBoardReqDto reqDto) {
         User user = userRepository.findByEmail(userEmail).orElseThrow(UserNotFoundException::new);
         List<FileInfo> fileInfos = getFileInfos(reqDto.getFiles());
         GroupBoard groupBoard = reqDto.toEntity(user);
@@ -58,10 +58,12 @@ public class GroupBoardServiceImpl implements GroupBoardService {
                 .build();
 
         glanner.addUserGlanner(userGlanner);
-        glannerRepository.save(glanner);
+        Glanner savedGlanner = glannerRepository.save(glanner);
 
         groupBoard.changeGlanner(glanner);
-        return groupBoardRepository.save(groupBoard).getId();
+        GroupBoard savedGroupBoard = groupBoardRepository.save(groupBoard);
+
+        return new SaveGroupBoardResDto(savedGroupBoard.getId(), savedGlanner.getId(), reqDto.getTitle());
     }
 
     @Override

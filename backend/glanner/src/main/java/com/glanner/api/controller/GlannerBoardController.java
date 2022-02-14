@@ -31,7 +31,6 @@ public class GlannerBoardController extends BoardController<SaveGlannerBoardReqD
         this.queryRepository = queryRepository;
     }
 
-    @Override
     @PostMapping
     @ApiOperation(value = "게시판 저장")
     public ResponseEntity<BaseResponseEntity> saveBoard(@RequestBody @Valid SaveGlannerBoardReqDto requestDto) {
