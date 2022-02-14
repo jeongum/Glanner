@@ -19,7 +19,7 @@ export const GroupFormPageContainer = () => {
     // attachment: "",
     // tags: [],
     // present: 1,
-    // full: 4,    
+    numOfPeople: 5,    
   })
   const [tagItems, setTagItems] = useState([]);
   const [titleError, setTitleError] = useState(false);
@@ -50,10 +50,11 @@ export const GroupFormPageContainer = () => {
       alert('내용을 입력해주세요.')
       return
     }
-    if (tagItems === []) {
-      alert('관심사를 입력해주세요,')
+    if (tagItems.length === 0) {
+      alert('관심사를 입력해주세요.')
       return
-    }    
+    }
+    console.log(tagItems)    
     // 기존 글을 수정하는 로직
     if (state) {
       let tagString = ''

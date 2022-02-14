@@ -36,7 +36,8 @@ export default function TagsInput({ ...props }) {
         return;
       }
       if (!event.target.value.replace(/\s/g, "").length) return;
-
+      if (!event.target.value.replace(/[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/g, "").length) return;
+      if (event.target.value.includes('#')) return;
       newSelectedItem.push(event.target.value.trim());
       setSelectedItem(newSelectedItem);
       setInputValue("");

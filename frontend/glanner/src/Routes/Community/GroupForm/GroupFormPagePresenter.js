@@ -61,23 +61,24 @@ export const GroupFormPagePresenter = ({
                 // if (data.title) {setTitleError(false)}
                 handle(e)
               }}
-              value={data.full}              
+              value={data.numOfPeople}              
               // label="제목"
-              name="full"
+              name="numOfPeople"
               fullWidth
               required
               // error={titleError}
               className={[classes.smallInput, classes.field].join(' ')}
-              sx={{flexGrow: 2}}
-              InputProps={{maxLength: 4}}
+              sx={{flexGrow: 2, textAlign: "center"}}
+              InputProps={{maxLength: 5}}
             >             
-              <MenuItem value={2} >2</MenuItem>
-              <MenuItem value={3} >3</MenuItem>
-              <MenuItem value={4} >4</MenuItem>
+              <MenuItem sx={{display: 'flex', justifyContent: 'center'}} value={2} >2</MenuItem>
+              <MenuItem sx={{display: 'flex', justifyContent: 'center'}} value={3} >3</MenuItem>
+              <MenuItem sx={{display: 'flex', justifyContent: 'center'}} value={4} >4</MenuItem>
+              <MenuItem sx={{display: 'flex', justifyContent: 'center'}} value={5} >5</MenuItem>
             </TextField>
           </Grid>
           <Grid item xs={1.5}>
-            <Typography className={classes.groupLabel}>카테고리</Typography>
+            <Typography className={classes.groupLabel}>관심사</Typography>
           </Grid>
           <Grid item xs={7}>
             <TagsInput
@@ -88,7 +89,7 @@ export const GroupFormPagePresenter = ({
               variant="outlined"
               id="tags"
               name="tags"
-              placeholder="Add Category"
+              placeholder="Press Enter"
               // label="tags
               state={state}
             />            
