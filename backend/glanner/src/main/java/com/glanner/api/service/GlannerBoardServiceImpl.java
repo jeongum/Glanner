@@ -41,7 +41,6 @@ public class GlannerBoardServiceImpl implements GlannerBoardService{
         List<FindGlannerBoardWithCommentsResDto> resDto = new ArrayList<>();
         List<GlannerBoard> boards = glannerBoardRepository.findPage(glannerId, offset, limit);
         for(GlannerBoard board : boards){
-        System.out.println("---------------------------------------------------");
             List<FindCommentResDto> commentsByBoardId = commentQueryRepository.findCommentsByBoardId(board.getId());
             resDto.add(new FindGlannerBoardWithCommentsResDto(board, commentsByBoardId));
         }
