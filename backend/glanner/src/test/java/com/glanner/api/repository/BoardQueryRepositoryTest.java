@@ -128,7 +128,7 @@ public class BoardQueryRepositoryTest {
         //given
         for (int i = 0; i < 4; i++) {
             SaveGroupBoardReqDto boardReqDto = new SaveGroupBoardReqDto("title"+i, "content", new ArrayList<>(), "interests");
-            boardService.saveBoard(userEmail, boardReqDto);
+            groupBoardService.saveGroupBoard(userEmail, boardReqDto);
         }
 
         //when
@@ -137,6 +137,7 @@ public class BoardQueryRepositoryTest {
         //then
         assertThat(page.size()).isEqualTo(4);
         assertThat(page.get(0).getTitle()).isEqualTo("title3");
+        assertThat(page.get(0).getUserCount()).isEqualTo(1);
     }
 
     @Test

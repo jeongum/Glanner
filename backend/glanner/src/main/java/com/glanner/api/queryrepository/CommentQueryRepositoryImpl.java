@@ -24,7 +24,7 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository{
                 .select((Projections.constructor(FindCommentResDto.class,
                         comment.id,
                         comment.parent.id,
-                        comment.user.email,
+                        comment.user.name,
                         comment.content,
                         comment.createdDate)))
                 .from(comment)
