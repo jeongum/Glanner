@@ -77,9 +77,9 @@ public class UserServiceImpl implements UserService{
     public void modifyWork(Long id, AddPlannerWorkReqDto requestDto) {
         DailyWorkSchedule workSchedule = dailyWorkScheduleRepository.findById(id).orElseThrow(DailyWorkNotFoundException::new);
         workSchedule.changeDailyWork(
-                requestDto.getStartTime(),
-                requestDto.getEndTime(),
-                requestDto.getAlarmTime(),
+                requestDto.getStartDate(),
+                requestDto.getEndDate(),
+                requestDto.getAlarmDate(),
                 requestDto.getTitle(),
                 requestDto.getContent()
         );

@@ -1,7 +1,6 @@
 package com.glanner.api.queryrepository;
 
 import com.glanner.api.dto.response.FindGlannerBoardResDto;
-import com.glanner.api.dto.response.FindGlannerBoardWithCommentsResDto;
 
 import java.util.List;
 

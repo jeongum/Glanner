@@ -128,6 +128,6 @@ public class GlannerServiceImpl implements GlannerService{
     @Override
     public void updateDailyWork(UpdateGlannerWorkReqDto reqDto) {
         DailyWorkGlanner updateWork = dailyWorkGlannerRepository.findById(reqDto.getWorkId()).orElseThrow(DailyWorkNotFoundException::new);
-        updateWork.changeDailyWork(reqDto.getStartTime(), reqDto.getEndTime(), reqDto.getTitle(), reqDto.getContent());
+        updateWork.changeDailyWork(reqDto.getStartDate(), reqDto.getEndDate(), reqDto.getAlarmDate(), reqDto.getTitle(), reqDto.getContent());
     }
 }

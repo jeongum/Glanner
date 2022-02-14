@@ -1,7 +1,6 @@
 package com.glanner.api.controller;
 
 import com.glanner.api.dto.request.SaveGlannerBoardReqDto;
-import com.glanner.api.dto.request.SearchBoardReqDto;
 import com.glanner.api.dto.response.BaseResponseEntity;
 import com.glanner.api.dto.response.FindGlannerBoardResDto;
 import com.glanner.api.dto.response.FindGlannerBoardWithCommentsResDto;

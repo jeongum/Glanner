@@ -97,6 +97,7 @@ public class BoardQueryRepositoryTest {
         for (int i = 0; i < 4; i++) {
             SaveFreeBoardReqDto boardReqDto = new SaveFreeBoardReqDto("title"+i, "content", new ArrayList<>());
             boardService.saveBoard(userEmail, boardReqDto);
+            Thread.sleep(30);
         }
 
         //when
@@ -113,6 +114,7 @@ public class BoardQueryRepositoryTest {
         for (int i = 0; i < 4; i++) {
             SaveNoticeBoardReqDto boardReqDto = new SaveNoticeBoardReqDto("title"+i, "content", new ArrayList<>());
             boardService.saveBoard(userEmail, boardReqDto);
+            Thread.sleep(30);
         }
 
         //when
@@ -147,6 +149,7 @@ public class BoardQueryRepositoryTest {
         for (int i = 0; i < 4; i++) {
             SaveGlannerBoardReqDto boardReqDto = new SaveGlannerBoardReqDto("title"+i, "content", new ArrayList<>(), savedGlannerId);
             glannerBoardService.saveGlannerBoard(userEmail, boardReqDto);
+            Thread.sleep(30);
         }
 
         //when

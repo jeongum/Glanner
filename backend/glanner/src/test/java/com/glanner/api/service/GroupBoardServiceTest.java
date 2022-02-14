@@ -7,7 +7,6 @@ import com.glanner.api.exception.UserNotFoundException;
 import com.glanner.core.domain.board.FileInfo;
 import com.glanner.core.domain.glanner.Glanner;
 import com.glanner.core.domain.glanner.GroupBoard;
-import com.glanner.core.domain.glanner.UserGlanner;
 import com.glanner.core.domain.user.DailyWorkSchedule;
 import com.glanner.core.domain.user.Schedule;
 import com.glanner.core.domain.user.User;

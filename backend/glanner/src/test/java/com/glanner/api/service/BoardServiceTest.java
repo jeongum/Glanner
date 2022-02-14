@@ -2,12 +2,14 @@ package com.glanner.api.service;
 
 import com.glanner.api.dto.request.*;
 import com.glanner.api.dto.response.*;
-import com.glanner.api.queryrepository.CommentQueryRepository;
 import com.glanner.core.domain.board.FreeBoard;
 import com.glanner.core.domain.board.NoticeBoard;
-import com.glanner.core.domain.user.*;
 import com.glanner.core.domain.glanner.GlannerBoard;
 import com.glanner.core.domain.glanner.GroupBoard;
+import com.glanner.core.domain.user.DailyWorkSchedule;
+import com.glanner.core.domain.user.Schedule;
+import com.glanner.core.domain.user.User;
+import com.glanner.core.domain.user.UserRoleStatus;
 import com.glanner.core.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,13 +1,12 @@
 package com.glanner.core.domain.user;
 
-import static com.querydsl.core.types.PathMetadataFactory.*;
-
+import com.querydsl.core.types.Path;
+import com.querydsl.core.types.PathMetadata;
 import com.querydsl.core.types.dsl.*;
 
-import com.querydsl.core.types.PathMetadata;
 import javax.annotation.Generated;
-import com.querydsl.core.types.Path;
-import com.querydsl.core.types.dsl.PathInits;
+
+import static com.querydsl.core.types.PathMetadataFactory.forVariable;
 
 
 /**
@@ -24,7 +23,7 @@ public class QNotification extends EntityPathBase<Notification> {
 
     public final com.glanner.core.domain.base.QBaseTimeEntity _super = new com.glanner.core.domain.base.QBaseTimeEntity(this);
 
-    public final EnumPath<NotificationStatus> confirmation = createEnum("confirmation", NotificationStatus.class);
+    public final EnumPath<ConfirmStatus> confirmation = createEnum("confirmation", ConfirmStatus.class);
 
     public final StringPath content = createString("content");
 

@@ -259,11 +259,11 @@ public class GlannerServiceTest {
 
         Glanner savedGlanner = glannerRepository.save(glanner);
         Long workId = savedGlanner.getWorks().get(0).getId();
-        UpdateGlannerWorkReqDto reqDto = new UpdateGlannerWorkReqDto(workId, "title", null, LocalDateTime.now(), LocalDateTime.now());
+        UpdateGlannerWorkReqDto reqDto = new UpdateGlannerWorkReqDto(workId, "title", null, LocalDateTime.now(), LocalDateTime.now(), LocalDateTime.now());
 
         //when
         DailyWorkGlanner updateWork = dailyWorkGlannerRepository.findById(reqDto.getWorkId()).orElseThrow(IllegalArgumentException::new);
-        updateWork.changeDailyWork(reqDto.getStartTime(), reqDto.getEndTime(), reqDto.getTitle(), reqDto.getContent());
+        updateWork.changeDailyWork(reqDto.getStartDate(), reqDto.getEndDate(), reqDto.getAlarmDate(), reqDto.getTitle(), reqDto.getContent());
 
         //then
         assertThat(updateWork.getTitle()).isEqualTo("title");

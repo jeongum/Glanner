@@ -2,17 +2,11 @@ package com.glanner.api.service;
 
 import com.glanner.api.dto.request.AddCommentReqDto;
 import com.glanner.api.dto.request.SaveGlannerBoardReqDto;
-import com.glanner.api.dto.request.SaveGroupBoardReqDto;
 import com.glanner.api.dto.response.FindGlannerBoardWithCommentsResDto;
-import com.glanner.api.dto.response.SaveGroupBoardResDto;
-import com.glanner.api.exception.BoardNotFoundException;
-import com.glanner.core.domain.glanner.Glanner;
-import com.glanner.core.domain.glanner.GlannerBoard;
 import com.glanner.core.domain.user.DailyWorkSchedule;
 import com.glanner.core.domain.user.Schedule;
 import com.glanner.core.domain.user.User;
 import com.glanner.core.domain.user.UserRoleStatus;
-import com.glanner.core.repository.BoardRepository;
 import com.glanner.core.repository.GlannerBoardRepository;
 import com.glanner.core.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
