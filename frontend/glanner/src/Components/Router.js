@@ -56,7 +56,7 @@ export default () => (
           <Route path="/group-form" element={<GroupForm />} />
           <Route path="/board/:id" element={<BoardDetail />} />
           <Route path="/daily" element={<DailyPlanner />} />
-
+          <Route path="/group/:id" element={<GroupPlanner />} />
         </Routes>
         <FloatingActionButtons />
       </Router>
