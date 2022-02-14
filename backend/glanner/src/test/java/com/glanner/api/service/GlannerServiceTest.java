@@ -1,20 +1,20 @@
 package com.glanner.api.service;
 
 import com.glanner.api.dto.request.AddUserToGlannerReqDto;
+import com.glanner.api.dto.request.SaveGroupBoardReqDto;
 import com.glanner.api.dto.request.UpdateGlannerWorkReqDto;
 import com.glanner.api.dto.response.FindGlannerResDto;
+import com.glanner.api.exception.BoardNotFoundException;
 import com.glanner.api.exception.UserNotFoundException;
 import com.glanner.core.domain.glanner.DailyWorkGlanner;
 import com.glanner.core.domain.glanner.Glanner;
+import com.glanner.core.domain.glanner.GroupBoard;
 import com.glanner.core.domain.glanner.UserGlanner;
 import com.glanner.core.domain.user.DailyWorkSchedule;
 import com.glanner.core.domain.user.Schedule;
 import com.glanner.core.domain.user.User;
 import com.glanner.core.domain.user.UserRoleStatus;
-import com.glanner.core.repository.DailyWorkGlannerRepository;
-import com.glanner.core.repository.GlannerRepository;
-import com.glanner.core.repository.UserGlannerRepository;
-import com.glanner.core.repository.UserRepository;
+import com.glanner.core.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +22,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,6 +35,8 @@ public class GlannerServiceTest {
 
     @Autowired
     private GlannerRepository glannerRepository;
+    @Autowired
+    private GroupBoardRepository groupBoardRepository;
     @Autowired
     private DailyWorkGlannerRepository dailyWorkGlannerRepository;
     @Autowired
@@ -77,9 +80,15 @@ public class GlannerServiceTest {
     public void testDeleteGlanner() throws Exception{
         //given
         User findUser = getUser(userRepository.findByEmail("cherish8513@naver.com"));
+        SaveGroupBoardReqDto reqDto = new SaveGroupBoardReqDto("title", "content", new ArrayList<>(), "null");
+
+        GroupBoard groupBoard = reqDto.toEntity(findUser);
         Glanner glanner = Glanner.builder()
                 .host(findUser)
                 .build();
+
+        groupBoard.changeGlanner(glanner);
+        GroupBoard savedGroupBoard = groupBoardRepository.save(groupBoard);
 
         UserGlanner userGlanner = UserGlanner.builder()
                 .user(findUser)
@@ -91,11 +100,17 @@ public class GlannerServiceTest {
 
         //when
         Glanner findGlanner = getGlanner(glannerRepository.findRealById(savedGlanner.getId()));
+
+        glannerRepository.deleteGroupBoardById(findGlanner.getId());
         glannerRepository.deleteAllWorksById(findGlanner.getId());
         glannerRepository.deleteAllUserGlannerById(findGlanner.getId());
         glannerRepository.delete(findGlanner);
 
         //then
+        assertThatThrownBy(() -> {
+            groupBoardRepository.findRealById(savedGroupBoard.getId()).orElseThrow(BoardNotFoundException::new);
+        }).isInstanceOf(BoardNotFoundException.class);
+
         assertThatThrownBy(() -> {
             getGlanner(glannerRepository.findRealById(savedGlanner.getId()));
         }).isInstanceOf(IllegalArgumentException.class).hasMessage("글래너가 존재하지 않습니다.");
