@@ -9,9 +9,11 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Data
 @AllArgsConstructor
@@ -24,19 +26,16 @@ public class AddGlannerWorkReqDto {
     String content;
 
     @NotNull
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     LocalDateTime startTime;
 
     @NotNull
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH-mm")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     LocalDateTime endTime;
 
     @ApiModelProperty(value = "일정 시작 시간 - 타이머 설정 시간")
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH-mm")
-    LocalDateTime notiTime;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
+    LocalDateTime alarmTime;
 
     public DailyWorkGlanner toEntity(){
         return DailyWorkGlanner
@@ -45,7 +44,7 @@ public class AddGlannerWorkReqDto {
                 .content(content)
                 .startDate(startTime)
                 .endDate(endTime)
-                .notiDate(notiTime)
+                .notiDate(alarmTime)
                 .build();
     }
 }

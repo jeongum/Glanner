@@ -22,19 +22,16 @@ public class AddPlannerWorkReqDto {
     String content;
 
     @NotNull
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     LocalDateTime startTime;
 
     @NotNull
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH-mm")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     LocalDateTime endTime;
 
     @ApiModelProperty(value = "일정 시작 시간 - 타이머 설정 시간")
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH-mm")
-    LocalDateTime notiTime;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
+    LocalDateTime alarmTime;
 
 
     public DailyWorkSchedule toEntity(){
@@ -44,7 +41,7 @@ public class AddPlannerWorkReqDto {
                 .content(content)
                 .startDate(startTime)
                 .endDate(endTime)
-                .notiDate(notiTime)
+                .notiDate(alarmTime)
                 .build();
     }
 }
