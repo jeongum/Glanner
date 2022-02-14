@@ -1,12 +1,15 @@
 package com.glanner.core.domain.base;
 
-import static com.querydsl.core.types.PathMetadataFactory.*;
-
-import com.querydsl.core.types.dsl.*;
-
-import com.querydsl.core.types.PathMetadata;
-import javax.annotation.Generated;
 import com.querydsl.core.types.Path;
+import com.querydsl.core.types.PathMetadata;
+import com.querydsl.core.types.dsl.DateTimePath;
+import com.querydsl.core.types.dsl.EntityPathBase;
+import com.querydsl.core.types.dsl.EnumPath;
+import com.querydsl.core.types.dsl.StringPath;
+
+import javax.annotation.Generated;
+
+import static com.querydsl.core.types.PathMetadataFactory.forVariable;
 
 
 /**
@@ -21,7 +24,9 @@ public class QBaseEntity extends EntityPathBase<BaseEntity> {
 
     public final QBaseTimeEntity _super = new QBaseTimeEntity(this);
 
-    public final StringPath createdBy = createString("createdBy");
+    public final DateTimePath<java.time.LocalDateTime> alarmDate = createDateTime("alarmDate", java.time.LocalDateTime.class);
+
+    public final EnumPath<com.glanner.core.domain.user.ConfirmStatus> confirmStatus = createEnum("confirmStatus", com.glanner.core.domain.user.ConfirmStatus.class);
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdDate = _super.createdDate;

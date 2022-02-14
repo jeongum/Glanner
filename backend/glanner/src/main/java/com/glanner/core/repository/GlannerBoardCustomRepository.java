@@ -1,6 +1,5 @@
 package com.glanner.core.repository;
 
-import com.glanner.api.dto.response.FindGlannerBoardWithCommentsResDto;
 import com.glanner.core.domain.glanner.GlannerBoard;
 
 import java.util.List;

@@ -3,7 +3,6 @@ package com.glanner.api.service;
 import com.glanner.api.dto.request.AddCommentReqDto;
 import com.glanner.api.dto.request.SaveBoardReqDto;
 import com.glanner.api.dto.request.UpdateCommentReqDto;
-import com.glanner.api.dto.response.FindCommentResDto;
 import com.glanner.api.dto.response.ModifyCommentResDto;
 import com.glanner.api.dto.response.SaveCommentResDto;
 import com.glanner.api.exception.BoardNotFoundException;
@@ -12,8 +11,8 @@ import com.glanner.api.exception.UserNotFoundException;
 import com.glanner.core.domain.board.Board;
 import com.glanner.core.domain.board.Comment;
 import com.glanner.core.domain.board.FileInfo;
+import com.glanner.core.domain.user.ConfirmStatus;
 import com.glanner.core.domain.user.Notification;
-import com.glanner.core.domain.user.NotificationStatus;
 import com.glanner.core.domain.user.NotificationType;
 import com.glanner.core.domain.user.User;
 import com.glanner.core.repository.BoardRepository;
@@ -92,7 +91,7 @@ public class BoardServiceImpl implements BoardService{
                     .type(NotificationType.BOARD)
                     .typeId(board.getId())
                     .content(makeContent(board.getTitle()))
-                    .confirmation(NotificationStatus.STILL_NOT_CONFIRMED)
+                    .confirmation(ConfirmStatus.STILL_NOT_CONFIRMED)
                     .build();
             board.getUser().addNotification(notification);
         }

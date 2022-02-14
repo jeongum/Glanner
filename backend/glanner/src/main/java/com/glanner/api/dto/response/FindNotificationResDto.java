@@ -1,6 +1,6 @@
 package com.glanner.api.dto.response;
 
-import com.glanner.core.domain.user.NotificationStatus;
+import com.glanner.core.domain.user.ConfirmStatus;
 import com.glanner.core.domain.user.NotificationType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class FindNotificationResDto {
     NotificationType type;
     Long typeId;
-    NotificationStatus confirmation;
+    ConfirmStatus confirmation;
     String content;
     LocalDateTime createdDate;
 }

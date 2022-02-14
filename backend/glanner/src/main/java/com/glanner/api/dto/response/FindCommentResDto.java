@@ -1,6 +1,5 @@
 package com.glanner.api.dto.response;
 
-import com.glanner.core.domain.board.Comment;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

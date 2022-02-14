@@ -1,19 +1,15 @@
 package com.glanner.api.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.glanner.core.domain.glanner.DailyWorkGlanner;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Data
 @AllArgsConstructor
@@ -27,24 +23,24 @@ public class AddGlannerWorkReqDto {
 
     @NotNull
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
-    LocalDateTime startTime;
+    LocalDateTime startDate;
 
     @NotNull
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
-    LocalDateTime endTime;
+    LocalDateTime endDate;
 
     @ApiModelProperty(value = "일정 시작 시간 - 타이머 설정 시간")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
-    LocalDateTime alarmTime;
+    LocalDateTime alarmDate;
 
     public DailyWorkGlanner toEntity(){
         return DailyWorkGlanner
                 .builder()
                 .title(title)
                 .content(content)
-                .startDate(startTime)
-                .endDate(endTime)
-                .notiDate(alarmTime)
+                .startDate(startDate)
+                .endDate(endDate)
+                .alarmDate(alarmDate)
                 .build();
     }
 }

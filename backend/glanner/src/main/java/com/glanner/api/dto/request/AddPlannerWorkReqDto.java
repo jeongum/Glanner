@@ -1,8 +1,6 @@
 package com.glanner.api.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.glanner.core.domain.user.DailyWorkSchedule;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AccessLevel;
@@ -23,15 +21,15 @@ public class AddPlannerWorkReqDto {
 
     @NotNull
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
-    LocalDateTime startTime;
+    LocalDateTime startDate;
 
     @NotNull
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
-    LocalDateTime endTime;
+    LocalDateTime endDate;
 
     @ApiModelProperty(value = "일정 시작 시간 - 타이머 설정 시간")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
-    LocalDateTime alarmTime;
+    LocalDateTime alarmDate;
 
 
     public DailyWorkSchedule toEntity(){
@@ -39,9 +37,9 @@ public class AddPlannerWorkReqDto {
                 .builder()
                 .title(title)
                 .content(content)
-                .startDate(startTime)
-                .endDate(endTime)
-                .notiDate(alarmTime)
+                .startDate(startDate)
+                .endDate(endDate)
+                .alarmDate(alarmDate)
                 .build();
     }
 }

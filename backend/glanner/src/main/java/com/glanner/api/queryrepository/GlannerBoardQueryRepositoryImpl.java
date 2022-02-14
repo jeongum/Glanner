@@ -1,7 +1,6 @@
 package com.glanner.api.queryrepository;
 
 import com.glanner.api.dto.response.FindGlannerBoardResDto;
-import com.glanner.api.dto.response.FindGlannerBoardWithCommentsResDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;

@@ -1,9 +1,6 @@
 package com.glanner.core.repository;
 
-import com.glanner.api.dto.response.FindGlannerBoardResDto;
-import com.glanner.api.dto.response.FindGlannerBoardWithCommentsResDto;
 import com.glanner.core.domain.glanner.GlannerBoard;
-import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
