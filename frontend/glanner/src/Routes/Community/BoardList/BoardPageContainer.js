@@ -10,6 +10,7 @@ export default function BoardPageContainer () {
     const [loading, setLoading] = useState(true);
     const [boardList, setBoardList] = useState([]);
     const [latestNoticeList, setLatestNoticeList] = useState([]);
+    const [inputData, setInputData] = useState("");
     const [page, setPage] = useState(0);
 
     // const [totalPage, setTotalPage] = useState(1);
@@ -40,7 +41,10 @@ export default function BoardPageContainer () {
     const handleChangePage = newPage => {
       setPage((newPage - 1) * 9)     
     }
-
+    const handleInput = (e) => {
+      console.log(e.target.value)
+      setInputData(e.target.value)
+    }
     return (
       <>
         <Helmet>
@@ -51,6 +55,8 @@ export default function BoardPageContainer () {
           boardList={boardList}
           latestNoticeList={latestNoticeList}
           handleChangePage={handleChangePage}
+          inputData={inputData}
+          handleInput={handleInput}
           // type = {type}
         />
       </>

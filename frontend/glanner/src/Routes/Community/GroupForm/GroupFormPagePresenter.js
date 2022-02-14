@@ -15,7 +15,8 @@ export const GroupFormPagePresenter = ({
   deleteFile, 
   attachment,  
   data,
-  handleSelecetedTags
+  handleSelecetedTags,
+  state
 }) => {
   const classes = useStyles();    
   return (
@@ -24,17 +25,23 @@ export const GroupFormPagePresenter = ({
           <Grid item xs={1.2}>
             <Typography className={classes.groupLabel}>제목</Typography>
           </Grid>
-          <Grid item xs={10}>            
+          <Grid item xs={10}> 
+            <input hidden="hidden" />           
             <TextField
               onChange={(e) => {
                 // if (data.title) {setTitleError(false)}
                 handle(e)
               }}
+              onKeyDown={e => {
+                if (e.key === 'Enter') {
+                  e.preventDefault()
+                }
+              }}
               value={data.title}              
               // label="제목"
               id="title" 
               fullWidth
-              // required
+              required
               // error={titleError}
               className={[classes.smallInput, classes.field].join(' ')}
               sx={{flexGrow: 2}}
@@ -54,35 +61,37 @@ export const GroupFormPagePresenter = ({
                 // if (data.title) {setTitleError(false)}
                 handle(e)
               }}
-              value={data.full}              
+              value={data.numOfPeople}              
               // label="제목"
-              name="full"
+              name="numOfPeople"
               fullWidth
               required
               // error={titleError}
               className={[classes.smallInput, classes.field].join(' ')}
-              sx={{flexGrow: 2}}
-              InputProps={{maxLength: 4}}
+              sx={{flexGrow: 2, textAlign: "center"}}
+              InputProps={{maxLength: 5}}
             >             
-              <MenuItem value={2} >2</MenuItem>
-              <MenuItem value={3} >3</MenuItem>
-              <MenuItem value={4} >4</MenuItem>
+              <MenuItem sx={{display: 'flex', justifyContent: 'center'}} value={2} >2</MenuItem>
+              <MenuItem sx={{display: 'flex', justifyContent: 'center'}} value={3} >3</MenuItem>
+              <MenuItem sx={{display: 'flex', justifyContent: 'center'}} value={4} >4</MenuItem>
+              <MenuItem sx={{display: 'flex', justifyContent: 'center'}} value={5} >5</MenuItem>
             </TextField>
           </Grid>
           <Grid item xs={1.5}>
-            <Typography className={classes.groupLabel}>카테고리</Typography>
+            <Typography className={classes.groupLabel}>관심사</Typography>
           </Grid>
           <Grid item xs={7}>
             <TagsInput
               className={[classes.smallInput, classes.field].join(' ')}
-              onChange={(e) => handle(e)}  
+              onChange={(e) => handle(e)}              
               selectedTags={handleSelecetedTags}
               fullWidth
               variant="outlined"
               id="tags"
               name="tags"
-              placeholder="Add Category"
-              // label="tags"
+              placeholder="Press Enter"
+              // label="tags
+              state={state}
             />            
           </Grid>
         </Grid>
@@ -170,6 +179,7 @@ export const GroupFormPagePresenter = ({
         <Grid container sx={{mt: 2, justifyContent: 'space-between'}}>
           {/* <Grid item xs={2}/> */}
           <Grid item>
+            {!state ?
             <Link to={'/community/group'}>
               <Button className={classes.btn}>
                 <Typography className={classes.btnText}>
@@ -177,6 +187,14 @@ export const GroupFormPagePresenter = ({
                 </Typography>
               </Button>
             </Link>
+            :
+            <Link to={-1}>
+              <Button className={classes.btn}>
+                <Typography className={classes.btnText}>
+                  본문으로
+                </Typography>
+              </Button>
+            </Link>}
           </Grid>
           <Grid item sx={{ ml: 1}}>
               <Button type="submit" className={classes.btn}>

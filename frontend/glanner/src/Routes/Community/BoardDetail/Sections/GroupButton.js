@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
 import PeopleIcon from '@mui/icons-material/People';
 
-export const GroupMember = ({post}) => {
+export const GroupMember = ({post, glannerInfo}) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -34,7 +34,7 @@ export const GroupMember = ({post}) => {
             <PeopleIcon fontSize="large" color="disabled" />
           </IconButton>          
         </Tooltip>
-        <Typography sx={{color: "#6F6F6F", fontWeight: 'regular', fontSize: '24px', textAlign: 'center', marginLeft: 1}}>{post.present} / {post.full}</Typography>
+        <Typography sx={{color: "#6F6F6F", fontWeight: 'regular', fontSize: '24px', textAlign: 'center', marginLeft: 1}}>{glannerInfo.numOfMember} / 5</Typography>
       </Box>
       <Menu
         anchorEl={anchorEl}
@@ -77,7 +77,7 @@ export const GroupMember = ({post}) => {
         </Typography>
         <Divider />
         <MenuItem>
-          <Avatar /> 유저1
+          <Avatar /> 유저1{}
         </MenuItem>
         <MenuItem>
           <Avatar /> 유저2

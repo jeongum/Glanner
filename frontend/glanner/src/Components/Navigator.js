@@ -1,9 +1,6 @@
 import * as React from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-
-import axios from "axios";
-
 import Drawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
 import Box from "@mui/material/Box";
@@ -23,6 +20,11 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ReactComponent as Logout } from "../assets/arrow-right-from-bracket-solid.svg";
 import logo from "../assets/glannerLogo1.png";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { addGlanner, onClickPlanner, removeGlanner } from "../redux/planners";
+import { deleteGlanner, fetchGlanner } from "../redux/apiCalls";
 
 const GroupPlannerList = styled.div`
   background-color: #ffffff;
@@ -44,7 +46,6 @@ const groupPlanners = [
   "독서 모임",
   "00대 16학번 모임",
 ]; // useState, useRedux 들어갈 자리
-
 const categories = [
   {
     id: "내 플래너",
@@ -145,17 +146,17 @@ const settingItem = {
   fontSize: "16px",
 };
 
-const onClickPlanner = (e) => {
-  categories.map(({ id, children }) => {
-    children.map(({ id: childId, active }) => {
-      if (e.currentTarget.id == childId) {
-        active = true;
-      } else {
-        active = false;
-      }
-    });
-  });
-};
+// const onClickPlanner = (e) => {
+//   categories.map(({ id, children }) => {
+//     children.map(({ id: childId, active }) => {
+//       if (e.currentTarget.id == childId) {
+//         active = true;
+//       } else {
+//         active = false;
+//       }
+//     });
+//   });
+// };
 
 function Navigator(props) {
   const { ...other } = props;

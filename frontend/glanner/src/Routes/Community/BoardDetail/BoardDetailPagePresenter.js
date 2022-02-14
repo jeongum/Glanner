@@ -10,7 +10,8 @@ const useStyles = makeStyles(boardStyles)
 
 export const BoardDetailPagePresenter = ({
   loading, 
-  post, 
+  post,
+  postLikeCount, 
   addLike, 
   content, 
   setContent, 
@@ -19,7 +20,8 @@ export const BoardDetailPagePresenter = ({
   addComment, 
   addCommentLike,
   updateComment,
-  pathname
+  pathname,
+  glannerInfo
 }) => {
   const classes = useStyles();  
   return (
@@ -27,7 +29,7 @@ export const BoardDetailPagePresenter = ({
     {loading && <div>Loading...</div>}
     {post && comments &&
       <div className={classes.card}>
-        <DetailBody post={post} addLike={addLike} />
+        <DetailBody post={post} addLike={addLike} postLikeCount={postLikeCount} glannerInfo={glannerInfo} />
 
         <Divider />        
         <Typography component="div" variant="h5" sx={{ padding: 3}}> 댓글 {comments && comments.length}</Typography>            
@@ -35,8 +37,8 @@ export const BoardDetailPagePresenter = ({
         {/* 댓글 박스 */}       
         {comments && comments.map(comment => {           
             return (
-            <div key={comment.id}>
-              {comment.responseTo === -1 &&
+            <div key={comment.commentId}>
+              {comment.parentId === -1 &&
               <>
                 <SingleComment
                 comments={comments}            
@@ -50,7 +52,7 @@ export const BoardDetailPagePresenter = ({
                 <ReplyComment
                   addCommentLike={addCommentLike} 
                   commentList={comments} 
-                  parentCommentId={comment.id} 
+                  parentCommentId={comment.commentId} 
                   setComments={setComments}
                   updateComment={updateComment}
                 />
@@ -59,7 +61,14 @@ export const BoardDetailPagePresenter = ({
             </div>
         )})}
         {/* 댓글 작성창 */}
-        <CommentForm addComment={addComment} content={content} setContent={setContent}/> 
+        <CommentForm 
+          addComment={addComment} 
+          content={content} 
+          setContent={setContent}
+          boardId={post.boardId}
+          comments={comments}
+          setComments={setComments}
+        /> 
       </div>
       
     }

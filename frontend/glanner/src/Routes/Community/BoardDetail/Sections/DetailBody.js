@@ -9,38 +9,49 @@ import moment from "moment";
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { GroupMember } from "./GroupButton";
+import axios from "axios";
+import { ReactComponent as CircleUser } from "../../../../assets/circle-user-solid.svg";
 
 const useStyles = makeStyles(boardStyles);
 
-export const DetailBody = ({ post, addLike }) => {
+export const DetailBody = ({ post, addLike, postLikeCount, glannerInfo }) => {
   const classes = useStyles();
   const { pathname } = useLocation();
   const [groupPage, setGroupPage] = useState(false);
 
   useEffect(() => {
     if (pathname.includes('/group/')) {
-      setGroupPage(true)      
+      setGroupPage(true)
     }
   }, [pathname])
-
+  
   return (
     <>    
       <CardHeader
         avatar={
-          <Avatar sx={{ bgcolor: grey[500] }} aria-label="recipe">              
-          </Avatar>
+          // <Avatar sx={{ bgcolor: grey[500] }} aria-label="recipe">              
+          // </Avatar>
+          <CircleUser
+            style={{
+              fontSize: 40 + "px",
+              color: "#5F5F5F",
+              backgroundColor: "#F2D0D9",
+              borderRadius: "50%",
+              marginRight: 2
+            }}
+          /> 
         }
         action={
           groupPage ?
           <div style={{display: 'flex', justifyContent: 'space-between', width: '170px'}}>
-              <GroupMember post={post} />
+              <GroupMember post={post} glannerInfo={glannerInfo} />
               <MoreBtn editData={post} type={`/group/body`} />
           </div>
           :
           <MoreBtn editData={post} type={`/free/body`} />
         }
         
-        title={post.userEmail}
+        title={post.userName}
         subheader={moment(post.createdDate).format('YYYY.MM.DD HH:mm:ss')}
         className={classes.dateText}
       />
@@ -62,22 +73,26 @@ export const DetailBody = ({ post, addLike }) => {
       {groupPage &&
       <Stack spacing={1} sx={{mt: 5}}>        
         <Stack direction="row" spacing={1}>          
-          {/* {post.tags && post.tags.map((title, idx) => {
+          {post.interests && post.interests.split('#').slice(1).map((title, idx) => {
             return <Chip label={title} size="small" sx={{borderRadius: '5px', color: 'white', backgroundColor: "#8C7B80"}} key={idx} />
-          })} */}
-          <Chip label={post.interests} size="small" sx={{borderRadius: '5px', color: 'white', backgroundColor: "#8C7B80"}} />
+          })}
         </Stack>
       </Stack>}
       <CardActions disableSpacing sx={{display: 'flex', justifyContent: 'space-between'}}>
-        <span className={classes.botText}>조회수 {post.count}{post.likeCount ? <>{`, 좋아요 ${post.likeCount}`}</>: null } </span>
-        <div>
-          <IconButton onClick={addLike}>
-            <FavoriteIcon />
-          </IconButton>
-          <IconButton aria-label="share">
-            <ShareIcon />
-          </IconButton>
-        </div>          
+        <span className={classes.botText}>조회수 {post.count}{postLikeCount ? <>{`, 좋아요 ${postLikeCount}`}</>: null } </span>
+        
+        <div style={{height: 40}}>
+          {!groupPage &&
+            <>
+              <IconButton onClick={addLike}>
+                <FavoriteIcon />
+              </IconButton>
+              <IconButton aria-label="share">
+                <ShareIcon />
+              </IconButton>
+            </>
+          }
+        </div>       
       </CardActions>
     </>
   )

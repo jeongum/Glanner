@@ -18,8 +18,8 @@ export const CommentForm = ({
   // 댓글 && 대댓글 작성/수정 로직
   const onSubmit = (e) => {
     e.preventDefault();    
-    let parentCommentId = -1
-    if (comment) parentCommentId = comment.id
+    let parentCommentId = null
+    if (comment) parentCommentId = comment.commentId
     if (comment && updateFlag) { // 수정 로직
       updateComment(content, comment)
       setUpdateFlag(false)      
@@ -27,12 +27,12 @@ export const CommentForm = ({
       addComment(content, parentCommentId)
     }  
     setContent("")
-    if (parentCommentId !== -1) setOpenForm(false)
+    if (parentCommentId !== null) setOpenForm(false)
   }
 
   return (    
     <form onSubmit={onSubmit}>
-      <TextField className={classes.field} value={content} onChange={(e) => setContent(e.target.value)} id="comment" fullWidth multiline={true} rows={3} placeholder='댓글을 달아주세요.' sx={{ml: 5, width: "95%"}}/>
+      <TextField className={classes.field} value={content} onChange={(e) => {setContent(e.target.value)}} id="comment" fullWidth multiline={true} rows={3} placeholder='댓글을 달아주세요.' sx={{ml: 5, width: "95%"}}/>
       <Grid container sx={{justifyContent: 'end'}}>
         { comment && 
           <Button type="button"

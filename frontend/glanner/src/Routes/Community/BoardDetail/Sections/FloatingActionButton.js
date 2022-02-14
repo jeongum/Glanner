@@ -16,25 +16,16 @@ export default function FloatingActionButtons() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const classes = useStyles();
-  const getUrl = () => {
-    if (pathname.includes('/free/')) {
-      return 'free'
-    } else if (pathname.includes('/group')) {
-      return 'group'
-    }
-  }
-  function hasNumber(myString) {
-    return /\d/.test(myString);
-  }
+
   return (
-    hasNumber(pathname) &&
+    pathname.includes('board') &&
       <Button
         onClick={() => {          
-          if (pathname.includes('/free/')) {
+          if (pathname.includes('/board/free/')) {
             navigate(`/community/free/`)
-          } else if (pathname.includes('/group/')) {
+          } else if (pathname.includes('/board/group/')) {
             navigate(`/community/group/`)
-          } else if (pathname.includes('/notice/')) {
+          } else if (pathname.includes('/board/notice/')) {
             navigate(`/community/notice/`)
           }
         }}
