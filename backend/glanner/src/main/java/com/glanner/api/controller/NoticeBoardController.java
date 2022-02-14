@@ -1,12 +1,17 @@
 package com.glanner.api.controller;
 
 import com.glanner.api.dto.request.SaveBoardReqDto;
+import com.glanner.api.dto.request.SaveFreeBoardReqDto;
+import com.glanner.api.dto.request.SaveNoticeBoardReqDto;
 import com.glanner.api.dto.request.SearchBoardReqDto;
+import com.glanner.api.dto.response.BaseResponseEntity;
 import com.glanner.api.dto.response.FindNoticeBoardResDto;
 import com.glanner.api.dto.response.FindNoticeBoardWithCommentResDto;
+import com.glanner.api.exception.UserNotFoundException;
 import com.glanner.api.queryrepository.NoticeBoardQueryRepository;
 import com.glanner.api.service.BoardService;
 import com.glanner.api.service.NoticeBoardService;
+import com.glanner.security.SecurityUtils;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,12 +25,22 @@ import java.util.List;
 public class NoticeBoardController extends BoardController<SaveBoardReqDto> {
     private final NoticeBoardQueryRepository queryRepository;
     private final NoticeBoardService noticeBoardService;
+    private final BoardService boardService;
 
     @Autowired
     public NoticeBoardController(BoardService boardService, NoticeBoardQueryRepository queryRepository, NoticeBoardService noticeBoardService) {
         super(boardService);
+        this.boardService = boardService;
         this.queryRepository = queryRepository;
         this.noticeBoardService = noticeBoardService;
+    }
+
+    @PostMapping
+    @ApiOperation(value = "게시판 저장")
+    public ResponseEntity<BaseResponseEntity> saveBoard(@RequestBody @Valid SaveNoticeBoardReqDto requestDto){
+        String userEmail = SecurityUtils.getCurrentUsername().orElseThrow(UserNotFoundException::new);
+        boardService.saveBoard(userEmail, requestDto);
+        return ResponseEntity.status(200).body(new BaseResponseEntity(200, "Success"));
     }
 
     @GetMapping("/{page}/{limit}")

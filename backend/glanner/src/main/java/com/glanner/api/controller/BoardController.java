@@ -24,13 +24,13 @@ import javax.validation.Valid;
 public class BoardController<Q extends SaveBoardReqDto> {
     private final BoardService boardService;
 
-    @PostMapping
-    @ApiOperation(value = "게시판 저장")
-    public ResponseEntity<BaseResponseEntity> saveBoard(@RequestBody @Valid Q requestDto){
-        String userEmail = SecurityUtils.getCurrentUsername().orElseThrow(UserNotFoundException::new);
-        boardService.saveBoard(userEmail, requestDto);
-        return ResponseEntity.status(200).body(new BaseResponseEntity(200, "Success"));
-    }
+//    @PostMapping
+//    @ApiOperation(value = "게시판 저장")
+//    public ResponseEntity<BaseResponseEntity> saveBoard(@RequestBody @Valid Q requestDto){
+//        String userEmail = SecurityUtils.getCurrentUsername().orElseThrow(UserNotFoundException::new);
+//        boardService.saveBoard(userEmail, requestDto);
+//        return ResponseEntity.status(200).body(new BaseResponseEntity(200, "Success"));
+//    }
 
     @PutMapping("/{boardId}")
     @ApiOperation(value = "게시판 수정")

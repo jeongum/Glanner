@@ -1,11 +1,7 @@
 package com.glanner.api.controller;
 
 import com.glanner.api.dto.request.SaveGroupBoardReqDto;
-import com.glanner.api.dto.request.SearchBoardReqDto;
-import com.glanner.api.dto.response.BaseResponseEntity;
-import com.glanner.api.dto.response.FindGlannerResDto;
-import com.glanner.api.dto.response.FindGroupBoardResDto;
-import com.glanner.api.dto.response.FindGroupBoardWithCommentResDto;
+import com.glanner.api.dto.response.*;
 import com.glanner.api.exception.UserNotFoundException;
 import com.glanner.api.queryrepository.GroupBoardQueryRepository;
 import com.glanner.api.service.BoardService;
@@ -32,13 +28,12 @@ public class GroupBoardController extends BoardController<SaveGroupBoardReqDto> 
         this.groupBoardService = groupBoardService;
     }
 
-    @Override
     @PostMapping
     @ApiOperation(value = "게시판 저장")
-    public ResponseEntity<BaseResponseEntity> saveBoard(@RequestBody @Valid SaveGroupBoardReqDto requestDto) {
+    public ResponseEntity<SaveGroupBoardResDto> saveGroupBoard(@RequestBody @Valid SaveGroupBoardReqDto requestDto) {
         String userEmail = SecurityUtils.getCurrentUsername().orElseThrow(UserNotFoundException::new);
-        groupBoardService.saveGroupBoard(userEmail, requestDto);
-        return ResponseEntity.status(200).body(new BaseResponseEntity(200, "Success"));
+        SaveGroupBoardResDto resDto = groupBoardService.saveGroupBoard(userEmail, requestDto);
+        return ResponseEntity.status(200).body(resDto);
     }
 
     @Override
