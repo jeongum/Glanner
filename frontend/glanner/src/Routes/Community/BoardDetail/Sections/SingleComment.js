@@ -7,7 +7,7 @@ import { CommentForm } from "./CommentForm";
 import { boardStyles } from "../../Board.styles";
 import MoreBtn from "../../../../Components/MoreBtn";
 import { getTime } from "../../helper";
-
+import { ReactComponent as CircleUser } from "../../../../assets/circle-user-solid.svg";
 const useStyles = makeStyles(boardStyles)
 
 export const SingleComment = ({
@@ -39,16 +39,36 @@ export const SingleComment = ({
       <CardHeader
         avatar={
           comment.parentId === -1 ? 
-          <Avatar sx={{ bgcolor: grey[500] }} aria-label="recipe">              
-          </Avatar>
+          // <Avatar sx={{ bgcolor: grey[500] }} aria-label="recipe">              
+          // </Avatar>
+          <CircleUser
+            style={{
+              fontSize: 30 + "px",
+              color: "#5F5F5F",
+              backgroundColor: "#F2D0D9",
+              borderRadius: "50%",
+              marginRight: 2
+            }}
+          /> 
           :
           <>
             <span 
               className={classes.replyIcon}
               style={{ position: 'relative', left: '-30px'}}
             >ㄴ</span>
-            <Avatar sx={{ bgcolor: grey[500], right: '25.2px' }} aria-label="recipe">              
-            </Avatar>
+            {/* <Avatar sx={{ bgcolor: grey[500], right: '25.2px' }} aria-label="recipe">              
+            </Avatar> */}
+            <CircleUser
+              style={{
+                fontSize: 30 + "px",
+                color: "#5F5F5F",
+                backgroundColor: "#F2D0D9",
+                borderRadius: "50%",
+                marginRight: 2,
+                position: 'relative',
+                left: -25
+              }}
+            /> 
           </>
         }
         action={

@@ -1,9 +1,6 @@
 import * as React from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-
-import axios from "axios";
-
 import Drawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
 import Box from "@mui/material/Box";
@@ -26,7 +23,7 @@ import logo from "../assets/glannerLogo1.png";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-import { addGlanner, removeGlanner } from "../redux/planners";
+import { addGlanner, onClickPlanner, removeGlanner } from "../redux/planners";
 import { deleteGlanner, fetchGlanner } from "../redux/apiCalls";
 
 const GroupPlannerList = styled.div`
@@ -49,59 +46,59 @@ const groupPlanners = [
   "독서 모임",
   "00대 16학번 모임",
 ]; // useState, useRedux 들어갈 자리
-// const categories = [
-//   {
-//     id: "내 플래너",
-//     children: [
-//       {
-//         id: myPlanners[0],
-//         active: true,
-//       },
-//       {
-//         id: myPlanners[1],
-//         active: false,
-//       },
-//       {
-//         id: "개인 플래너2",
-//         active: false,
-//       },
-//       {
-//         id: "개인 플래너3",
-//         active: false,
-//       },
-//       {
-//         id: "개인 플래너4",
-//         active: false,
-//       },
-//     ],
-//   },
-//   {
-//     id: "그룹 플래너",
-//     children:
-//     [
-//       {
-//         id: groupPlanners[0],
-//         active: false,
-//       },
-//       {
-//         id: groupPlanners[1],
-//         active: false,
-//       },
-//       {
-//         id: groupPlanners[2],
-//         active: false,
-//       },
-//       {
-//         id: groupPlanners[3],
-//         active: false,
-//       },
-//       {
-//         id: "축구",
-//         active: false,
-//       },
-//     ],
-//   },
-// ];
+const categories = [
+  {
+    id: "내 플래너",
+    children: [
+      // {
+      //   id: myPlanners[0],
+      //   active: true,
+      // },
+      // {
+      //   id: myPlanners[1],
+      //   active: false,
+      // },
+      // {
+      //   id: "개인 플래너2",
+      //   active: false,
+      // },
+      // {
+      //   id: "개인 플래너3",
+      //   active: false,
+      // },
+      // {
+      //   id: "개인 플래너4",
+      //   active: false,
+      // },
+    ],
+  },
+  {
+    id: "그룹 플래너",
+    children:
+    [
+      // {
+      //   id: groupPlanners[0],
+      //   active: false,
+      // },
+      // {
+      //   id: groupPlanners[1],
+      //   active: false,
+      // },
+      // {
+      //   id: groupPlanners[2],
+      //   active: false,
+      // },
+      // {
+      //   id: groupPlanners[3],
+      //   active: false,
+      // },
+      // {
+      //   id: "축구",
+      //   active: false,
+      // },
+    ],
+  },
+];
 
 const boards = [
   {
@@ -194,43 +191,27 @@ const settingItem = {
   fontSize: "16px",
 };
 
-const onClickPlanner = (e) => {
-  categories.map(({ id, children }) => {
-    children.map(({ id: childId, active }) => {
-      if (e.currentTarget.id == childId) {
-        active = true;
-      } else {
-        active = false;
-      }
-    });
-  });
-};
+// const onClickPlanner = (e) => {
+//   categories.map(({ id, children }) => {
+//     children.map(({ id: childId, active }) => {
+//       if (e.currentTarget.id == childId) {
+//         active = true;
+//       } else {
+//         active = false;
+//       }
+//     });
+//   });
+// };
 
 function Navigator(props) {
   const { ...other } = props;
 
-  const [groupPList, setGroupPList] = useState([]);
-
-  const bodyParams = {
-    id: "test001@naver.com",
-  };
-  const fetchGroupList = () => {
-    axios
-      .get(
-        `/api/glanner`,
-        bodyParams
-      )
-      .then((res) => {
-        setGroupPList(res.data);
-        console.log(res.data);
-      })
-      .catch((err) => console.log(err));
-  };
-
-  React.useEffect(() => {
-    fetchGroupList();
-  }, []);
-
+  const planners = useSelector(state => state.planner.plannerList);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    fetchGlanner(dispatch)
+  }, [])
+  
   return (
     <Drawer variant="persistent" {...other} open={true} varient="no">
       <List disablePadding sx={{ display: "inline-block" }}>
@@ -247,70 +228,112 @@ function Navigator(props) {
             <img src={logo} style={{ height: 40 + "px" }} />
           </Link>
         </ListItem>
-        {categories.map(({ id, children }) => (
+        {planners.map(planner => (
           <Box
-            key={id}
+            key={planner.name}
             sx={{
               maxHeight: "240px",
             }}
           >
             <ListItem sx={{ pb: 0, px: 2, mt: 2 }}>
               <ListItemText sx={{ color: "#959595", fontSize: "14px" }}>
-                {id}
+                {planner.name}
               </ListItemText>
-            </ListItem>
-            <Box
-              sx={{
-                maxHeight: "200px",
-                overflow: "scroll",
-              }}
-            >
-              {groupPList.map(({ id: childId, active }) => (
-                <ListItem key={childId} sx={{ pb: 0 }}>
-                  <GroupPlannerList>
-                    <Link to={`/group/${childId}`}>
-                      <ListItemButton
-                        selected={active}
-                        sx={item}
-                        onClick={onClickPlanner}
-                        id={childId}
-                      >
-                        <ListItemText>
-                          {id === "그룹 플래너" ? (
-                            <FontAwesomeIcon
-                              icon={faCircle}
-                              className="circle"
-                              style={{ width: 12 + "px", color: "#ABC3FF" }}
-                            />
-                          ) : (
-                            <FontAwesomeIcon
-                              icon={faCircle}
-                              className="circle"
-                              style={{ width: 12 + "px", color: "#FFABAB" }}
-                            />
-                          )}
-                          {"  "}
-                          {childId}
-                          {active ? (
-                            <FontAwesomeIcon
-                              icon={faAngleRight}
-                              className="arrowRight"
-                              style={{
-                                width: 15 + "px",
-                                color: "#959595",
-                                marginLeft: 10 + "px",
-                              }}
-                            />
-                          ) : (
-                            ""
-                          )}
-                        </ListItemText>
-                      </ListItemButton>
-                    </Link>
-                  </GroupPlannerList>
-                </ListItem>
-              ))}
-            </Box>
+            </ListItem>            
+              <Box
+                sx={{
+                  maxHeight: "200px",
+                  overflow: "scroll",
+                }}
+              >
+                {planner.children.map(({ plannerName, plannerId, glannerName, glannerId, active }) =>                   
+                  <ListItem key={glannerId} sx={{ pb: 0 }}>
+                    <GroupPlannerList>
+                      {planner.name === '내 플래너' ? 
+                        <Link to={`/daily`}>
+                          <ListItemButton
+                            selected={active}
+                            sx={item}
+                            onClick={(e) => dispatch(onClickPlanner(Number(e.currentTarget.id)))}
+                            id={plannerId}
+                          >
+                            <ListItemText>
+                              {planner.name === "그룹 플래너" ? (
+                                <FontAwesomeIcon
+                                  icon={faCircle}
+                                  className="circle"
+                                  style={{ width: 12 + "px", color: "#ABC3FF" }}
+                                />
+                              ) : (
+                                <FontAwesomeIcon
+                                  icon={faCircle}
+                                  className="circle"
+                                  style={{ width: 12 + "px", color: "#FFABAB" }}
+                                />
+                              )}
+                              {"  "}
+                              {plannerName}
+                              {active ? (
+                                <FontAwesomeIcon
+                                  icon={faAngleRight}
+                                  className="arrowRight"
+                                  style={{
+                                    width: 15 + "px",
+                                    color: "#959595",
+                                    marginLeft: 10 + "px",
+                                  }}
+                                />
+                              ) : (
+                                ""
+                              )}
+                            </ListItemText>
+                          </ListItemButton>
+                        </Link>
+                        :
+                        <Link to={`/group/${glannerId}`}>
+                          <ListItemButton
+                            selected={active}
+                            sx={item}
+                            onClick={(e) => dispatch(onClickPlanner(Number(e.currentTarget.id)))}
+                            id={glannerId}
+                          >
+                            <ListItemText>
+                              {planner.name === "그룹 플래너" ? (
+                                <FontAwesomeIcon
+                                  icon={faCircle}
+                                  className="circle"
+                                  style={{ width: 12 + "px", color: "#ABC3FF" }}
+                                />
+                              ) : (
+                                <FontAwesomeIcon
+                                  icon={faCircle}
+                                  className="circle"
+                                  style={{ width: 12 + "px", color: "#FFABAB" }}
+                                />
+                              )}
+                              {"  "}
+                              {glannerName}
+                              {active ? (
+                                <FontAwesomeIcon
+                                  icon={faAngleRight}
+                                  className="arrowRight"
+                                  style={{
+                                    width: 15 + "px",
+                                    color: "#959595",
+                                    marginLeft: 10 + "px",
+                                  }}
+                                />
+                              ) : (
+                                ""
+                              )}
+                            </ListItemText>
+                          </ListItemButton>
+                        </Link>
+                      }
+                    </GroupPlannerList>
+                  </ListItem>
+                )}
+              </Box>
           </Box>
         ))}
 

@@ -34,7 +34,7 @@ export const GroupMember = ({post, glannerInfo}) => {
             <PeopleIcon fontSize="large" color="disabled" />
           </IconButton>          
         </Tooltip>
-        <Typography sx={{color: "#6F6F6F", fontWeight: 'regular', fontSize: '24px', textAlign: 'center', marginLeft: 1}}>{glannerInfo.numOfMember} / {post.full}</Typography>
+        <Typography sx={{color: "#6F6F6F", fontWeight: 'regular', fontSize: '24px', textAlign: 'center', marginLeft: 1}}>{glannerInfo.numOfMember} / 5</Typography>
       </Box>
       <Menu
         anchorEl={anchorEl}

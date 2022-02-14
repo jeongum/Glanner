@@ -1,44 +1,35 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, current } from '@reduxjs/toolkit'
 
 export const plannerSlice = createSlice({
     name: "glanner",
     initialState: {
-        plannerList: [{
-            id: "내 플래너",
+        plannerList: [
+          {
+            name: "내 플래너",
             children: [
               { 
-                glannerId: 1,
-                glannerName: "개인 플래너",
+                plannerId: 1,
+                plannerName: "내 플래너",
                 active: true,
-              },
-              {
-                glannerId: 2,
-                glannerName: "개인 플래너2",
-                active: false,
-              },
-              {
-                glannerId: 3,
-                glannerName: "개인 플래너3",
-                active: false,
-              },
-              {
-                glannerId: 4,
-                glannerName: "개인 플래너4",
-                active: false,
-              },
+              },              
             ],
           },
           {
-            id: "그룹 플래너",
+            name: "그룹 플래너",
             children: [
               
             ],
-          },]
+          },
+        ]
 
     },
     reducers: {
         getGlanners: (state, action) => {
-          state.plannerList[1].children = action.payload;
+          const glannerList = action.payload.map(item => {
+            return {active: false, ...item}
+          });
+          state.plannerList[1].children = glannerList;
+          // state.plannerList[1].children = action.payload;
         },
         addGlanner: (state, action) => {
           state.plannerList[1].children.push(action.payload)
@@ -47,10 +38,22 @@ export const plannerSlice = createSlice({
           state.plannerList[1].children = state.plannerList[1].children.filter(item => {
             return item.glannerId !== action.payload
           })           
+        },
+        onClickPlanner: (state, action) => {
+          state.plannerList.map(planner => {
+            planner.children.map(targetPlanner => {
+              if (action.payload == targetPlanner.glannerId || action.payload == targetPlanner.plannerId) {
+                targetPlanner.active = true;
+              } else {
+                targetPlanner.active = false;
+              }
+            console.log(current(state.plannerList))
+            });
+          });
         }
     }
 
 })
 
-export const { getGlanners, addGlanner, removeGlanner } = plannerSlice.actions;
+export const { getGlanners, addGlanner, removeGlanner, onClickPlanner } = plannerSlice.actions;
 export default plannerSlice.reducer;

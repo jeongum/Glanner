@@ -10,6 +10,7 @@ import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { GroupMember } from "./GroupButton";
 import axios from "axios";
+import { ReactComponent as CircleUser } from "../../../../assets/circle-user-solid.svg";
 
 const useStyles = makeStyles(boardStyles);
 
@@ -28,8 +29,17 @@ export const DetailBody = ({ post, addLike, postLikeCount, glannerInfo }) => {
     <>    
       <CardHeader
         avatar={
-          <Avatar sx={{ bgcolor: grey[500] }} aria-label="recipe">              
-          </Avatar>
+          // <Avatar sx={{ bgcolor: grey[500] }} aria-label="recipe">              
+          // </Avatar>
+          <CircleUser
+            style={{
+              fontSize: 40 + "px",
+              color: "#5F5F5F",
+              backgroundColor: "#F2D0D9",
+              borderRadius: "50%",
+              marginRight: 2
+            }}
+          /> 
         }
         action={
           groupPage ?
@@ -71,13 +81,17 @@ export const DetailBody = ({ post, addLike, postLikeCount, glannerInfo }) => {
       <CardActions disableSpacing sx={{display: 'flex', justifyContent: 'space-between'}}>
         <span className={classes.botText}>조회수 {post.count}{postLikeCount ? <>{`, 좋아요 ${postLikeCount}`}</>: null } </span>
         
-        <div>
-          <IconButton onClick={addLike}>
-            <FavoriteIcon />
-          </IconButton>
-          <IconButton aria-label="share">
-            <ShareIcon />
-          </IconButton>
+        <div style={{height: 40}}>
+          {!groupPage &&
+            <>
+              <IconButton onClick={addLike}>
+                <FavoriteIcon />
+              </IconButton>
+              <IconButton aria-label="share">
+                <ShareIcon />
+              </IconButton>
+            </>
+          }
         </div>       
       </CardActions>
     </>
