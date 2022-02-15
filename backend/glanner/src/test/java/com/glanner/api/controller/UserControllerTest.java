@@ -77,7 +77,7 @@ class UserControllerTest {
     public void testFindWorksList() throws Exception{
         //given
         String date = "2022-02-01";
-        LocalDateTime dateTimeStart = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd")).atStartOfDay();
+        LocalDateTime dateTimeStart = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd")).atStartOfDay().minusMinutes(1);
         LocalDateTime dateTimeEnd = dateTimeStart.plusMonths(1);
         FindPlannerWorkResDto success = new FindPlannerWorkResDto(1L,"title", "content", LocalDateTime.now(), LocalDateTime.now().plusDays(3));
         List<FindPlannerWorkResDto> response = new ArrayList<>();

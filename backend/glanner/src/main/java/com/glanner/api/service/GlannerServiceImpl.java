@@ -6,8 +6,11 @@ import com.glanner.api.dto.request.ChangeGlannerNameReqDto;
 import com.glanner.api.dto.request.UpdateGlannerWorkReqDto;
 import com.glanner.api.dto.response.FindAttendedGlannerResDto;
 import com.glanner.api.dto.response.FindGlannerResDto;
+import com.glanner.api.dto.response.FindGlannerWorkResDto;
+import com.glanner.api.dto.response.FindPlannerWorkResDto;
 import com.glanner.api.exception.*;
 import com.glanner.api.queryrepository.GlannerQueryRepository;
+import com.glanner.api.queryrepository.UserQueryRepository;
 import com.glanner.core.domain.glanner.DailyWorkGlanner;
 import com.glanner.core.domain.glanner.Glanner;
 import com.glanner.core.domain.glanner.UserGlanner;
@@ -20,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -31,6 +35,7 @@ public class GlannerServiceImpl implements GlannerService{
     private final GlannerQueryRepository glannerQueryRepository;
     private final DailyWorkGlannerRepository dailyWorkGlannerRepository;
     private final UserGlannerRepository userGlannerRepository;
+    private final UserQueryRepository userQueryRepository;
 
     private static final int MAX_PERSONNEL_SIZE = 5;
 
@@ -76,6 +81,7 @@ public class GlannerServiceImpl implements GlannerService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public FindGlannerResDto findGlannerDetail(Long id) {
         Glanner findGlanner = glannerRepository.findRealById(id).orElseThrow(GlannerNotFoundException::new);
         List<UserGlanner> findUserGlanners = userGlannerRepository.findByGlannerId(id);
@@ -88,13 +94,10 @@ public class GlannerServiceImpl implements GlannerService{
         User attendingUser = userRepository.findByEmail(reqDto.getEmail()).orElseThrow(UserNotFoundException::new);
         Glanner findGlanner = glannerRepository.findRealById(reqDto.getGlannerId()).orElseThrow(GlannerNotFoundException::new);
 
-        if(userGlannerRepository.findByUserIdAndGlannerId(attendingUser.getId(), findGlanner.getId()) != null){
-            throw new AlreadyInGroupException();
-        }
+        validateUserExist(attendingUser, findGlanner);
 
-        if (findGlanner.getUserGlanners().size() >= MAX_PERSONNEL_SIZE){
-            throw new FullUserInGroupException();
-        }
+        validateFullUser(findGlanner);
+
         UserGlanner userGlanner = UserGlanner
                 .builder()
                 .user(attendingUser)
@@ -118,6 +121,7 @@ public class GlannerServiceImpl implements GlannerService{
     @Override
     public void addDailyWork(AddGlannerWorkReqDto reqDto) {
         Glanner glanner = glannerRepository.findById(reqDto.getGlannerId()).orElseThrow(GlannerNotFoundException::new);
+        validateDuplicateGroupPlan(glanner, reqDto.getStartDate().minusMinutes(1), reqDto.getEndDate());
         glanner.addDailyWork(reqDto.toEntity());
     }
 
@@ -132,5 +136,36 @@ public class GlannerServiceImpl implements GlannerService{
     public void updateDailyWork(UpdateGlannerWorkReqDto reqDto) {
         DailyWorkGlanner updateWork = dailyWorkGlannerRepository.findById(reqDto.getWorkId()).orElseThrow(DailyWorkNotFoundException::new);
         updateWork.changeDailyWork(reqDto.getStartDate(), reqDto.getEndDate(), reqDto.getAlarmDate(), reqDto.getTitle(), reqDto.getContent());
+    }
+
+    private void validateDuplicateGroupPlan(Glanner glanner, LocalDateTime start, LocalDateTime end){
+        List<FindGlannerWorkResDto> validate = glannerQueryRepository.findDailyWorksDtoWithPeriod(glanner.getId(), start, end);
+        if(validate.size() > 0){
+            throw new DuplicatePlanException(glanner.getHost().getName(), validate.get(0).getTitle());
+        }
+        validateDuplicationUserPlan(glanner, start, end);
+    }
+
+    private void validateDuplicationUserPlan(Glanner glanner, LocalDateTime start, LocalDateTime end){
+        int size = glanner.getUserGlanners().size();
+        for (int i = 0; i < size; i++) {
+            User user = glanner.getUserGlanners().get(i).getUser();
+            List<FindPlannerWorkResDto> validate = userQueryRepository.findDailyWorksWithPeriod(user.getSchedule().getId(), start, end);
+            if(validate.size() > 0){
+                throw new DuplicatePlanException(user.getName(), validate.get(0).getTitle());
+            }
+        }
+    }
+
+    private void validateFullUser(Glanner glanner){
+        if (glanner.getUserGlanners().size() >= MAX_PERSONNEL_SIZE){
+            throw new FullUserInGroupException();
+        }
+    }
+
+    private void validateUserExist(User user, Glanner glanner){
+        if(userGlannerRepository.findByUserIdAndGlannerId(user.getId(), glanner.getId()) != null){
+            throw new AlreadyInGroupException();
+        }
     }
 }
