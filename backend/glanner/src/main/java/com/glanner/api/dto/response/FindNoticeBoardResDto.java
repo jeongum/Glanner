@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 public class FindNoticeBoardResDto extends FindBoardResDto {
     private int commentCount;
 
-    public FindNoticeBoardResDto(Long boardId, String userName, String title, String content, int count, LocalDateTime createdDate, int commentCount) {
-        super(boardId, userName, title, content, count, createdDate);
+    public FindNoticeBoardResDto(Long boardId, String userName, String userEmail, String title, String content, int count, LocalDateTime createdDate, int commentCount) {
+        super(boardId, userName, userEmail, title, content, count, createdDate);
         this.commentCount = commentCount;
     }
 }

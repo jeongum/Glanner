@@ -16,6 +16,7 @@ public class FindGlannerBoardWithCommentsResDto extends FindBoardResDto {
     public FindGlannerBoardWithCommentsResDto(GlannerBoard glannerBoard, List<FindCommentResDto> comments){
         super(glannerBoard.getId(),
                 glannerBoard.getUser().getName(),
+                glannerBoard.getUser().getEmail(),
                 glannerBoard.getTitle(),
                 glannerBoard.getContent(),
                 glannerBoard.getCount(),
@@ -24,8 +25,4 @@ public class FindGlannerBoardWithCommentsResDto extends FindBoardResDto {
         this.comments = comments;
     }
 
-    public FindGlannerBoardWithCommentsResDto(Long boardId, String userName, String title, String content, int count, LocalDateTime createdDate, List<FindCommentResDto> comments) {
-        super(boardId, userName, title, content, count, createdDate);
-        this.comments = comments;
-    }
 }

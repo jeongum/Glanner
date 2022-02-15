@@ -14,8 +14,8 @@ public class FindGroupBoardResDto extends FindBoardResDto {
     private int commentCount;
     private int userCount;
 
-    public FindGroupBoardResDto(Long boardId, String userName, String title, String content, int count, LocalDateTime createdDate, String interests, int commentCount, int userCount) {
-        super(boardId, userName, title, content, count, createdDate);
+    public FindGroupBoardResDto(Long boardId, String userName, String userEmail, String title, String content, int count, LocalDateTime createdDate, String interests, int commentCount, int userCount) {
+        super(boardId, userName, userEmail, title, content, count, createdDate);
         this.interests = interests;
         this.commentCount = commentCount;
         this.userCount = userCount;
