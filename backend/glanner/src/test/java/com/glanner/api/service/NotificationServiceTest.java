@@ -136,7 +136,7 @@ class NotificationServiceTest {
         addWorks(now.plusMinutes(40), now.plusHours(1), now.plusMinutes(10)); // 알림 X
 
         //when
-        List<FindWorkByTimeResDto> resDtos = notificationQueryRepository.findWorkBySchedule();
+        List<FindWorkByTimeResDto> resDtos = notificationQueryRepository.findScheduleWork();
 
         for(FindWorkByTimeResDto resDto:resDtos){
             /* 메세지 보내기 */

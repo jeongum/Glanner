@@ -29,6 +29,7 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import javax.crypto.Mac;
@@ -43,6 +44,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class NotificationServiceImpl implements NotificationService {
 
     private final JavaMailSender javaMailSender;
@@ -103,11 +105,13 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void sendScheduledNoti() {
-        List<FindWorkByTimeResDto> scheduleResDtos = notificationQueryRepository.findWorkBySchedule();
-        List<FindWorkByTimeResDto> glannerResDtos = notificationQueryRepository.findWorkByGlanner();
+        List<FindWorkByTimeResDto> scheduleResDtos = notificationQueryRepository.findScheduleWork();
+        List<FindWorkByTimeResDto> glannerResDtos = notificationQueryRepository.findGlannerWork();
+        List<FindWorkByTimeResDto> conferenceResDtos = notificationQueryRepository.findReservedConference();
 
         sendNotiByType(scheduleResDtos, "schedule");
         sendNotiByType(glannerResDtos, "glanner");
+        sendNotiByType(conferenceResDtos, "conference");
     }
 
     private void sendNotiByType(List<FindWorkByTimeResDto> resDtos, String type) {
@@ -142,7 +146,7 @@ public class NotificationServiceImpl implements NotificationService {
                         .user(findUser)
                         .type(NotificationType.DAILY_WORK_GLANNER)
                         .typeId(resDto.getDailyWorkId())
-                        .content(makeContent(schedule.getTitle()))
+                        .content((type.equals("conference"))?makeConferenceContent(schedule.getTitle(), schedule.getGlanner().getId()) : makeContent(schedule.getTitle()))
                         .confirmation(ConfirmStatus.STILL_NOT_CONFIRMED)
                         .build();
 
@@ -150,6 +154,10 @@ public class NotificationServiceImpl implements NotificationService {
                 schedule.confirm();
             }
         }
+    }
+
+    private String makeConferenceContent(String title, Long glannerId) {
+        return "["+title+"] 화상회의가 곧 시작합니다! <a href=''> http://i6a606.p.ssafy.io:8080/ </a> 위 링크로 이동해 주세요!";
     }
 
     private String makeContent(String title) {
