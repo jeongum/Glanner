@@ -20,6 +20,7 @@ public enum ErrorCode {
     SMS_NOT_SENT(500, "504 - ERROR", "SMS not sent"),
     FILE_NOT_SAVED(500, "505 - ERROR", "File not saved"),
     FULL_USER_IN_GROUP(500, "506 - ERROR", "Full user in group"),
+    ALREADY_IN_GROUP(500, "507 - ERROR", "Already in group"),
 
     INTERNAL_SERVER_ERROR(500, "500 - ERROR", "Internal server error");
 

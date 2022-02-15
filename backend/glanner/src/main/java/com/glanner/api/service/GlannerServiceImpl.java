@@ -6,10 +6,7 @@ import com.glanner.api.dto.request.ChangeGlannerNameReqDto;
 import com.glanner.api.dto.request.UpdateGlannerWorkReqDto;
 import com.glanner.api.dto.response.FindAttendedGlannerResDto;
 import com.glanner.api.dto.response.FindGlannerResDto;
-import com.glanner.api.exception.DailyWorkNotFoundException;
-import com.glanner.api.exception.FullUserInGroupException;
-import com.glanner.api.exception.GlannerNotFoundException;
-import com.glanner.api.exception.UserNotFoundException;
+import com.glanner.api.exception.*;
 import com.glanner.api.queryrepository.GlannerQueryRepository;
 import com.glanner.core.domain.glanner.DailyWorkGlanner;
 import com.glanner.core.domain.glanner.Glanner;
@@ -59,6 +56,7 @@ public class GlannerServiceImpl implements GlannerService{
     public void deleteGlanner(Long id) {
         Glanner findGlanner = glannerRepository.findById(id).orElseThrow(GlannerNotFoundException::new);
 
+        glannerRepository.deleteGroupBoardById(findGlanner.getId());
         glannerRepository.deleteAllWorksById(findGlanner.getId());
         glannerRepository.deleteAllUserGlannerById(findGlanner.getId());
         glannerRepository.delete(findGlanner);
@@ -89,6 +87,11 @@ public class GlannerServiceImpl implements GlannerService{
 
         User attendingUser = userRepository.findByEmail(reqDto.getEmail()).orElseThrow(UserNotFoundException::new);
         Glanner findGlanner = glannerRepository.findRealById(reqDto.getGlannerId()).orElseThrow(GlannerNotFoundException::new);
+
+        if(userGlannerRepository.findByUserIdAndGlannerId(attendingUser.getId(), findGlanner.getId()) != null){
+            throw new AlreadyInGroupException();
+        }
+
         if (findGlanner.getUserGlanners().size() >= MAX_PERSONNEL_SIZE){
             throw new FullUserInGroupException();
         }
