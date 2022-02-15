@@ -295,6 +295,10 @@ public class BoardServiceTest {
         assertThat(groupBoardResDto.getContent()).isEqualTo("content");
         assertThat(glannerBoardResDto.getContent()).isEqualTo("content");
         assertThat(noticeResDto.getContent()).isEqualTo("content");
+        assertThat(freeBoardResDto.getUserEmail()).isEqualTo(userEmail);
+        assertThat(groupBoardResDto.getUserEmail()).isEqualTo(userEmail);
+        assertThat(glannerBoardResDto.getUserEmail()).isEqualTo(userEmail);
+        assertThat(noticeResDto.getUserEmail()).isEqualTo(userEmail);
     }
 
 }
