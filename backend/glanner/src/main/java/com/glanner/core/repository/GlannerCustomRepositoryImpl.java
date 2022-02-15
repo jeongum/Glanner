@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+import static com.glanner.core.domain.board.QComment.comment;
 import static com.glanner.core.domain.glanner.QDailyWorkGlanner.dailyWorkGlanner;
 import static com.glanner.core.domain.glanner.QGlanner.glanner;
 import static com.glanner.core.domain.glanner.QGlannerBoard.glannerBoard;
@@ -34,15 +35,6 @@ public class GlannerCustomRepositoryImpl implements GlannerCustomRepository{
                 .leftJoin(glanner.works, dailyWorkGlanner)
                 .where(glanner.id.eq(id))
                 .fetchOne());
-    }
-
-    @Override
-    @Transactional
-    public void deleteGroupBoardById(Long id) {
-        query
-                .delete(groupBoard)
-                .where(groupBoard.glanner.id.eq(id))
-                .execute();
     }
 
     @Override

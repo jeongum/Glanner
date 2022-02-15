@@ -6,7 +6,6 @@ import java.util.Optional;
 
 public interface GlannerCustomRepository {
     Optional<Glanner> findRealById(Long id);
-    void deleteGroupBoardById(Long id);
     void deleteAllWorksById(Long id);
     void deleteAllUserGlannerById(Long id);
 }
