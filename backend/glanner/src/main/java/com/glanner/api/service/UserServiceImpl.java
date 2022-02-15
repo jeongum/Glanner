@@ -6,6 +6,7 @@ import com.glanner.api.dto.request.SaveUserReqDto;
 import com.glanner.api.dto.response.FindPlannerWorkResDto;
 import com.glanner.api.exception.DailyWorkNotFoundException;
 import com.glanner.api.exception.DuplicateMemberException;
+import com.glanner.api.exception.DuplicatePlanException;
 import com.glanner.api.exception.UserNotFoundException;
 import com.glanner.api.queryrepository.UserQueryRepository;
 import com.glanner.core.domain.user.DailyWorkSchedule;
@@ -14,6 +15,7 @@ import com.glanner.core.domain.user.User;
 import com.glanner.core.repository.DailyWorkScheduleRepository;
 import com.glanner.core.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import net.bytebuddy.implementation.bytecode.Throw;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,12 +70,17 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    @Transactional
     public void addWork(String userEmail, AddPlannerWorkReqDto requestDto) {
         User user = userRepository.findByEmail(userEmail).orElseThrow(UserNotFoundException::new);
+
+        validateDuplicatePlan(user, requestDto.getStartDate().minusMinutes(1), requestDto.getEndDate());
+
         user.getSchedule().addDailyWork(requestDto.toEntity());
     }
 
     @Override
+    @Transactional
     public void modifyWork(Long id, AddPlannerWorkReqDto requestDto) {
         DailyWorkSchedule workSchedule = dailyWorkScheduleRepository.findById(id).orElseThrow(DailyWorkNotFoundException::new);
         workSchedule.changeDailyWork(
@@ -89,6 +96,13 @@ public class UserServiceImpl implements UserService{
         userRepository.findByEmail(user.getEmail())
                 .ifPresent(m -> {throw new DuplicateMemberException();
                 });
+    }
+
+    private void validateDuplicatePlan(User user, LocalDateTime start, LocalDateTime end){
+        List<FindPlannerWorkResDto> validate = userQueryRepository.findDailyWorksWithPeriod(user.getSchedule().getId(), start, end);
+        if(validate.size() > 0){
+            throw new DuplicatePlanException(user.getName(), validate.get(0).getTitle());
+        }
     }
 
 }

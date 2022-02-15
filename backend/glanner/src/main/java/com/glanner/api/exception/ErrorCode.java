@@ -15,6 +15,7 @@ public enum ErrorCode {
     CONFERENCE_NOT_FOUND(404, "404 - ERROR", "Conference work not found"),
 
     DUPLICATE_MEMBER(500, "501 - ERROR", "Duplicated member"),
+    DUPLICATE_PLAN(500, "501 - ERROR", "Duplicated plan"),
     METHOD_ARGUMENT_NOT_VALID(500, "502 - ERROR", "Method argument not valid"),
     MAIL_NOT_SENT(500, "503 - ERROR", "Mail not sent"),
     SMS_NOT_SENT(500, "504 - ERROR", "SMS not sent"),

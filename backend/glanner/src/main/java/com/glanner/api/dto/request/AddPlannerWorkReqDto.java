@@ -27,7 +27,6 @@ public class AddPlannerWorkReqDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     LocalDateTime endDate;
 
-    @ApiModelProperty(value = "일정 시작 시간 - 타이머 설정 시간")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     LocalDateTime alarmDate;
 
