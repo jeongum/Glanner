@@ -57,7 +57,7 @@ public class NotificationController {
         return ResponseEntity.status(200).body(new BaseResponseEntity(200, "Success"));
     }
 
-    @Scheduled(cron="0 * * * * *")
+    @Scheduled(cron="0 0/1 * * * *")
     public void sendScheduledNoti(){
         notificationService.sendScheduledNoti();
     }

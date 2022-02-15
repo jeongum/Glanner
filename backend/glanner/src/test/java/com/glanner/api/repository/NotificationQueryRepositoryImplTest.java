@@ -85,7 +85,7 @@ class NotificationQueryRepositoryImplTest {
         addWorks(now.plusMinutes(40), now.plusHours(1), now.plusMinutes(10)); // 알림 X
 
         //when
-        List<FindWorkByTimeResDto> findWorks = notificationQueryRepository.findWorkBySchedule();
+        List<FindWorkByTimeResDto> findWorks = notificationQueryRepository.findScheduleWork();
 
         //then
         assertThat(dailyWorkScheduleRepository.count()).isEqualTo(3);
@@ -105,7 +105,7 @@ class NotificationQueryRepositoryImplTest {
         addGlannerWorks(savedGlannerId, now.plusMinutes(40), now.plusHours(1), now.plusMinutes(10)); // 알림 X
 
         //when
-        List<FindWorkByTimeResDto> findWorks = notificationQueryRepository.findWorkByGlanner();
+        List<FindWorkByTimeResDto> findWorks = notificationQueryRepository.findGlannerWork();
 
         //then
         assertThat(findWorks.size()).isEqualTo(2);
