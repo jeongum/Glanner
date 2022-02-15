@@ -39,6 +39,8 @@ public class GlannerServiceTest {
     @Autowired
     private GroupBoardRepository groupBoardRepository;
     @Autowired
+    private GlannerBoardRepository glannerBoardRepository;
+    @Autowired
     private DailyWorkGlannerRepository dailyWorkGlannerRepository;
     @Autowired
     private UserGlannerRepository userGlannerRepository;
@@ -102,7 +104,8 @@ public class GlannerServiceTest {
         //when
         Glanner findGlanner = getGlanner(glannerRepository.findRealById(savedGlanner.getId()));
 
-        glannerRepository.deleteGroupBoardById(findGlanner.getId());
+        glannerBoardRepository.deleteByGlanner(findGlanner);
+        groupBoardRepository.deleteByGlanner(findGlanner);
         glannerRepository.deleteAllWorksById(findGlanner.getId());
         glannerRepository.deleteAllUserGlannerById(findGlanner.getId());
         glannerRepository.delete(findGlanner);

@@ -15,10 +15,7 @@ import com.glanner.core.domain.glanner.DailyWorkGlanner;
 import com.glanner.core.domain.glanner.Glanner;
 import com.glanner.core.domain.glanner.UserGlanner;
 import com.glanner.core.domain.user.User;
-import com.glanner.core.repository.DailyWorkGlannerRepository;
-import com.glanner.core.repository.GlannerRepository;
-import com.glanner.core.repository.UserGlannerRepository;
-import com.glanner.core.repository.UserRepository;
+import com.glanner.core.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +33,8 @@ public class GlannerServiceImpl implements GlannerService{
     private final DailyWorkGlannerRepository dailyWorkGlannerRepository;
     private final UserGlannerRepository userGlannerRepository;
     private final UserQueryRepository userQueryRepository;
+    private final GroupBoardRepository groupBoardRepository;
+    private final GlannerBoardRepository glannerBoardRepository;
 
     private static final int MAX_PERSONNEL_SIZE = 5;
 
@@ -61,7 +60,8 @@ public class GlannerServiceImpl implements GlannerService{
     public void deleteGlanner(Long id) {
         Glanner findGlanner = glannerRepository.findById(id).orElseThrow(GlannerNotFoundException::new);
 
-        glannerRepository.deleteGroupBoardById(findGlanner.getId());
+        glannerBoardRepository.deleteByGlanner(findGlanner);
+        groupBoardRepository.deleteByGlanner(findGlanner);
         glannerRepository.deleteAllWorksById(findGlanner.getId());
         glannerRepository.deleteAllUserGlannerById(findGlanner.getId());
         glannerRepository.delete(findGlanner);
