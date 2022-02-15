@@ -25,6 +25,7 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository{
                         comment.id,
                         comment.parent.id,
                         comment.user.name,
+                        comment.user.email,
                         comment.content,
                         comment.createdDate)))
                 .from(comment)

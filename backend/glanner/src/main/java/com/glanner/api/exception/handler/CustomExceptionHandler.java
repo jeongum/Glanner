@@ -89,6 +89,12 @@ public class CustomExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR );
     }
 
+    @ExceptionHandler(AlreadyInGroupException.class)
+    public ResponseEntity<ErrorResponseEntity> handleAlreadyInGroupError(Exception ex){
+        ErrorResponseEntity response = new ErrorResponseEntity(ErrorCode.ALREADY_IN_GROUP);
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR );
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseEntity> handleAll(Exception ex){
         ErrorResponseEntity response = new ErrorResponseEntity(ErrorCode.INTERNAL_SERVER_ERROR);

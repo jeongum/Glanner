@@ -4,6 +4,7 @@ import com.glanner.api.dto.request.AddUserToGlannerReqDto;
 import com.glanner.api.dto.request.SaveGroupBoardReqDto;
 import com.glanner.api.dto.request.UpdateGlannerWorkReqDto;
 import com.glanner.api.dto.response.FindGlannerResDto;
+import com.glanner.api.exception.AlreadyInGroupException;
 import com.glanner.api.exception.BoardNotFoundException;
 import com.glanner.api.exception.UserNotFoundException;
 import com.glanner.core.domain.glanner.DailyWorkGlanner;
@@ -133,7 +134,7 @@ public class GlannerServiceTest {
         Glanner savedGlanner = glannerRepository.save(glanner);
 
         User anotherUser = User.builder()
-                .email("cherish8514@naver.com")
+                .email("test@naver.com")
                 .role(UserRoleStatus.ROLE_USER)
                 .build();
 
@@ -143,11 +144,16 @@ public class GlannerServiceTest {
         userRepository.save(anotherUser);
 
         int size = 5;
-        AddUserToGlannerReqDto reqDto = new AddUserToGlannerReqDto(savedGlanner.getId(),"cherish8514@naver.com");
+        AddUserToGlannerReqDto reqDto = new AddUserToGlannerReqDto(savedGlanner.getId(),"test@naver.com");
 
         //when
         User findAnotherUser = getUser(userRepository.findByEmail(reqDto.getEmail()));
         Glanner findGlanner = getGlanner(glannerRepository.findRealById(savedGlanner.getId()));
+
+        if(userGlannerRepository.findByUserIdAndGlannerId(findAnotherUser.getId(), findGlanner.getId()) != null){
+            throw new AlreadyInGroupException();
+        }
+
         if (findGlanner.getUserGlanners().size() >= size){
             throw new IllegalStateException("회원 수가 가득 찼습니다.");
         }
