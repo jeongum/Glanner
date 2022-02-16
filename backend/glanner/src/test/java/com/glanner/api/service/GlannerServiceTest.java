@@ -223,6 +223,8 @@ public class GlannerServiceTest {
         //then
         User deleteAfterUser = getUser(userRepository.findByEmail("cherish8514@naver.com"));
         assertThat(deleteAfterUser.getUserGlanners().size()).isEqualTo(0);
+        Glanner deleteAfterGlanner = getGlanner(glannerRepository.findById(savedGlanner.getId()));
+        assertThat(deleteAfterGlanner.getUserGlanners().size()).isEqualTo(1);
     }
 
     @Test
@@ -306,7 +308,7 @@ public class GlannerServiceTest {
         //when
         Glanner findGlanner = glannerRepository.findRealById(savedGlannerId).orElseThrow(IllegalArgumentException::new);
         GroupBoard findGroupBoard = groupBoardRepository.findByGlannerId(findGlanner.getId()).orElseThrow(BoardNotFoundException::new);
-        List<UserGlanner> findUserGlanners = userGlannerRepository.findByGlannerId(savedGlannerId);
+        List<UserGlanner> findUserGlanners = findGlanner.getUserGlanners();
 
         FindGlannerResDto findGlannerResDto = new FindGlannerResDto(findGlanner, findGroupBoard, findUserGlanners);
 
