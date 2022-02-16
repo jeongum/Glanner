@@ -110,7 +110,7 @@ public class GlannerServiceImpl implements GlannerService{
 
     @Override
     public void deleteUser(Long glannerId, Long userId) {
-        Glanner findGlanner = glannerRepository.findById(userId).orElseThrow(GlannerNotFoundException::new);
+        Glanner findGlanner = glannerRepository.findById(glannerId).orElseThrow(GlannerNotFoundException::new);
         int size = findGlanner.getUserGlanners().size();
         for (int i = 0; i < size; i++) {
             if(findGlanner.getUserGlanners().get(i).getUser().getId().equals(userId)){
