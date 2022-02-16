@@ -13,6 +13,7 @@ import com.glanner.api.queryrepository.GlannerQueryRepository;
 import com.glanner.api.queryrepository.UserQueryRepository;
 import com.glanner.core.domain.glanner.DailyWorkGlanner;
 import com.glanner.core.domain.glanner.Glanner;
+import com.glanner.core.domain.glanner.GroupBoard;
 import com.glanner.core.domain.glanner.UserGlanner;
 import com.glanner.core.domain.user.User;
 import com.glanner.core.repository.*;
@@ -84,8 +85,9 @@ public class GlannerServiceImpl implements GlannerService{
     @Transactional(readOnly = true)
     public FindGlannerResDto findGlannerDetail(Long id) {
         Glanner findGlanner = glannerRepository.findRealById(id).orElseThrow(GlannerNotFoundException::new);
+        GroupBoard findGroupBoard = groupBoardRepository.findByGlannerId(findGlanner.getId()).orElseThrow(BoardNotFoundException::new);
         List<UserGlanner> findUserGlanners = userGlannerRepository.findByGlannerId(id);
-        return new FindGlannerResDto(findGlanner, findUserGlanners);
+        return new FindGlannerResDto(findGlanner, findGroupBoard, findUserGlanners);
     }
 
     @Override

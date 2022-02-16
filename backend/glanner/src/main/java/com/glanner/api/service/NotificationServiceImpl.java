@@ -8,6 +8,7 @@ import com.glanner.api.dto.request.SendSmsReqDto;
 import com.glanner.api.dto.response.FindNotificationResDto;
 import com.glanner.api.dto.response.FindWorkByTimeResDto;
 import com.glanner.api.dto.response.SendSmsApiResDto;
+import com.glanner.api.dto.response.SendSmsResDto;
 import com.glanner.api.exception.DailyWorkNotFoundException;
 import com.glanner.api.exception.MailNotSentException;
 import com.glanner.api.exception.SMSNotSentException;
@@ -96,11 +97,12 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public void sendSms(SendSmsReqDto reqDto) {
+    public SendSmsResDto sendSms(SendSmsReqDto reqDto) {
         List<SendSmsReqDto> messages = new ArrayList<>();
         messages.add(reqDto);
         try { sendSmsServer(messages); }
         catch (Exception e) { throw new SMSNotSentException(); }
+        return new SendSmsResDto(reqDto.content);
     }
 
     @Override
