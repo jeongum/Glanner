@@ -10,11 +10,11 @@ const MainPageContainer = styled.div`
   text-align: center;
 `;
 
-export default function MainPagePresenter() {
+export default function MainPagePresenter({ state, eventList, handleEvent }) {
   return (
     <>
       <MainPageContainer>
-        <Calendar />
+        <Calendar eventList={eventList} handleEvent={handleEvent} />
       </MainPageContainer>
     </>
   );

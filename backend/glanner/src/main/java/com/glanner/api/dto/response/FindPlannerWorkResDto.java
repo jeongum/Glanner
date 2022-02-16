@@ -14,6 +14,6 @@ public class FindPlannerWorkResDto {
     Long workId;
     String title;
     String content;
-    LocalDateTime start;
-    LocalDateTime end;
+    LocalDateTime startTime;
+    LocalDateTime endTime;
 }

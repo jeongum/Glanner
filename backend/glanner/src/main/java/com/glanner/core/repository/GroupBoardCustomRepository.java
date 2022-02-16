@@ -6,5 +6,4 @@ import java.util.Optional;
 
 public interface GroupBoardCustomRepository {
     Optional<GroupBoard> findRealById(Long id);
-    Optional<GroupBoard> findByGlannerId(Long id);
 }

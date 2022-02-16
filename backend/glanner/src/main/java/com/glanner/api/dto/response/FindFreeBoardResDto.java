@@ -23,8 +23,8 @@ public class FindFreeBoardResDto extends FindBoardResDto {
         this.listTotalCount = listTotalCount;
     }
 
-    public FindFreeBoardResDto(Long boardId, String userName, String userEmail, String title, String content, int count, LocalDateTime createdDate, int likeCount, int dislikeCount, int commentCount) {
-        super(boardId, userName, userEmail, title, content, count, createdDate);
+    public FindFreeBoardResDto(Long boardId, String userName, String title, String content, int count, LocalDateTime createdDate, int likeCount, int dislikeCount, int commentCount) {
+        super(boardId, userName, title, content, count, createdDate);
         this.likeCount = likeCount;
         this.dislikeCount = dislikeCount;
         this.commentCount = commentCount;

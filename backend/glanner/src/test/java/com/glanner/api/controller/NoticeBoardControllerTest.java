@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -86,12 +87,14 @@ public class NoticeBoardControllerTest {
 
         //when
         mockMvc.perform(get("/api/notice/search/{page}/{limit}", page, limit)
-                        .param("keyword", "키워드"))
+                        .content(asJsonString(reqDto))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
                 //then
                 .andExpect(status().isOk());
 
         verify(queryRepository, times(1))
-                .findPageWithKeyword(page, limit, "키워드");
+                .findPageWithKeyword(page, limit, reqDto.getKeyWord());
     }
 
     public static String asJsonString(final Object obj) {

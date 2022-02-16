@@ -84,7 +84,7 @@ public class GlannerQueryRepositoryTest {
 
         //then
         for (FindGlannerWorkResDto findGlannerWorkResDto : responseDto) {
-            assertThat(findGlannerWorkResDto.getStart().getMonthValue()).isEqualTo(2);
+            assertThat(findGlannerWorkResDto.getStartTime().getMonthValue()).isEqualTo(2);
         }
     }
 

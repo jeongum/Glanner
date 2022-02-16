@@ -85,7 +85,7 @@ class NotificationQueryRepositoryImplTest {
         addWorks(now.plusMinutes(40), now.plusHours(1), now.plusMinutes(10)); // 알림 X
 
         //when
-        List<FindWorkByTimeResDto> findWorks = notificationQueryRepository.findScheduleWork();
+        List<FindWorkByTimeResDto> findWorks = notificationQueryRepository.findWorkBySchedule();
 
         //then
         assertThat(dailyWorkScheduleRepository.count()).isEqualTo(3);
@@ -105,7 +105,7 @@ class NotificationQueryRepositoryImplTest {
         addGlannerWorks(savedGlannerId, now.plusMinutes(40), now.plusHours(1), now.plusMinutes(10)); // 알림 X
 
         //when
-        List<FindWorkByTimeResDto> findWorks = notificationQueryRepository.findGlannerWork();
+        List<FindWorkByTimeResDto> findWorks = notificationQueryRepository.findWorkByGlanner();
 
         //then
         assertThat(findWorks.size()).isEqualTo(2);
@@ -134,7 +134,7 @@ class NotificationQueryRepositoryImplTest {
                 .type(NotificationType.DAILY_WORK_SCHEDULE)
                 .typeId(1L)
                 .content(content)
-                .confirmation(ConfirmStatus.STILL_NOT_CONFIRMED)
+                .confirmation(NotificationStatus.STILL_NOT_CONFIRMED)
                 .build();
         user.addNotification(notification);
     }
@@ -145,18 +145,18 @@ class NotificationQueryRepositoryImplTest {
                 .type(NotificationType.DAILY_WORK_SCHEDULE)
                 .typeId(1L)
                 .content(content)
-                .confirmation(ConfirmStatus.CONFIRM)
+                .confirmation(NotificationStatus.CONFIRM)
                 .build();
         user.addNotification(notification);
     }
-    private void addWorks(LocalDateTime startDate, LocalDateTime endDate, LocalDateTime alarmDate) {
+    private void addWorks(LocalDateTime start, LocalDateTime end, LocalDateTime noti) {
         User user = userRepository.findByEmail("cherish8513@naver.com").orElseThrow(UserNotFoundException::new);
         DailyWorkSchedule workSchedule = DailyWorkSchedule.builder()
                 .content("hard")
                 .title("work")
-                .startDate(startDate)
-                .endDate(endDate)
-                .alarmDate(alarmDate)
+                .startDate(start)
+                .endDate(end)
+                .notiDate(noti)
                 .build();
         user.getSchedule().addDailyWork(workSchedule);
     }
@@ -200,14 +200,14 @@ class NotificationQueryRepositoryImplTest {
         return savedGlanner.getId();
     }
 
-    private void addGlannerWorks(Long savedGlannerId, LocalDateTime startDate, LocalDateTime endDate, LocalDateTime alarmDate) {
+    private void addGlannerWorks(Long savedGlannerId, LocalDateTime start, LocalDateTime end, LocalDateTime noti) {
         Glanner glanner = glannerRepository.findRealById(savedGlannerId).orElseThrow(IllegalArgumentException::new);
         glanner.addDailyWork(DailyWorkGlanner.builder()
                 .content("hard")
                 .title("work")
-                .startDate(startDate)
-                .endDate(endDate)
-                .alarmDate(alarmDate)
+                .startDate(start)
+                .endDate(end)
+                .notiDate(noti)
                 .build());
     }
 

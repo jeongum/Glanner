@@ -16,7 +16,7 @@ import javax.persistence.*;
 public class Notification extends BaseTimeEntity {
 
     @Builder
-    public Notification(User user, NotificationType type, Long typeId, ConfirmStatus confirmation, String content) {
+    public Notification(User user, NotificationType type, Long typeId, NotificationStatus confirmation, String content) {
         this.user = user;
         this.type = type;
         this.typeId = typeId;
@@ -37,10 +37,10 @@ public class Notification extends BaseTimeEntity {
     private Long typeId;
 
     @Enumerated(EnumType.STRING)
-    private ConfirmStatus confirmation;
+    private NotificationStatus confirmation;
     private String content;
 
     public void changeStatus(){
-        this.confirmation = ConfirmStatus.CONFIRM;
+        this.confirmation = NotificationStatus.CONFIRM;
     }
 }

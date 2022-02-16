@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 import static com.glanner.core.domain.glanner.QGlanner.glanner;
@@ -29,16 +28,5 @@ public class GlannerBoardCustomRepositoryImpl implements GlannerBoardCustomRepos
                 .innerJoin(glannerBoard.glanner, glanner)
                 .where(glannerBoard.id.eq(id))
                 .fetchOne());
-    }
-
-    public List<GlannerBoard> findPage(Long glannerId, int offset, int limit) {
-        return query
-                .select(glannerBoard)
-                .from(glannerBoard)
-                .where(glannerBoard.glanner.id.eq(glannerId))
-                .orderBy(glannerBoard.createdDate.desc())
-                .offset(offset)
-                .limit(limit)
-                .fetch();
     }
 }

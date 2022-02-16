@@ -15,7 +15,6 @@ public class FindGroupBoardWithCommentResDto extends FindBoardResDto {
     public FindGroupBoardWithCommentResDto(GroupBoard groupBoard, List<FindCommentResDto> comments){
         super(groupBoard.getId(),
                 groupBoard.getUser().getName(),
-                groupBoard.getUser().getEmail(),
                 groupBoard.getTitle(),
                 groupBoard.getContent(),
                 groupBoard.getCount(),

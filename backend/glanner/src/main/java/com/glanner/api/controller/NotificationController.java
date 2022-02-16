@@ -4,8 +4,8 @@ import com.glanner.api.dto.request.SendMailReqDto;
 import com.glanner.api.dto.request.SendSmsReqDto;
 import com.glanner.api.dto.response.BaseResponseEntity;
 import com.glanner.api.dto.response.FindNotificationResDto;
-import com.glanner.api.dto.response.SendSmsResDto;
 import com.glanner.api.exception.UserNotFoundException;
+import com.glanner.api.queryrepository.NotificationQueryRepository;
 import com.glanner.api.service.NotificationService;
 import com.glanner.security.SecurityUtils;
 import io.swagger.annotations.ApiOperation;
@@ -53,12 +53,12 @@ public class NotificationController {
     }
 
     @PostMapping("/sms")
-    public ResponseEntity<SendSmsResDto> sendSMS(@RequestBody SendSmsReqDto reqDto){
-        SendSmsResDto resDto = notificationService.sendSms(reqDto);
-        return ResponseEntity.status(200).body(resDto);
+    public ResponseEntity<BaseResponseEntity> sendSMS(@RequestBody SendSmsReqDto reqDto){
+        notificationService.sendSms(reqDto);
+        return ResponseEntity.status(200).body(new BaseResponseEntity(200, "Success"));
     }
 
-    @Scheduled(cron="0 0/1 * * * *")
+    @Scheduled(cron="0 * * * * *")
     public void sendScheduledNoti(){
         notificationService.sendScheduledNoti();
     }

@@ -14,6 +14,6 @@ public class FindGlannerWorkResDto {
     Long glannerWorkId;
     String title;
     String content;
-    LocalDateTime start;
-    LocalDateTime end;
+    LocalDateTime startTime;
+    LocalDateTime endTime;
 }

@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 public class FindBoardResDto {
     private Long boardId;
     private String userName;
-    private String userEmail;
     private String title;
     private String content;
     private int count;

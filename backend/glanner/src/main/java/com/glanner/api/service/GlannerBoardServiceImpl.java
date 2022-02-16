@@ -37,17 +37,6 @@ public class GlannerBoardServiceImpl implements GlannerBoardService{
     private final CommentQueryRepository commentQueryRepository;
 
     @Override
-    public List<FindGlannerBoardWithCommentsResDto> getGlannerBoards(Long glannerId, int offset, int limit) {
-        List<FindGlannerBoardWithCommentsResDto> resDto = new ArrayList<>();
-        List<GlannerBoard> boards = glannerBoardRepository.findPage(glannerId, offset, limit);
-        for(GlannerBoard board : boards){
-            List<FindCommentResDto> commentsByBoardId = commentQueryRepository.findCommentsByBoardId(board.getId());
-            resDto.add(new FindGlannerBoardWithCommentsResDto(board, commentsByBoardId));
-        }
-        return resDto;
-    }
-
-    @Override
     public FindGlannerBoardWithCommentsResDto getGlannerBoard(Long boardId) {
         GlannerBoard glannerBoard = glannerBoardRepository.findRealById(boardId).orElseThrow(GlannerNotFoundException::new);
         glannerBoard.addCount();

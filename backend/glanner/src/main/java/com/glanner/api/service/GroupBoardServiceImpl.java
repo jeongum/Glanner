@@ -4,7 +4,6 @@ import com.glanner.api.dto.request.SaveGroupBoardReqDto;
 import com.glanner.api.dto.response.FindCommentResDto;
 import com.glanner.api.dto.response.FindGlannerResDto;
 import com.glanner.api.dto.response.FindGroupBoardWithCommentResDto;
-import com.glanner.api.dto.response.SaveGroupBoardResDto;
 import com.glanner.api.exception.BoardNotFoundException;
 import com.glanner.api.exception.GlannerNotFoundException;
 import com.glanner.api.exception.UserNotFoundException;
@@ -42,7 +41,8 @@ public class GroupBoardServiceImpl implements GroupBoardService {
     private final GlannerRepository glannerRepository;
     private final UserGlannerRepository userGlannerRepository;
 
-    public SaveGroupBoardResDto saveGroupBoard(String userEmail, SaveGroupBoardReqDto reqDto) {
+    @Override
+    public Long saveGroupBoard(String userEmail, SaveGroupBoardReqDto reqDto) {
         User user = userRepository.findByEmail(userEmail).orElseThrow(UserNotFoundException::new);
         List<FileInfo> fileInfos = getFileInfos(reqDto.getFiles());
         GroupBoard groupBoard = reqDto.toEntity(user);
@@ -58,12 +58,10 @@ public class GroupBoardServiceImpl implements GroupBoardService {
                 .build();
 
         glanner.addUserGlanner(userGlanner);
-        Glanner savedGlanner = glannerRepository.save(glanner);
+        glannerRepository.save(glanner);
 
         groupBoard.changeGlanner(glanner);
-        GroupBoard savedGroupBoard = groupBoardRepository.save(groupBoard);
-
-        return new SaveGroupBoardResDto(savedGroupBoard.getId(), savedGlanner.getId(), reqDto.getTitle());
+        return groupBoardRepository.save(groupBoard).getId();
     }
 
     @Override
@@ -87,7 +85,7 @@ public class GroupBoardServiceImpl implements GroupBoardService {
         Long id = board.getGlanner().getId();
         Glanner findGlanner = glannerRepository.findRealById(id).orElseThrow(GlannerNotFoundException::new);
         List<UserGlanner> findUserGlanners = userGlannerRepository.findByGlannerId(id);
-        return new FindGlannerResDto(findGlanner, board, findUserGlanners);
+        return new FindGlannerResDto(findGlanner, findUserGlanners);
     }
 
 

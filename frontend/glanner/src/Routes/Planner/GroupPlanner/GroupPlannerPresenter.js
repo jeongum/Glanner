@@ -19,6 +19,7 @@ import momentPlugin from "@fullcalendar/moment";
 import monthName from "../../../store/monthName";
 import AddEventModal from "../Modal/AddEventModal";
 import { Link } from "react-router-dom";
+import EventModal from "../Modal/EventModal";
 
 const CalendarDiv = styled.div`
   width: 100%;
@@ -108,6 +109,7 @@ const CalendarDiv = styled.div`
   .fc-event-main {
     color: #5f5f5f;
     font-size: 14px;
+    padding: 5px;
   }
 
   .fc-day-today > div.fc-daygrid-day-frame {
@@ -146,73 +148,6 @@ const CalendarDiv = styled.div`
   }
 `;
 
-const events = [
-  {
-    id: 1,
-    title: "event 1",
-    type: "myPlanner",
-    start: "2022-02-14T10:00:00",
-    end: "2022-02-14T12:00:00",
-  },
-  {
-    id: 2,
-    title: "event 2",
-    type: "groupPlanner",
-    start: "2022-02-04T13:00:00",
-    end: "2022-02-04T18:00:00",
-  },
-  { id: 3, title: "event 3", start: "2022-02-15", end: "2022-02-20" },
-  {
-    id: 4,
-    title: "event 4",
-    type: "groupPlanner",
-    start: "2022-02-04T13:00:00",
-    end: "2022-02-04T18:00:00",
-  },
-  {
-    id: 5,
-    title: "event 4",
-    type: "myPlanner",
-    start: "2022-02-04T13:00:00",
-    end: "2022-02-04T18:00:00",
-  },
-  {
-    id: 6,
-    title: "event 4",
-    type: "groupPlanner",
-    start: "2022-02-04T13:00:00",
-    end: "2022-02-04T18:00:00",
-  },
-  {
-    id: 7,
-    title: "event 4",
-    type: "groupPlanner",
-    start: "2022-02-04T13:00:00",
-    end: "2022-02-04T18:00:00",
-  },
-  {
-    id: 8,
-    title: "event 4",
-    type: "myPlanner",
-    start: "2022-02-04T13:00:00",
-    end: "2022-02-04T18:00:00",
-  },
-  {
-    id: 9,
-    title: "event 4",
-    type: "myPlanner",
-    start: "2022-02-04T13:00:00",
-    end: "2022-02-04T18:00:00",
-  },
-  {
-    id: 10,
-    title: "event 4",
-    type: "groupPlanner",
-    start: "2022-02-04T13:00:00",
-    end: "2022-02-04T18:00:00",
-  },
-];
-
 const intendedPlans = [
   {
     id: 1,
@@ -249,22 +184,14 @@ const latestWrite = [
 ];
 
 function renderEventContent(events) {
-  //console.log(events);
+  console.log(events);
   return (
     <div style={{ textAlign: "left", marginLeft: "5px" }}>
-      {events.event._def.extendedProps.type === "groupPlanner" ? (
-        <FontAwesomeIcon
-          icon={faCircle}
-          className="circle"
-          style={{ width: 14 + "px", color: "#ABC3FF" }}
-        />
-      ) : (
-        <FontAwesomeIcon
-          icon={faCircle}
-          className="circle"
-          style={{ width: 14 + "px", color: "#FFABAB" }}
-        />
-      )}
+      <FontAwesomeIcon
+        icon={faCircle}
+        className="circle"
+        style={{ width: 14 + "px", color: "#ABC3FF" }}
+      />
       {"  "}
       {events.event._def.title}
     </div>
@@ -292,7 +219,16 @@ function Dday(date) {
   return <DdayDiv>D{diff < 0 ? "+" + diff * -1 : "-" + diff}</DdayDiv>;
 }
 
-export default function GroupPlannerPresenter(groupPlannerId) {
+export default function GroupPlannerPresenter({
+  groupPlannerId,
+  eventList,
+  modalOpen,
+  handleModalOpen,
+  handleModalClose,
+  handlePickerOpen,
+  handlePickerClose,
+}) {
+  const [specificEvent, setSpecificEvent] = useState({});
   const [date, setDate] = useState(new Date());
   const emptyPlans = [];
   const emptyWrite = [];
@@ -300,9 +236,10 @@ export default function GroupPlannerPresenter(groupPlannerId) {
   for (var i = 0; i < 3 - intendedPlans.length; i++) {
     emptyPlans.push(i);
   }
-  for (var i = 0; i < 3 - latestWrite.length; i++) {
-    emptyWrite.push(i);
+  for (var j = 0; j < 3 - latestWrite.length; j++) {
+    emptyWrite.push(j);
   }
+  console.log(eventList);
 
   return (
     <CalendarDiv className="calendar-div">
@@ -310,8 +247,30 @@ export default function GroupPlannerPresenter(groupPlannerId) {
         plugins={[dayGridPlugin, timeGridPlugin, momentPlugin]}
         initialView="dayGridWeek"
         contentHeight={180}
-        events={events}
+        // * eventList의 값을 반환해주기도 하고, 이벤트리스트가 있을 때, console.log 출력해주기도 하는데, 날짜를 바꿨을 때 값이 갱신되는 걸 구현하는 건 좀 더 생각해봐야겠음!!
+        events={
+          ((event) => {
+            console.log(event);
+          },
+          eventList)
+        }
         eventDisplay="block"
+        eventClick={(e) => {
+          handleModalOpen();
+          console.log(e.event);
+          const newEvent = {
+            title: e.event.title,
+            startDate: String(e.event.startStr)
+              .replaceAll("T", " ")
+              .substring(0, 16),
+            endDate: String(e.event.endStr)
+              .replaceAll("T", " ")
+              .substring(0, 16),
+            content: e.event._def.extendedProps.content,
+            alarmDate: "",
+          };
+          setSpecificEvent(newEvent);
+        }}
         titleFormat={function (date) {
           //console.log(date)
           return `${date.date.year} ${monthName[date.date.month]} Week ${
@@ -409,6 +368,14 @@ export default function GroupPlannerPresenter(groupPlannerId) {
         eventContent={renderEventContent}
       ></FullCalendar>
 
+      <EventModal
+        open={modalOpen}
+        handleClose={handleModalClose}
+        specificEvent={specificEvent}
+        type={"groupPlanner"}
+        groupPlannerId={groupPlannerId}
+      />
+
       {/* 플래너 예정된 일정, 최근 글 파트 */}
       <Box
         sx={{
@@ -432,7 +399,7 @@ export default function GroupPlannerPresenter(groupPlannerId) {
           {intendedPlans.map(({ id, title, start, end, content }) => {
             // console.log("그룹 플래너 파트" + id);
             return (
-              <Link to={`/conference/${groupPlannerId.groupPlannerId}`}>
+              <Link to={`/conference/${groupPlannerId}`}>
                 <Paper
                   elevation={0}
                   sx={{

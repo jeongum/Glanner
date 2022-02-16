@@ -59,12 +59,6 @@ public class CustomExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR );
     }
 
-    @ExceptionHandler(DuplicatePlanException.class)
-    public ResponseEntity<PlanErrorResponseEntity> handleDuplicatedPlan(DuplicatePlanException ex){
-        PlanErrorResponseEntity response = new PlanErrorResponseEntity(ErrorCode.DUPLICATE_PLAN, ex.getUserName(), ex.getTitle());
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR );
-    }
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponseEntity> handleValidationError(Exception ex){
         ErrorResponseEntity response = new ErrorResponseEntity(ErrorCode.METHOD_ARGUMENT_NOT_VALID);
@@ -92,12 +86,6 @@ public class CustomExceptionHandler {
     @ExceptionHandler(FullUserInGroupException.class)
     public ResponseEntity<ErrorResponseEntity> handleFullUserError(Exception ex){
         ErrorResponseEntity response = new ErrorResponseEntity(ErrorCode.FULL_USER_IN_GROUP);
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR );
-    }
-
-    @ExceptionHandler(AlreadyInGroupException.class)
-    public ResponseEntity<ErrorResponseEntity> handleAlreadyInGroupError(Exception ex){
-        ErrorResponseEntity response = new ErrorResponseEntity(ErrorCode.ALREADY_IN_GROUP);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR );
     }
 

@@ -6,5 +6,4 @@ import java.util.List;
 
 public interface UserGlannerCustomRepository {
     List<UserGlanner> findByGlannerId(Long glannerId);
-    UserGlanner findByUserIdAndGlannerId(Long userId, Long glannerId);
 }

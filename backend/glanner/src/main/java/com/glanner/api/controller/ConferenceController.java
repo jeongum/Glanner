@@ -4,6 +4,7 @@ import com.glanner.api.dto.request.AddParticipantReqDto;
 import com.glanner.api.dto.request.OpenConferenceReqDto;
 import com.glanner.api.dto.response.BaseResponseEntity;
 import com.glanner.api.dto.response.FindConferenceResDto;
+import com.glanner.api.dto.response.FindGlannerResDto;
 import com.glanner.api.exception.UserNotFoundException;
 import com.glanner.api.service.ConferenceService;
 import com.glanner.security.SecurityUtils;

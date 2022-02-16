@@ -24,14 +24,4 @@ public class UserGlannerCustomRepositoryImpl implements UserGlannerCustomReposit
                 .where(userGlanner.glanner.id.eq(glannerId))
                 .fetch();
     }
-
-    @Override
-    public UserGlanner findByUserIdAndGlannerId(Long userId, Long glannerId) {
-        return query
-                .select(userGlanner)
-                .from(userGlanner)
-                .where(userGlanner.glanner.id.eq(glannerId).and(
-                        userGlanner.user.id.eq(userId)))
-                .fetchOne();
-    }
 }

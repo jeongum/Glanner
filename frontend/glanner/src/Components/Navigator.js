@@ -1,6 +1,10 @@
 import * as React from "react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
+import axios from "axios";
+import jwt_decode from "jwt-decode";
+
 import Drawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
 import Box from "@mui/material/Box";
@@ -20,7 +24,6 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ReactComponent as Logout } from "../assets/arrow-right-from-bracket-solid.svg";
 import logo from "../assets/glannerLogo1.png";
-import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { addGlanner, onClickPlanner, removeGlanner } from "../redux/planners";
@@ -39,21 +42,7 @@ const GroupPlannerList = styled.div`
   }
 `;
 
-const myPlanners = ["글래너님의 플래너", "개인 플래너1"]; // useState, useRedux 들어갈 자리
-const groupPlanners = [
-  "알고리즘 스터디",
-  "스프링 스터디",
-  "독서 모임",
-  "00대 16학번 모임",
-]; // useState, useRedux 들어갈 자리
-const categories = [
-  {
-    id: "내 플래너",
-  },
-  {
-    id: "그룹 플래너",
-  },
-];
+const categories = [{ id: "내 플래너" }, { id: "그룹 플래너" }];
 
 const boards = [
   {
@@ -96,34 +85,6 @@ const boards = [
   },
 ];
 
-// const onLogout = () => {
-//   sessionStorage.removeItem("token");
-//   document.location.href = "";
-// };
-
-const settings = [
-  {
-    id: "",
-    children: [
-      {
-        id: "설정",
-        icon: (
-          <FontAwesomeIcon
-            icon={faWrench}
-            className="wrench"
-            style={{ width: 15 + "px" }}
-          />
-        ),
-      },
-      {
-        id: "로그아웃",
-        icon: <Logout style={{ width: 15 + "px" }} />,
-        // func: onLogout(),
-      },
-    ],
-  },
-];
-
 const item = {
   py: 0,
   color: "#5f5f5f",
@@ -160,18 +121,46 @@ const settingItem = {
 
 function Navigator(props) {
   const { ...other } = props;
+  const navigate = useNavigate();
+  
+  // const onLogout = () => {
+  //   sessionStorage.removeItem("token");
+  //   localStorage.removeItem("token");
+  //   navigate("/");
+  // };
+  const settings = [
+    {
+      id: "",
+      children: [
+        {
+          id: "설정",
+          icon: (
+            <FontAwesomeIcon
+              icon={faWrench}
+              className="wrench"
+              style={{ width: 15 + "px" }}
+            />
+          ),
+        },
+        {
+          id: "로그아웃",
+          icon: <Logout style={{ width: 15 + "px" }} />,
+          // func: onLogout(),
+        },
+      ],
+    },
+  ];
 
   const [groupPList, setGroupPList] = useState([]);
 
   const bodyParams = {
-    id: "test001@naver.com",
+    id: jwt_decode(localStorage.getItem("token")),
   };
   const fetchGroupList = () => {
     axios
       .get(`/api/glanner`, bodyParams)
       .then((res) => {
         setGroupPList(res.data);
-        console.log(res.data);
       })
       .catch((err) => console.log(err));
   };
@@ -238,7 +227,7 @@ function Navigator(props) {
           </Box>
         </Box>
         <Box
-          key={"myPlanner"}
+          key={"groupPlanner"}
           sx={{
             maxHeight: "240px",
           }}
@@ -342,7 +331,7 @@ function Navigator(props) {
                 <ListItemButton
                   sx={{ m: 0, height: "30px" }}
                   components="a"
-                  //onClick={func}
+                  // onClick={func}
                 >
                   <ListItemText>
                     {icon} {childId}

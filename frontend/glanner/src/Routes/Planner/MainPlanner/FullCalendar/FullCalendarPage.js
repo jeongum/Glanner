@@ -19,8 +19,10 @@ import "bootstrap/dist/css/bootstrap.css";
 import "@fortawesome/fontawesome-free/css/all.css";
 
 import monthName from "../../../../store/monthName";
+import { Typography } from "@mui/material";
+
 import AddEventModal from "../../Modal/AddEventModal";
-import { Modal, Typography } from "@mui/material";
+import EventModal from "../../Modal/EventModal";
 
 const CalendarDiv = styled.div`
   width: 100%;
@@ -167,53 +169,24 @@ function renderEventContent(events) {
   );
 }
 
-function DatePickerDiv(date, setDate, pickerOpen, handleClose) {
-  return (
-    <Modal open={pickerOpen} onClose={handleClose}>
-      {/* <DatePicker onChange={setDate} value={date} /> */}
-    </Modal>
+export default function Calendar({ eventList, handleEvent }) {
+  const [date, setDate] = useState(
+    new Date(new Date().getFullYear(), new Date().getMonth(), 2)
+      .toISOString()
+      .substring(0, 10)
   );
-}
+  const [specificEvent, setSpecificEvent] = useState({});
 
-const events = [
-  {
-    id: 1,
-    title: "event 1",
-    type: "myPlanner",
-    start: "2022-02-14T10:00:00",
-    end: "2022-02-14T12:00:00",
-  },
-  {
-    id: 2,
-    title: "event 2",
-    type: "groupPlanner",
-    start: "2022-02-16T13:00:00",
-    end: "2022-02-16T18:00:00",
-  },
-  { id: 3, title: "event 3", start: "2022-02-15", end: "2022-02-20" },
-];
-
-export default function Calendar(props) {
-  const [date, setDate] = useState(new Date());
   const [pickerOpen, setPickerOpen] = useState(false);
-  const handleOpen = () => setPickerOpen(true);
-  const handleClose = () => setPickerOpen(false);
+  const handlePickerOpen = () => setPickerOpen(true);
+  const handlePickerClose = () => setPickerOpen(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const handleModalOpen = () => setModalOpen(true);
+  const handleModalClose = () => setModalOpen(false);
 
   const calendarRef = useRef();
 
-  useEffect(() => {
-    changeDate(date);
-  });
-
-  const getApi = () => {
-    const calendarDom = calendarRef.current;
-    return calendarDom ? calendarDom.getApi() : null;
-  };
-
-  const changeDate = (date) => {
-    const API = getApi();
-    API.gotoDate(date);
-  };
+  useEffect(() => {}, [eventList, date]);
 
   return (
     <CalendarDiv>
@@ -237,9 +210,9 @@ export default function Calendar(props) {
             ),
             click: () => {
               if (pickerOpen) {
-                handleClose();
+                handlePickerClose();
               } else {
-                handleOpen();
+                handlePickerOpen();
               }
               console.log(pickerOpen);
             },
@@ -264,13 +237,38 @@ export default function Calendar(props) {
         }}
         locale={"ko"}
         initialDate={date}
-        events={events}
+        dayCellDidMount={(date) => {
+          var newDay = new Date(date.date);
+          console.log(newDay.toISOString().substring(0, 10));
+          if (
+            newDay.toISOString().substring(8, 10) === "01" &&
+            newDay.getMonth() == new Date().getMonth()
+          ) {
+            setDate(newDay);
+            handleEvent(newDay.toISOString().substring(0, 10));
+            console.log(eventList);
+          }
+        }}
+        events={eventList}
         eventColor={"#F6F6F6"}
         eventTextColor={"#5F5F5F"}
         eventDisplay="block"
         dateClick={(e) => console.log(e.dateStr)}
-        eventClick={function (info) {
-          alert(info.event.title);
+        eventClick={(e) => {
+          handleModalOpen();
+          console.log(e.event);
+          const newEvent = {
+            title: e.event.title,
+            startDate: String(e.event.startStr)
+              .replaceAll("T", " ")
+              .substring(0, 16),
+            endDate: String(e.event.endStr)
+              .replaceAll("T", " ")
+              .substring(0, 16),
+            content: e.event._def.extendedProps.content,
+            alarmDate: "",
+          };
+          setSpecificEvent(newEvent);
         }}
         height={780}
         expandRows={false}
@@ -278,8 +276,11 @@ export default function Calendar(props) {
           //console.log(date)
           return (
             <div>
-              <Typography style={{ fontSize: "20px", fontFamily: "Noto Sans KR" }}>
-                {date.date.year} {monthName[date.date.month]} {new Date().getDate()}
+              <Typography
+                style={{ fontSize: "20px", fontFamily: "Noto Sans KR" }}
+              >
+                {date.date.year} {monthName[date.date.month]}{" "}
+                {new Date().getDate()}
               </Typography>
             </div>
           );
@@ -304,13 +305,19 @@ export default function Calendar(props) {
                   marginRight: "20px",
                 }}
               >
-                <AddEventModal date={date.date} />
+                <AddEventModal date={date.date} type={"myPlanner"} />
               </div>
             </div>
           );
         }}
         eventContent={renderEventContent}
         editable={true}
+      />
+      <EventModal
+        open={modalOpen}
+        handleClose={handleModalClose}
+        specificEvent={specificEvent}
+        type={"myPlanner"}
       />
     </CalendarDiv>
   );

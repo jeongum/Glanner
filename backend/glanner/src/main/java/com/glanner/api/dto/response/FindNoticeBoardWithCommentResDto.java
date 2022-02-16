@@ -14,7 +14,6 @@ public class FindNoticeBoardWithCommentResDto extends FindBoardResDto {
     public FindNoticeBoardWithCommentResDto(NoticeBoard noticeBoard, List<FindCommentResDto> comments){
         super(noticeBoard.getId(),
                 noticeBoard.getUser().getName(),
-                noticeBoard.getUser().getEmail(),
                 noticeBoard.getTitle(),
                 noticeBoard.getContent(),
                 noticeBoard.getCount(),

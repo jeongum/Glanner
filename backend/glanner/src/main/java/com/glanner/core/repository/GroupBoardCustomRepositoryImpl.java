@@ -27,13 +27,4 @@ public class GroupBoardCustomRepositoryImpl implements GroupBoardCustomRepositor
                 .where(groupBoard.id.eq(id))
                 .fetchOne());
     }
-
-    @Override
-    public Optional<GroupBoard> findByGlannerId(Long id) {
-        return Optional.ofNullable(query
-                .select(groupBoard)
-                .from(groupBoard)
-                .where(groupBoard.glanner.id.eq(id))
-                .fetchOne());
-    }
 }

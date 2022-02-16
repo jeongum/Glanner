@@ -11,7 +11,7 @@ import { useState } from 'react';
 import axios from 'axios';
 
 const LoginComponent = ({setSignupPage, signupPage}) => {  
-    const { register, reset, formState: {errors}, handleSubmit } = useForm();
+    const { register, watch, formState: {errors}, handleSubmit } = useForm();
 //   const handleSubmit = (event) => {
 //     event.preventDefault();
 //     console.log()
@@ -21,22 +21,21 @@ const LoginComponent = ({setSignupPage, signupPage}) => {
 //       password: data.get('password'),
 //     });
 //   };  
-  const emailInput = useRef(null);
-  const onSubmit = (data) => {
-    axios(`/api/auth`, 
-    {
-      method: 'POST',
-      data: data
-    })
-      .then(res =>{
-        localStorage.setItem('token', res.data.idToken)
-        window.location.reload();
-      })
-      .catch(err => {               
-        reset()
-        alert('로그인 정보가 올바르지 않습니다')
-      })
-  }
+    const onSubmit = (data) => {
+        axios(`/api/auth`, 
+        {
+            method: 'POST',
+            data: data
+        })
+            .then(res =>{
+                localStorage.setItem('token', res.data.idToken)
+                window.location.reload();
+            })
+            .catch(err => {
+                console.log(err)
+                alert(err)
+            })
+    }
   return (
       <Grid container component="main" sx={{ height: '100vh', width: '100%'}}>
         <CssBaseline />
@@ -73,6 +72,7 @@ const LoginComponent = ({setSignupPage, signupPage}) => {
               Log In
             </Typography>
             <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1, width: '100%'}}>
+
               {/* 이메일 폼 */}
               <Grid container direction='row' alignItems='center' sx={{ mt: '1em'}}>
                 <Grid item xs={4} >

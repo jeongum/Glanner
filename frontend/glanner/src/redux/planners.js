@@ -42,7 +42,7 @@ export const plannerSlice = createSlice({
         onClickPlanner: (state, action) => {
           state.plannerList.map(planner => {
             planner.children.map(targetPlanner => {
-              if (action.payload == targetPlanner.glannerId || action.payload == targetPlanner.plannerId) {
+              if (action.payload === targetPlanner.glannerId || action.payload === targetPlanner.plannerId) {
                 targetPlanner.active = true;
               } else {
                 targetPlanner.active = false;

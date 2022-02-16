@@ -164,12 +164,14 @@ public class FreeBoardControllerTest {
 
         //when
         mockMvc.perform(get("/api/free-board/search/{page}/{limit}", page, limit)
-                .param("keyword", "키워드"))
+                .content(asJsonString(reqDto))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
 
                 //then
                 .andExpect(status().isOk());
         verify(freeBoardQueryRepository, times(1))
-                .findPageWithKeyword(page, limit, "키워드");
+                .findPageWithKeyword(page, limit, reqDto.getKeyWord());
     }
 
     public static String asJsonString(final Object obj) {
