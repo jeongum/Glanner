@@ -28,13 +28,14 @@ public class FindGlannerResDto {
         glannerName = glanner.getName();
         groupBoardId = groupBoard.getId();
         numOfMember = userGlanners.size();
-        userGlanners.forEach(u -> {membersInfos.add(new MemberInfo(u.getUser().getEmail(), u.getUser().getName()));});
+        userGlanners.forEach(u -> {membersInfos.add(new MemberInfo(u.getUser().getId(), u.getUser().getEmail(), u.getUser().getName()));});
     }
 
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
     public static class MemberInfo{
+        Long userId;
         String userEmail;
         String userName;
     }

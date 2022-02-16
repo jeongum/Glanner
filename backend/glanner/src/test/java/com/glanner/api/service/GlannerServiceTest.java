@@ -315,6 +315,7 @@ public class GlannerServiceTest {
         assertThat(findGlannerResDto.getHostEmail()).isEqualTo(findGlanner.getHost().getEmail());
         assertThat(findGlannerResDto.getNumOfMember()).isEqualTo(1);
         assertThat(findGlannerResDto.getMembersInfos().size()).isEqualTo(1);
+        assertThat(findGlannerResDto.getMembersInfos().get(0).getUserId()).isEqualTo(findUser.getId());
         assertThat(findGlannerResDto.getMembersInfos().get(0).getUserEmail()).isEqualTo("cherish8513@naver.com");
         assertThat(findGlannerResDto.getMembersInfos().get(0).getUserName()).isEqualTo("JeongJooHeon");
         assertThat(findGlannerResDto.getGroupBoardId()).isEqualTo(findGroupBoard.getId());
