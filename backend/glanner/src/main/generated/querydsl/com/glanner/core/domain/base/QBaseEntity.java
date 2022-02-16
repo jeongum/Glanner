@@ -21,7 +21,9 @@ public class QBaseEntity extends EntityPathBase<BaseEntity> {
 
     public final QBaseTimeEntity _super = new QBaseTimeEntity(this);
 
-    public final StringPath createdBy = createString("createdBy");
+    public final DateTimePath<java.time.LocalDateTime> alarmDate = createDateTime("alarmDate", java.time.LocalDateTime.class);
+
+    public final EnumPath<com.glanner.core.domain.user.ConfirmStatus> confirmStatus = createEnum("confirmStatus", com.glanner.core.domain.user.ConfirmStatus.class);
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdDate = _super.createdDate;

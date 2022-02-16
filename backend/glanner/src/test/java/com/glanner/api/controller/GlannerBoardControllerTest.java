@@ -109,7 +109,7 @@ public class GlannerBoardControllerTest {
 
                 //then
                 .andExpect(status().isOk());
-        verify(queryRepository, times(1)).findPage(glannerId, page, limit);
+        verify(glannerBoardService, times(1)).getGlannerBoards(glannerId, page, limit);
     }
 
     @Test
@@ -145,14 +145,12 @@ public class GlannerBoardControllerTest {
 
         //when
         mockMvc.perform(get("/api/glanner-board/{id}/search/{page}/{limit}", glannerId, page, limit)
-                        .content(asJsonString(reqDto))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
+                        .param("keyword", "키워드"))
 
                 //then
                 .andExpect(status().isOk());
         verify(queryRepository, times(1))
-                .findPageWithKeyword(glannerId, page, limit, reqDto.getKeyWord());
+                .findPageWithKeyword(glannerId, page, limit, "키워드");
     }
 
     public static String asJsonString(final Object obj) {

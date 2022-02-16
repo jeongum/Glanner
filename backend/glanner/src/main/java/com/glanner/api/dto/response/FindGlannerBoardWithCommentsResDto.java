@@ -4,6 +4,7 @@ import com.glanner.core.domain.glanner.GlannerBoard;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @NoArgsConstructor
@@ -15,6 +16,7 @@ public class FindGlannerBoardWithCommentsResDto extends FindBoardResDto {
     public FindGlannerBoardWithCommentsResDto(GlannerBoard glannerBoard, List<FindCommentResDto> comments){
         super(glannerBoard.getId(),
                 glannerBoard.getUser().getName(),
+                glannerBoard.getUser().getEmail(),
                 glannerBoard.getTitle(),
                 glannerBoard.getContent(),
                 glannerBoard.getCount(),
@@ -22,4 +24,5 @@ public class FindGlannerBoardWithCommentsResDto extends FindBoardResDto {
         glannerId = glannerBoard.getGlanner().getId();
         this.comments = comments;
     }
+
 }

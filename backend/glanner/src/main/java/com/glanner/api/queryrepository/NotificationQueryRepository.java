@@ -8,6 +8,7 @@ import java.util.List;
 public interface NotificationQueryRepository {
     public List<FindNotificationResDto> findNotificationResDtoByUserId(Long userId);
     public List<FindNotificationResDto> findUnreadNotificationResDtoByUserId(Long userId);
-    public List<FindWorkByTimeResDto> findWorkBySchedule();
-    public List<FindWorkByTimeResDto> findWorkByGlanner();
+    public List<FindWorkByTimeResDto> findScheduleWork();
+    public List<FindWorkByTimeResDto> findGlannerWork();
+    public List<FindWorkByTimeResDto> findReservedConference();
 }

@@ -1,11 +1,7 @@
 package com.glanner.api.controller;
 
 import com.glanner.api.dto.request.SaveGroupBoardReqDto;
-import com.glanner.api.dto.request.SearchBoardReqDto;
-import com.glanner.api.dto.response.BaseResponseEntity;
-import com.glanner.api.dto.response.FindGlannerResDto;
-import com.glanner.api.dto.response.FindGroupBoardResDto;
-import com.glanner.api.dto.response.FindGroupBoardWithCommentResDto;
+import com.glanner.api.dto.response.*;
 import com.glanner.api.exception.UserNotFoundException;
 import com.glanner.api.queryrepository.GroupBoardQueryRepository;
 import com.glanner.api.service.BoardService;
@@ -32,13 +28,12 @@ public class GroupBoardController extends BoardController<SaveGroupBoardReqDto> 
         this.groupBoardService = groupBoardService;
     }
 
-    @Override
     @PostMapping
     @ApiOperation(value = "게시판 저장")
-    public ResponseEntity<BaseResponseEntity> saveBoard(@RequestBody @Valid SaveGroupBoardReqDto requestDto) {
+    public ResponseEntity<SaveGroupBoardResDto> saveGroupBoard(@RequestBody @Valid SaveGroupBoardReqDto requestDto) {
         String userEmail = SecurityUtils.getCurrentUsername().orElseThrow(UserNotFoundException::new);
-        groupBoardService.saveGroupBoard(userEmail, requestDto);
-        return ResponseEntity.status(200).body(new BaseResponseEntity(200, "Success"));
+        SaveGroupBoardResDto resDto = groupBoardService.saveGroupBoard(userEmail, requestDto);
+        return ResponseEntity.status(200).body(resDto);
     }
 
     @Override
@@ -72,15 +67,15 @@ public class GroupBoardController extends BoardController<SaveGroupBoardReqDto> 
 
     @GetMapping("/search/{page}/{limit}")
     @ApiOperation(value = "검색 게시판 리스트 가져오기", notes = "keyword가 제목 + 내용에 포함되어있는 게시판들을 가져온다.")
-    public ResponseEntity<List<FindGroupBoardResDto>> searchBoardsWithKeyword(@PathVariable int page, @PathVariable int limit, @RequestBody @Valid SearchBoardReqDto reqDto){
-        List<FindGroupBoardResDto> responseDto = queryRepository.findPageWithKeyword(page, limit, reqDto.getKeyWord());
+    public ResponseEntity<List<FindGroupBoardResDto>> searchBoardsWithKeyword(@PathVariable int page, @PathVariable int limit,  @RequestParam("keyword") String keyWord){
+        List<FindGroupBoardResDto> responseDto = queryRepository.findPageWithKeyword(page, limit, keyWord);
         return ResponseEntity.status(200).body(responseDto);
     }
 
     @GetMapping("/interest/{page}/{limit}")
     @ApiOperation(value = "검색 게시판 리스트 가져오기", notes = "interest가 그룹 게시판 관심사에 포함되어있는 게시판들을 가져온다.")
-    public ResponseEntity<List<FindGroupBoardResDto>> searchBoardsWithInterest(@PathVariable int page, @PathVariable int limit, @RequestBody @Valid SearchBoardReqDto reqDto){
-        List<FindGroupBoardResDto> responseDto = queryRepository.findPageWithInterest(page, limit, reqDto.getKeyWord());
+    public ResponseEntity<List<FindGroupBoardResDto>> searchBoardsWithInterest(@PathVariable int page, @PathVariable int limit,  @RequestParam("keyword") String keyWord){
+        List<FindGroupBoardResDto> responseDto = queryRepository.findPageWithInterest(page, limit, keyWord);
         return ResponseEntity.status(200).body(responseDto);
     }
 }

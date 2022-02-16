@@ -24,7 +24,7 @@ public class QNotification extends EntityPathBase<Notification> {
 
     public final com.glanner.core.domain.base.QBaseTimeEntity _super = new com.glanner.core.domain.base.QBaseTimeEntity(this);
 
-    public final EnumPath<NotificationStatus> confirmation = createEnum("confirmation", NotificationStatus.class);
+    public final EnumPath<ConfirmStatus> confirmation = createEnum("confirmation", ConfirmStatus.class);
 
     public final StringPath content = createString("content");
 

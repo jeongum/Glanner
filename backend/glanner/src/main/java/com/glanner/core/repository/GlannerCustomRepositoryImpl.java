@@ -9,9 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+import static com.glanner.core.domain.board.QComment.comment;
 import static com.glanner.core.domain.glanner.QDailyWorkGlanner.dailyWorkGlanner;
 import static com.glanner.core.domain.glanner.QGlanner.glanner;
 import static com.glanner.core.domain.glanner.QGlannerBoard.glannerBoard;
+import static com.glanner.core.domain.glanner.QGroupBoard.groupBoard;
 import static com.glanner.core.domain.glanner.QUserGlanner.userGlanner;
 import static com.glanner.core.domain.user.QUser.user;
 

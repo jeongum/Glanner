@@ -97,6 +97,7 @@ public class BoardQueryRepositoryTest {
         for (int i = 0; i < 4; i++) {
             SaveFreeBoardReqDto boardReqDto = new SaveFreeBoardReqDto("title"+i, "content", new ArrayList<>());
             boardService.saveBoard(userEmail, boardReqDto);
+            Thread.sleep(30);
         }
 
         //when
@@ -105,15 +106,15 @@ public class BoardQueryRepositoryTest {
         //then
         assertThat(page.size()).isEqualTo(4);
         assertThat(page.get(0).getTitle()).isEqualTo("title3");
-        assertThat(page.get(0).getListTotalCount()).isEqualTo(4);
     }
 
     @Test
     public void testFindNoticeBoards() throws Exception{
         //given
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 4; i++) {
             SaveNoticeBoardReqDto boardReqDto = new SaveNoticeBoardReqDto("title"+i, "content", new ArrayList<>());
             boardService.saveBoard(userEmail, boardReqDto);
+            Thread.sleep(30);
         }
 
         //when
@@ -121,8 +122,7 @@ public class BoardQueryRepositoryTest {
 
         //then
         assertThat(page.size()).isEqualTo(4);
-        assertThat(page.get(0).getTitle()).isEqualTo("title7");
-        assertThat(page.get(0).getListTotalCount()).isEqualTo(8);
+        assertThat(page.get(0).getTitle()).isEqualTo("title3");
     }
 
     @Test
@@ -130,7 +130,7 @@ public class BoardQueryRepositoryTest {
         //given
         for (int i = 0; i < 4; i++) {
             SaveGroupBoardReqDto boardReqDto = new SaveGroupBoardReqDto("title"+i, "content", new ArrayList<>(), "interests");
-            boardService.saveBoard(userEmail, boardReqDto);
+            groupBoardService.saveGroupBoard(userEmail, boardReqDto);
         }
 
         //when
@@ -139,6 +139,7 @@ public class BoardQueryRepositoryTest {
         //then
         assertThat(page.size()).isEqualTo(4);
         assertThat(page.get(0).getTitle()).isEqualTo("title3");
+        assertThat(page.get(0).getUserCount()).isEqualTo(1);
     }
 
     @Test
@@ -148,6 +149,7 @@ public class BoardQueryRepositoryTest {
         for (int i = 0; i < 4; i++) {
             SaveGlannerBoardReqDto boardReqDto = new SaveGlannerBoardReqDto("title"+i, "content", new ArrayList<>(), savedGlannerId);
             glannerBoardService.saveGlannerBoard(userEmail, boardReqDto);
+            Thread.sleep(30);
         }
 
         //when

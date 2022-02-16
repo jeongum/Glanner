@@ -24,12 +24,14 @@ public class GroupBoardQueryRepositoryImpl implements GroupBoardQueryRepository{
                 .select(Projections.constructor(FindGroupBoardResDto.class,
                         groupBoard.id,
                         groupBoard.user.name,
+                        groupBoard.user.email,
                         groupBoard.title,
                         groupBoard.content,
                         groupBoard.count,
                         groupBoard.createdDate,
                         groupBoard.interests,
-                        groupBoard.comments.size()))
+                        groupBoard.comments.size(),
+                        groupBoard.glanner.userGlanners.size()))
                 .from(groupBoard)
                 .orderBy(groupBoard.createdDate.desc())
                 .offset(offset)
@@ -43,12 +45,14 @@ public class GroupBoardQueryRepositoryImpl implements GroupBoardQueryRepository{
                 .select(Projections.constructor(FindGroupBoardResDto.class,
                         groupBoard.id,
                         groupBoard.user.name,
+                        groupBoard.user.email,
                         groupBoard.title,
                         groupBoard.content,
                         groupBoard.count,
                         groupBoard.createdDate,
                         groupBoard.interests,
-                        groupBoard.comments.size()))
+                        groupBoard.comments.size(),
+                        groupBoard.glanner.userGlanners.size()))
                 .from(groupBoard)
                 .where(groupBoard.title.contains(keyword)
                         .or(groupBoard.content.contains(keyword)))
@@ -68,7 +72,9 @@ public class GroupBoardQueryRepositoryImpl implements GroupBoardQueryRepository{
                         groupBoard.content,
                         groupBoard.count,
                         groupBoard.createdDate,
-                        groupBoard.interests))
+                        groupBoard.interests,
+                        groupBoard.comments.size(),
+                        groupBoard.glanner.userGlanners.size()))
                 .from(groupBoard)
                 .where(groupBoard.interests.contains(interest))
                 .orderBy(groupBoard.createdDate.desc())

@@ -16,6 +16,7 @@ public class FindFreeBoardWithCommentsResDto extends FindBoardResDto {
     public FindFreeBoardWithCommentsResDto(FreeBoard freeBoard, List<FindCommentResDto> comments){
         super(freeBoard.getId(),
                 freeBoard.getUser().getName(),
+                freeBoard.getUser().getEmail(),
                 freeBoard.getTitle(),
                 freeBoard.getContent(),
                 freeBoard.getCount(),

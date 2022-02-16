@@ -87,7 +87,7 @@ public class UserController {
     @GetMapping("/planner/{date}")
     @ApiOperation(value = "특정 개인 일정 가져오기", notes = "'yyyy-mm-01'의 양식으로 mm + 1의 모든 일정을 가져온다. ex) 2022-02-01 ~ 2022-03-01")
     public ResponseEntity<List<FindPlannerWorkResDto>> getWorks(@PathVariable @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate date) {
-        LocalDateTime dateTimeStart = date.atStartOfDay();
+        LocalDateTime dateTimeStart = date.atStartOfDay().minusMinutes(1);
         LocalDateTime dateTimeEnd = dateTimeStart.plusMonths(1);
         String userEmail = getUsername(SecurityUtils.getCurrentUsername());
         List<FindPlannerWorkResDto> responseDto = userService.getWorks(userEmail, dateTimeStart, dateTimeEnd);
