@@ -86,7 +86,7 @@ public class GlannerServiceImpl implements GlannerService{
     public FindGlannerResDto findGlannerDetail(Long id) {
         Glanner findGlanner = glannerRepository.findRealById(id).orElseThrow(GlannerNotFoundException::new);
         GroupBoard findGroupBoard = groupBoardRepository.findByGlannerId(findGlanner.getId()).orElseThrow(BoardNotFoundException::new);
-        List<UserGlanner> findUserGlanners = userGlannerRepository.findByGlannerId(id);
+        List<UserGlanner> findUserGlanners = findGlanner.getUserGlanners();
         return new FindGlannerResDto(findGlanner, findGroupBoard, findUserGlanners);
     }
 
