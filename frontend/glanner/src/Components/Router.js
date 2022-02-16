@@ -24,8 +24,6 @@ const HeaderDiv = styled.div`
   border-bottom: 2px solid #e5e5e5;
 `;
 
-const decodedToken = jwt_decode(localStorage.getItem("token"));
-
 export default function RouterComponent() {
   return (
     <>
@@ -36,7 +34,13 @@ export default function RouterComponent() {
         <Router>
           <HeaderDiv>
             <Header
-              title={`${String(decodedToken.sub).split("@")[0]}님의 플래너`}
+              title={`${
+                jwt_decode(localStorage.getItem("token")) != null
+                  ? String(jwt_decode(localStorage.getItem("token")).sub).split(
+                      "@"
+                    )[0]
+                  : ""
+              }님의 플래너`}
             />
           </HeaderDiv>
           <Navigator
