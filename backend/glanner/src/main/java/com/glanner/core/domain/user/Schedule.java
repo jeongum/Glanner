@@ -29,7 +29,7 @@ public class Schedule extends BaseTimeEntity {
     @OneToOne(mappedBy = "schedule", fetch = FetchType.LAZY)
     private User user;
 
-    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "schedule", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<DailyWorkSchedule> works = new ArrayList<>();
 
     public void changeUser(User user){

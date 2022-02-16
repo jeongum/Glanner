@@ -1,6 +1,6 @@
 package com.glanner.core.domain.user;
 
-import com.glanner.core.domain.base.BaseTimeEntity;
+import com.glanner.core.domain.base.BaseEntity;
 import com.querydsl.core.annotations.QueryEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -14,16 +14,15 @@ import java.time.LocalDateTime;
 @QueryEntity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class DailyWorkSchedule extends BaseTimeEntity {
+public class DailyWorkSchedule extends BaseEntity {
 
     @Builder
-    public DailyWorkSchedule(LocalDateTime startDate, LocalDateTime endDate, LocalDateTime notiDate, String title, String content) {
+    public DailyWorkSchedule(LocalDateTime startDate, LocalDateTime endDate, LocalDateTime alarmDate, String title, String content) {
         this.startDate = startDate;
         this.endDate = endDate;
-        this.notiDate = notiDate;
         this.title = title;
         this.content = content;
-        this.notiStatus = NotificationStatus.STILL_NOT_CONFIRMED;
+        changeAlarmDate(alarmDate);
     }
 
     @Id @GeneratedValue
@@ -35,27 +34,19 @@ public class DailyWorkSchedule extends BaseTimeEntity {
     private Schedule schedule;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-    private LocalDateTime notiDate;
     private String title;
     private String content;
-
-    @Enumerated(EnumType.STRING)
-    private NotificationStatus notiStatus;
 
     public void changeSchedule(Schedule schedule){
         this.schedule = schedule;
     }
 
-    public void changeDailyWork(LocalDateTime startDate, LocalDateTime endDate, LocalDateTime notiDate, String title, String content){
+    public void changeDailyWork(LocalDateTime startDate, LocalDateTime endDate, LocalDateTime alarmDate, String title, String content){
         this.startDate = startDate;
         this.endDate = endDate;
-        this.notiDate = notiDate;
         this.title = title;
         this.content = content;
-    }
-
-    public void changeNotiStatus(){
-        this.notiStatus = NotificationStatus.CONFIRM;
+        changeAlarmDate(alarmDate);
     }
 
     public void cancel(){

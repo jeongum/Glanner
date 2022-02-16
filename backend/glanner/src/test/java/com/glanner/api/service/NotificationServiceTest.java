@@ -12,7 +12,6 @@ import com.glanner.api.exception.DailyWorkNotFoundException;
 import com.glanner.api.exception.SMSNotSentException;
 import com.glanner.api.exception.UserNotFoundException;
 import com.glanner.api.queryrepository.NotificationQueryRepository;
-import com.glanner.core.domain.glanner.DailyWorkGlanner;
 import com.glanner.core.domain.user.*;
 import com.glanner.core.repository.DailyWorkScheduleRepository;
 import com.glanner.core.repository.NotificationRepository;
@@ -84,16 +83,16 @@ class NotificationServiceTest {
         createReadNotification("content3");
 
         //when
-        List<Notification> notifications = notificationRepository.findByConfirmation(NotificationStatus.STILL_NOT_CONFIRMED);
+        List<Notification> notifications = notificationRepository.findByConfirmation(ConfirmStatus.STILL_NOT_CONFIRMED);
         for(Notification notification : notifications){
             notification.changeStatus();
         }
 
         //then
         assertThat(user.getNotifications().size()).isEqualTo(3);
-        assertThat(user.getNotifications().get(0).getConfirmation()).isEqualTo(NotificationStatus.CONFIRM);
-        assertThat(user.getNotifications().get(1).getConfirmation()).isEqualTo(NotificationStatus.CONFIRM);
-        assertThat(user.getNotifications().get(2).getConfirmation()).isEqualTo(NotificationStatus.CONFIRM);
+        assertThat(user.getNotifications().get(0).getConfirmation()).isEqualTo(ConfirmStatus.CONFIRM);
+        assertThat(user.getNotifications().get(1).getConfirmation()).isEqualTo(ConfirmStatus.CONFIRM);
+        assertThat(user.getNotifications().get(2).getConfirmation()).isEqualTo(ConfirmStatus.CONFIRM);
 
         List<FindNotificationResDto> resDtos = notificationQueryRepository.findUnreadNotificationResDtoByUserId(user.getId());
         assertThat(resDtos.size()).isEqualTo(0);
@@ -137,7 +136,7 @@ class NotificationServiceTest {
         addWorks(now.plusMinutes(40), now.plusHours(1), now.plusMinutes(10)); // 알림 X
 
         //when
-        List<FindWorkByTimeResDto> resDtos = notificationQueryRepository.findWorkBySchedule();
+        List<FindWorkByTimeResDto> resDtos = notificationQueryRepository.findScheduleWork();
 
         for(FindWorkByTimeResDto resDto:resDtos){
             /* 메세지 보내기 */
@@ -155,11 +154,11 @@ class NotificationServiceTest {
                     .type(NotificationType.DAILY_WORK_SCHEDULE)
                     .typeId(resDto.getDailyWorkId())
                     .content(makeContent(schedule.getTitle()))
-                    .confirmation(NotificationStatus.STILL_NOT_CONFIRMED)
+                    .confirmation(ConfirmStatus.STILL_NOT_CONFIRMED)
                     .build();
 
             findUser.addNotification(notification);
-            schedule.changeNotiStatus();
+            schedule.confirm();
         }
         //then
         User findUser = userRepository.findByEmail("cherish8513@naver.com").orElseThrow(UserNotFoundException::new);
@@ -240,14 +239,14 @@ class NotificationServiceTest {
         userRepository.save(user);
     }
 
-    private void addWorks(LocalDateTime start, LocalDateTime end, LocalDateTime noti) {
+    private void addWorks(LocalDateTime startDate, LocalDateTime endDate, LocalDateTime alarmDate) {
         User user = userRepository.findByEmail("cherish8513@naver.com").orElseThrow(UserNotFoundException::new);
         DailyWorkSchedule workSchedule = DailyWorkSchedule.builder()
                 .content("hard")
                 .title("work")
-                .startDate(start)
-                .endDate(end)
-                .notiDate(noti)
+                .startDate(startDate)
+                .endDate(endDate)
+                .alarmDate(alarmDate)
                 .build();
         user.getSchedule().addDailyWork(workSchedule);
     }
@@ -258,7 +257,7 @@ class NotificationServiceTest {
                 .type(NotificationType.DAILY_WORK_SCHEDULE)
                 .typeId(1L)
                 .content(content)
-                .confirmation(NotificationStatus.STILL_NOT_CONFIRMED)
+                .confirmation(ConfirmStatus.STILL_NOT_CONFIRMED)
                 .build();
         user.addNotification(notification);
     }
@@ -269,7 +268,7 @@ class NotificationServiceTest {
                 .type(NotificationType.DAILY_WORK_SCHEDULE)
                 .typeId(1L)
                 .content(content)
-                .confirmation(NotificationStatus.CONFIRM)
+                .confirmation(ConfirmStatus.CONFIRM)
                 .build();
         user.addNotification(notification);
     }

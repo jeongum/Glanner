@@ -2,8 +2,7 @@ package com.glanner.api.queryrepository;
 
 import com.glanner.api.dto.response.FindNotificationResDto;
 import com.glanner.api.dto.response.FindWorkByTimeResDto;
-import com.glanner.core.domain.user.Notification;
-import com.glanner.core.domain.user.NotificationStatus;
+import com.glanner.core.domain.user.ConfirmStatus;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -51,13 +50,13 @@ public class NotificationQueryRepositoryImpl implements NotificationQueryReposit
                         notification.createdDate))
                 .from(notification)
                 .where(notification.user.id.eq(userId)
-                        .and(notification.confirmation.eq(NotificationStatus.STILL_NOT_CONFIRMED)))
+                        .and(notification.confirmation.eq(ConfirmStatus.STILL_NOT_CONFIRMED)))
                 .fetch();
     }
 
 
     @Override
-    public List<FindWorkByTimeResDto> findWorkBySchedule() {
+    public List<FindWorkByTimeResDto> findScheduleWork() {
         LocalDateTime now = LocalDateTime.now();
 
         return query
@@ -69,13 +68,13 @@ public class NotificationQueryRepositoryImpl implements NotificationQueryReposit
                 .from(dailyWorkSchedule)
                 .innerJoin(user)
                 .on(dailyWorkSchedule.schedule.eq(user.schedule))
-                .where(dailyWorkSchedule.notiDate.before(now)
-                        .and(dailyWorkSchedule.notiStatus.eq(NotificationStatus.STILL_NOT_CONFIRMED)))
+                .where(dailyWorkSchedule.alarmDate.before(now)
+                        .and(dailyWorkSchedule.confirmStatus.eq(ConfirmStatus.STILL_NOT_CONFIRMED)))
                 .fetch();
     }
 
     @Override
-    public List<FindWorkByTimeResDto> findWorkByGlanner() {
+    public List<FindWorkByTimeResDto> findGlannerWork() {
         LocalDateTime now = LocalDateTime.now();
 
         return query
@@ -87,8 +86,27 @@ public class NotificationQueryRepositoryImpl implements NotificationQueryReposit
                 .from(user)
                 .join(userGlanner).on(userGlanner.user.eq(user))
                 .join(dailyWorkGlanner).on(dailyWorkGlanner.glanner.eq(userGlanner.glanner))
-                .where(dailyWorkGlanner.notiDate.before(now)
-                        .and(dailyWorkGlanner.notiStatus.eq(NotificationStatus.STILL_NOT_CONFIRMED)))
+                .where(dailyWorkGlanner.alarmDate.before(now)
+                        .and(dailyWorkGlanner.confirmStatus.eq(ConfirmStatus.STILL_NOT_CONFIRMED)))
+                .fetch();
+    }
+
+    @Override
+    public List<FindWorkByTimeResDto> findReservedConference() {
+
+        LocalDateTime start = LocalDateTime.now();
+        LocalDateTime end = start.plusMinutes(1);
+
+        return query
+                .select(Projections.constructor(FindWorkByTimeResDto.class,
+                        dailyWorkGlanner.id,
+                        dailyWorkGlanner.title,
+                        user.id,
+                        user.phoneNumber))
+                .from(user)
+                .join(userGlanner).on(userGlanner.user.eq(user))
+                .join(dailyWorkGlanner).on(dailyWorkGlanner.glanner.eq(userGlanner.glanner))
+                .where(dailyWorkGlanner.startDate.between(start, end))
                 .fetch();
     }
 }
