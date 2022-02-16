@@ -9,9 +9,15 @@ import java.time.LocalDateTime;
 @Getter
 public class FindNoticeBoardResDto extends FindBoardResDto {
     private int commentCount;
+    private Long listTotalCount;
 
-    public FindNoticeBoardResDto(Long boardId, String userName, String title, String content, int count, LocalDateTime createdDate, int commentCount) {
-        super(boardId, userName, title, content, count, createdDate);
+    public FindNoticeBoardResDto(Long boardId, String userName, String userEmail, String title, String content, int count, LocalDateTime createdDate, int commentCount, Long listTotalCount) {
+        super(boardId, userName, userEmail, title, content, count, createdDate);
+        this.commentCount = commentCount;
+        this.listTotalCount = listTotalCount;
+    }
+    public FindNoticeBoardResDto(Long boardId, String userName, String userEmail, String title, String content, int count, LocalDateTime createdDate, int commentCount) {
+        super(boardId, userName, userEmail, title, content, count, createdDate);
         this.commentCount = commentCount;
     }
 }

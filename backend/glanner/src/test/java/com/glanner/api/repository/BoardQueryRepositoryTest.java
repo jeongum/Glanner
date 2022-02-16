@@ -105,12 +105,13 @@ public class BoardQueryRepositoryTest {
         //then
         assertThat(page.size()).isEqualTo(4);
         assertThat(page.get(0).getTitle()).isEqualTo("title3");
+        assertThat(page.get(0).getListTotalCount()).isEqualTo(4);
     }
 
     @Test
     public void testFindNoticeBoards() throws Exception{
         //given
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 8; i++) {
             SaveNoticeBoardReqDto boardReqDto = new SaveNoticeBoardReqDto("title"+i, "content", new ArrayList<>());
             boardService.saveBoard(userEmail, boardReqDto);
         }
@@ -120,7 +121,8 @@ public class BoardQueryRepositoryTest {
 
         //then
         assertThat(page.size()).isEqualTo(4);
-        assertThat(page.get(0).getTitle()).isEqualTo("title3");
+        assertThat(page.get(0).getTitle()).isEqualTo("title7");
+        assertThat(page.get(0).getListTotalCount()).isEqualTo(8);
     }
 
     @Test

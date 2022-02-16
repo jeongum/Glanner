@@ -1,7 +1,9 @@
 package com.glanner.api.queryrepository;
 
 import com.glanner.api.dto.response.FindNoticeBoardResDto;
+import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -9,7 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.glanner.core.domain.board.QFreeBoard.freeBoard;
 import static com.glanner.core.domain.board.QNoticeBoard.noticeBoard;
+import static com.querydsl.core.types.ExpressionUtils.count;
 
 @Repository
 @RequiredArgsConstructor
@@ -28,7 +32,11 @@ public class NoticeBoardQueryRepositoryImpl implements NoticeBoardQueryRepositor
                         noticeBoard.content,
                         noticeBoard.count,
                         noticeBoard.createdDate,
-                        noticeBoard.comments.size()))
+                        noticeBoard.comments.size(),
+                        ExpressionUtils.as(
+                                JPAExpressions.select(count(noticeBoard.id))
+                                        .from(noticeBoard),
+                                "listTotalCount")))
                 .from(noticeBoard)
                 .orderBy(noticeBoard.createdDate.desc())
                 .offset(offset)
