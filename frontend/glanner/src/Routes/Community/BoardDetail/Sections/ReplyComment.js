@@ -12,7 +12,7 @@ export const ReplyComment = ({commentList, parentCommentId, addCommentLike, setC
     // 대댓글 박스
     <>
       {commentList && commentList.map(comment => {
-        if (comment.responseTo === parentCommentId) {
+        if (comment.parentId === parentCommentId) {
           return (
             <SingleComment
               comments={commentList}            
@@ -21,7 +21,7 @@ export const ReplyComment = ({commentList, parentCommentId, addCommentLike, setC
               addCommentLike={addCommentLike}
               setComments={setComments}
               updateComment={updateComment}
-              key={comment.id}
+              key={comment.boardId}
             />            
           )
         }

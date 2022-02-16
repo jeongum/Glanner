@@ -13,7 +13,8 @@ export const BoardFormPagePresenter = ({
   onFileChange, 
   deleteFile, 
   attachment,  
-  data
+  data,
+  state
 }) => {
   const classes = useStyles();    
   return (
@@ -125,6 +126,7 @@ export const BoardFormPagePresenter = ({
         <Grid container sx={{mt: 2, justifyContent: 'space-between'}}>
           {/* <Grid item xs={2}/> */}
           <Grid item>
+            {!state ? 
             <Link to={'/community/free/'}>
               <Button className={classes.btn}>
                 <Typography className={classes.btnText}>
@@ -132,6 +134,13 @@ export const BoardFormPagePresenter = ({
                 </Typography>
               </Button>
             </Link>
+            :<Link to={-1}>
+            <Button className={classes.btn}>
+              <Typography className={classes.btnText}>
+                본문으로
+              </Typography>
+            </Button>
+          </Link>}
           </Grid>
           <Grid item sx={{ ml: 1}}>
             <Button className={classes.btn} type="submit">

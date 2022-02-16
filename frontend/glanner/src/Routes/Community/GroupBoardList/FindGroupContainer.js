@@ -8,7 +8,8 @@ export default function FindGroupContainer () {
   const [loading, setLoading] = useState(true);
   const [groupBoardList, setGroupBoardList] = useState([]);
   const [page, setPage] = useState(0);
-
+  const [category, setCategory] = useState('search');
+  const [inputData, setInputData] = useState("");
     useEffect(() => {      
       fetchGroupBoardList()
     }, [page])
@@ -24,7 +25,21 @@ export default function FindGroupContainer () {
     const handleChangePage = newPage => {
       setPage((newPage - 1) * 4)
     }
-
+    const handleInput = (e) => {
+      console.log(e.target.value)
+      setInputData(e.target.value)
+    }
+    // 검색 기능 다시 검토 필요
+    const searchBoard = () => {
+      if (category === 'search') {
+        axios(`/api/group-board/search/${page}/4`)
+          .then(res => {
+            setGroupBoardList(res.data)
+            setLoading(false)
+          })
+          .catch(err => console.log(err))
+      }
+    }
     return (
       <>
         <Helmet>
@@ -34,6 +49,11 @@ export default function FindGroupContainer () {
           loading={loading}
           groupBoardList={groupBoardList}
           handleChangePage={handleChangePage}
+          inputData={inputData}
+          handleInput={handleInput}
+          searchBoard={searchBoard}
+          category={category}
+          setCategory={setCategory}
         />
       </>
     );

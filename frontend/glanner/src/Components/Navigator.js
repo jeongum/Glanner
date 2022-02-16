@@ -24,6 +24,10 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ReactComponent as Logout } from "../assets/arrow-right-from-bracket-solid.svg";
 import logo from "../assets/glannerLogo1.png";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { addGlanner, onClickPlanner, removeGlanner } from "../redux/planners";
+import { deleteGlanner, fetchGlanner } from "../redux/apiCalls";
 
 const GroupPlannerList = styled.div`
   background-color: #ffffff;
@@ -103,17 +107,17 @@ const settingItem = {
   fontSize: "16px",
 };
 
-const onClickPlanner = (e) => {
-  categories.map(({ id, children }) => {
-    children.map(({ id: childId, active }) => {
-      if (e.currentTarget.id == childId) {
-        active = true;
-      } else {
-        active = false;
-      }
-    });
-  });
-};
+// const onClickPlanner = (e) => {
+//   categories.map(({ id, children }) => {
+//     children.map(({ id: childId, active }) => {
+//       if (e.currentTarget.id == childId) {
+//         active = true;
+//       } else {
+//         active = false;
+//       }
+//     });
+//   });
+// };
 
 function Navigator(props) {
   const { ...other } = props;

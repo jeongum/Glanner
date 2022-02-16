@@ -18,6 +18,7 @@ import {
   Divider,
   Stack,
   Pagination,
+  FormGroup,
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
@@ -32,7 +33,9 @@ export default function BoardPagePresenter({
   loading, 
   boardList, 
   latestNoticeList,  
-  handleChangePage
+  handleChangePage,
+  inputData,
+  handleInput
 }) {
   const classes = useStyles();
   return (
@@ -46,10 +49,12 @@ export default function BoardPagePresenter({
           autoComplete="off"
           sx={{ textAlign: "right", width: "95%", minHeight: "100%", m: 0 }}
         >
-          <FormControl sx={{ m: 1, width: "25ch" }} size="small">
-            <InputLabel htmlFor="search-board">이름, 제목</InputLabel>
+          <FormGroup sx={{ ml: 100, width: "25ch", mb: 1, mt: 3, height: 50,}} size="small">
+            {/* <InputLabel htmlFor="search-board">이름, 제목</InputLabel> */}
             <OutlinedInput
-              id="search-board"
+              value={inputData}
+              onChange={handleInput}
+              id="search-board"              
               endAdornment={
                 <InputAdornment position="end">
                   <IconButton aria-label="search-button" edge="end">
@@ -58,8 +63,12 @@ export default function BoardPagePresenter({
                 </InputAdornment>
               }
               label="Password"
+              sx={{ borderRadius: 5, background: '#F7F6F6',
+                border: '2px solid #E5E5E5', "legend": {width: 0},
+                "fieldset": {border: 'none'}, height: 40
+              }}
             />
-          </FormControl>
+          </FormGroup>
         </Box>
         <Box className={classes.textField} sx={{ textAlign: "center", minHeight: "100%" }}>          
           <List
@@ -92,7 +101,7 @@ export default function BoardPagePresenter({
               </Grid>
             </Grid>
             <Divider />
-            {latestNoticeList.map(({ id, title, userEmail, createdDate, count, like }) => (
+            {latestNoticeList.map(({ id, title, userName, createdDate, count, like }) => (
               <Paper sx={{ mb: 1, width: "100%", backgroundColor: "#F9F9F9" }} key={id}>
                 <ListItem
                   disableGutters
@@ -108,7 +117,7 @@ export default function BoardPagePresenter({
                       </Link>
                     </Grid>
                     <Grid item xs={1.8}>
-                      <ListItemText>{userEmail}</ListItemText>
+                      <ListItemText>{userName}</ListItemText>
                     </Grid>
                     <Grid item xs={1}>
                       <ListItemText>{getListTime(createdDate)}</ListItemText>
@@ -133,7 +142,7 @@ export default function BoardPagePresenter({
               minHeight: "100%",
             }}
           >
-            {boardList.map(({ boardId, title, userEmail, createdDate, count, likeCount }) => (
+            {boardList.map(({ boardId, title, userName, createdDate, count, likeCount }) => (
               <Paper sx={{ mb: 1, width: "100%", backgroundColor: "#F9F9F9" }} key={boardId}>
                 <ListItem                
                   disableGutters
@@ -158,7 +167,7 @@ export default function BoardPagePresenter({
                       </Link>
                     </Grid>
                     <Grid item xs={1.8}>
-                      <ListItemText sx={{mx: 3}}>{userEmail}</ListItemText>
+                      <ListItemText sx={{mx: 3}}>{userName}</ListItemText>
                     </Grid>
                     <Grid item xs={1}>
                       <ListItemText>

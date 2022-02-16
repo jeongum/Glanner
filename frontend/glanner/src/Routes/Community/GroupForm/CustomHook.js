@@ -36,7 +36,8 @@ export default function TagsInput({ ...props }) {
         return;
       }
       if (!event.target.value.replace(/\s/g, "").length) return;
-
+      if (!event.target.value.replace(/[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/g, "").length) return;
+      if (event.target.value.includes('#')) return;
       newSelectedItem.push(event.target.value.trim());
       setSelectedItem(newSelectedItem);
       setInputValue("");
@@ -92,6 +93,11 @@ export default function TagsInput({ ...props }) {
               <TextField                
                 style={{height: '40px', maxLength: 5}}
                 InputProps={{
+                  onKeyDown: event => {
+                    if (event.keyCode === 13) {
+                      event.preventDefault()
+                    }
+                  },
                   maxLength: 5,
                   // startAdornment: selectedItem.map(item => (
                   //   <Chip

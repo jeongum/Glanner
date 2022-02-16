@@ -102,28 +102,28 @@ export default function MoreBtn({ editData, type, comments, setComments, setOpen
           })
       // 댓글인 경우
       } else {
-        if (type === '/free/comment') {
+        if (pathname.includes('free') && type.includes('comment')) {
           axios({
-            url: `api/free-board/comment/${item.id}`,
+            url: `/api/free-board/comment/${item.commentId}`,
             method: 'DELETE'})
             .then(res => {        
               // alert('삭제되었습니다.')
               const newComments = comments.filter(comment => {
-                return comment.id !== item.id
+                return comment.commentId !== item.commentId
               })
               setComments(newComments)            
             })
             .catch(err => {
               alert('삭제할 수 없습니다.')
             })
-        } else {
+        } else if (pathname.includes('group') && type.includes('comment')) {
           axios({
-            url: `api/group-board/comment/${item.id}`,
+            url: `/api/group-board/comment/${item.commentId}`,
             method: 'DELETE'})
             .then(res => {        
               // alert('삭제되었습니다.')
               const newComments = comments.filter(comment => {
-                return comment.id !== item.id
+                return comment.commentId !== item.commentId
               })
               setComments(newComments)            
             })
