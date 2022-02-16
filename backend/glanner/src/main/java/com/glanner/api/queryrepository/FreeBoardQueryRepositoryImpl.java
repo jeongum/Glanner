@@ -1,7 +1,9 @@
 package com.glanner.api.queryrepository;
 
 import com.glanner.api.dto.response.FindFreeBoardResDto;
+import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -10,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static com.glanner.core.domain.board.QFreeBoard.freeBoard;
+import static com.querydsl.core.types.ExpressionUtils.count;
 
 @Repository
 @RequiredArgsConstructor
@@ -31,7 +34,11 @@ public class FreeBoardQueryRepositoryImpl implements FreeBoardQueryRepository{
                         freeBoard.createdDate,
                         freeBoard.likeCount,
                         freeBoard.dislikeCount,
-                        freeBoard.comments.size()))
+                        freeBoard.comments.size(),
+                        ExpressionUtils.as(
+                                JPAExpressions.select(count(freeBoard.id))
+                                        .from(freeBoard),
+                                "listTotalCount")))
                 .from(freeBoard)
                 .orderBy(freeBoard.createdDate.desc())
                 .offset(offset)
