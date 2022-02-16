@@ -1,15 +1,17 @@
 import axios from "axios";
 import { OpenVidu } from "openvidu-browser";
 import React, { Component } from "react";
-import "./App.css";
+import "./Video.css";
 import UserVideoComponent from "./UserVideoComponent";
 import jwt_decode from "jwt-decode";
+import { useParams, Link } from "react-router-dom";
+import logo from "../../assets/glannerLogo1.png";
 
-const OPENVIDU_SERVER_URL = "https://" + window.location.hostname + ":4443";
-// const GLANNER_SERVER_URL = "https://i6a606.p.ssafy.io:8080";
+// const OPENVIDU_SERVER_URL = "https://" + window.location.hostname + ":4443";
+const OPENVIDU_SERVER_URL = "https://i6a606.p.ssafy.io:5443";
 const OPENVIDU_SERVER_SECRET = "MY_SECRET";
 
-class App extends Component {
+class Video extends Component {
   constructor(props) {
     super(props);
 
@@ -36,11 +38,12 @@ class App extends Component {
   componentDidMount() {
     const accessToken = localStorage.getItem("token");
     const decodedToken = jwt_decode(accessToken);
+    const groupSessionId = this.props.params;
 
     if (accessToken != null) {
       // 로그인 했을 때
       this.setState({
-        mySessionId: "glannerA", // 각 glannerId를 세션 Id로 설정 예정
+        mySessionId: "Glanner" + groupSessionId.id, // 각 glannerId를 세션 Id로 설정
         myUserName: decodedToken.sub, // 토큰의 email 정보를 userName으로 설정
       });
     } else {
@@ -187,8 +190,6 @@ class App extends Component {
   }
 
   muteAudio() {
-    // console.log("현재 상태에 따라서 오디오 끄고 켜기");
-    // console.log(this.state.publisher.stream.audioActive);
     if (this.state.publisher.stream.audioActive === true) {
       this.state.publisher.publishAudio(false);
     } else {
@@ -197,9 +198,6 @@ class App extends Component {
   }
 
   muteVideo() {
-    // console.log("현재 상태에 따라서 비디오 끄고 켜기");
-    // console.log("퍼블리셔", this.state.publisher);
-    // console.log(this.state.publisher.stream.videoActive);
     if (this.state.publisher.stream.videoActive === true) {
       this.state.publisher.publishVideo(false);
     } else {
@@ -212,6 +210,7 @@ class App extends Component {
     const accessToken = localStorage.getItem("token");
     const decodedToken = jwt_decode(accessToken);
     const mySession = this.state.session;
+    const groupSessionId = this.props.params;
 
     if (mySession) {
       mySession.disconnect();
@@ -222,7 +221,7 @@ class App extends Component {
     this.setState({
       session: undefined,
       subscribers: [],
-      mySessionId: "glannerA",
+      mySessionId: "Glanner" + groupSessionId.id,
       myUserName: decodedToken.sub,
       mainStreamManager: undefined,
       publisher: undefined,
@@ -275,12 +274,20 @@ class App extends Component {
       <div className="container">
         {this.state.session === undefined ? (
           <div id="join">
+            <div id="img-div">
+              <Link to={`/`}>
+                <img
+                  src={logo}
+                  style={{ height: 120 + "px" }}
+                  alt="Glanner logo"
+                />
+              </Link>
+            </div>
             <div id="join-dialog" className="jumbotron vertical-center">
-              <h1> 그룹 모임 참여하기 </h1>
-              <br />
+              <h1> 그룹 모임 참여 </h1>
               <form className="form-group" onSubmit={this.joinSession}>
                 <p>
-                  <label>Participant: </label>
+                  <label>이메일주소: </label>
                   <input
                     className="form-control"
                     type="text"
@@ -292,7 +299,7 @@ class App extends Component {
                   />
                 </p>
                 <p>
-                  <label> Session: </label>
+                  <label> 세션: </label>
                   <input
                     className="form-control"
                     type="text"
@@ -308,7 +315,7 @@ class App extends Component {
                     className="btn btn-lg btn-success"
                     name="commit"
                     type="submit"
-                    value="JOIN"
+                    value="참여하기"
                   />
                 </p>
               </form>
@@ -392,7 +399,7 @@ class App extends Component {
    * These methods retrieve the mandatory user token from OpenVidu Server.
    * This behavior MUST BE IN YOUR SERVER-SIDE IN PRODUCTION (by using
    * the API REST, openvidu-java-client or openvidu-node-client):
-   *   1) Initialize a Session in OpenVidu Server	(POST /openvidu/api/sessions)
+   *   1) Initialize a Session in OpenVidu Server (POST /openvidu/api/sessions)
    *   2) Create a Connection in OpenVidu Server (POST /openvidu/api/sessions/<SESSION_ID>/connection)
    *   3) The Connection.token must be consumed in Session.connect() method
    */
@@ -415,7 +422,7 @@ class App extends Component {
           },
         })
         .then((response) => {
-          console.log("CREATE SESION", response);
+          // console.log("CREATE SESION", response);
           resolve(response.data.id);
         })
         .catch((response) => {
@@ -466,7 +473,7 @@ class App extends Component {
           }
         )
         .then((response) => {
-          console.log("TOKEN", response);
+          // console.log("TOKEN", response);
           resolve(response.data.token);
         })
         .catch((error) => reject(error));
@@ -474,4 +481,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default (props) => <Video {...props} params={useParams()} />;
