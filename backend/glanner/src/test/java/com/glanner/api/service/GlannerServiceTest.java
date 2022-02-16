@@ -7,6 +7,7 @@ import com.glanner.api.dto.response.FindGlannerResDto;
 import com.glanner.api.exception.AlreadyInGroupException;
 import com.glanner.api.exception.BoardNotFoundException;
 import com.glanner.api.exception.UserNotFoundException;
+import com.glanner.core.domain.board.FileInfo;
 import com.glanner.core.domain.glanner.DailyWorkGlanner;
 import com.glanner.core.domain.glanner.Glanner;
 import com.glanner.core.domain.glanner.GroupBoard;
@@ -58,7 +59,7 @@ public class GlannerServiceTest {
     @Test
     public void testCreateGlanner() throws Exception{
         //given
-       User findUser = getUser(userRepository.findByEmail("cherish8513@naver.com"));
+        User findUser = getUser(userRepository.findByEmail("cherish8513@naver.com"));
 
 
         //when
@@ -283,6 +284,9 @@ public class GlannerServiceTest {
         //given
         User findUser = userRepository.findByEmail("cherish8513@naver.com").orElseThrow(() -> new IllegalStateException("없는 회원 입니다."));
 
+        SaveGroupBoardReqDto reqDto = new SaveGroupBoardReqDto("title", "content", new ArrayList<>(), "null");
+        GroupBoard groupBoard = reqDto.toEntity(findUser);
+
         Glanner glanner = Glanner.builder()
                 .host(findUser)
                 .build();
@@ -294,12 +298,17 @@ public class GlannerServiceTest {
         glanner.addUserGlanner(userGlanner);
 
         Glanner savedGlanner = glannerRepository.save(glanner);
+        groupBoard.changeGlanner(glanner);
+        groupBoardRepository.save(groupBoard);
+
         Long savedGlannerId = savedGlanner.getId();
 
         //when
         Glanner findGlanner = glannerRepository.findRealById(savedGlannerId).orElseThrow(IllegalArgumentException::new);
+        GroupBoard findGroupBoard = groupBoardRepository.findByGlannerId(findGlanner.getId()).orElseThrow(BoardNotFoundException::new);
         List<UserGlanner> findUserGlanners = userGlannerRepository.findByGlannerId(savedGlannerId);
-        FindGlannerResDto findGlannerResDto = new FindGlannerResDto(findGlanner, findUserGlanners);
+
+        FindGlannerResDto findGlannerResDto = new FindGlannerResDto(findGlanner, findGroupBoard, findUserGlanners);
 
         //then
         assertThat(findGlannerResDto.getGlannerId()).isEqualTo(savedGlannerId);
@@ -308,6 +317,7 @@ public class GlannerServiceTest {
         assertThat(findGlannerResDto.getMembersInfos().size()).isEqualTo(1);
         assertThat(findGlannerResDto.getMembersInfos().get(0).getUserEmail()).isEqualTo("cherish8513@naver.com");
         assertThat(findGlannerResDto.getMembersInfos().get(0).getUserName()).isEqualTo("JeongJooHeon");
+        assertThat(findGlannerResDto.getGroupBoardId()).isEqualTo(findGroupBoard.getId());
     }
 
     public void createUser(){
