@@ -50,7 +50,10 @@
 <img src="https://img.shields.io/badge/-Test%20Driven%20Design-181717?style=flat-square"/>
 <img src="https://img.shields.io/badge/-Agile-181717?style=flat-square"/>
 
-## 📋개발 스프린트
+## 🌏Distribution flow
+![FLOW](https://raw.githubusercontent.com/johnna963/UseImg/main/flow.png)
+
+## 📋Sprint Planning
 
 |  스프린트  |               기간                | FE                                                           | BE                                                           |
 | :--------: | :-------------------------------: | :----------------------------------------------------------- | :----------------------------------------------------------- |
