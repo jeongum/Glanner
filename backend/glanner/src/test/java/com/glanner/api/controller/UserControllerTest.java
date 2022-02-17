@@ -79,7 +79,7 @@ class UserControllerTest {
         String date = "2022-02-01";
         LocalDateTime dateTimeStart = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd")).atStartOfDay().minusMinutes(1);
         LocalDateTime dateTimeEnd = dateTimeStart.plusMonths(1);
-        FindPlannerWorkResDto success = new FindPlannerWorkResDto(1L,"title", "content", LocalDateTime.now(), LocalDateTime.now().plusDays(3));
+        FindPlannerWorkResDto success = new FindPlannerWorkResDto(1L,"title", "content", LocalDateTime.now(), LocalDateTime.now().plusDays(3), null);
         List<FindPlannerWorkResDto> response = new ArrayList<>();
         response.add(success);
 
@@ -97,7 +97,7 @@ class UserControllerTest {
     public void testFindWork() throws Exception{
         //given
         Long workId = 1L;
-        FindPlannerWorkResDto success = new FindPlannerWorkResDto(workId, "title", "content", LocalDateTime.now(), LocalDateTime.now().plusDays(3));
+        FindPlannerWorkResDto success = new FindPlannerWorkResDto(workId, "title", "content", LocalDateTime.now(), LocalDateTime.now().plusDays(3), null);
 
         //when
         when(userQueryRepository.findDailyWork(workId)).thenReturn(Optional.of(success));

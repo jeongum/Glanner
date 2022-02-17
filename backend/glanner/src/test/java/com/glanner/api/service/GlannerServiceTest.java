@@ -1,9 +1,8 @@
 package com.glanner.api.service;
 
-import com.glanner.api.dto.request.AddUserToGlannerReqDto;
-import com.glanner.api.dto.request.SaveGroupBoardReqDto;
-import com.glanner.api.dto.request.UpdateGlannerWorkReqDto;
+import com.glanner.api.dto.request.*;
 import com.glanner.api.dto.response.FindGlannerResDto;
+import com.glanner.api.dto.response.SaveGroupBoardResDto;
 import com.glanner.api.exception.AlreadyInGroupException;
 import com.glanner.api.exception.BoardNotFoundException;
 import com.glanner.api.exception.UserNotFoundException;
@@ -24,6 +23,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -40,11 +40,17 @@ public class GlannerServiceTest {
     @Autowired
     private GroupBoardRepository groupBoardRepository;
     @Autowired
-    private GlannerBoardRepository glannerBoardRepository;
-    @Autowired
     private DailyWorkGlannerRepository dailyWorkGlannerRepository;
     @Autowired
     private UserGlannerRepository userGlannerRepository;
+    @Autowired
+    private GlannerService glannerService;
+    @Autowired
+    private GroupBoardService groupBoardService;
+    @Autowired
+    private UserService userService;
+
+    private final String userEmail = "test@test.com";
 
 
     // save user
@@ -59,7 +65,7 @@ public class GlannerServiceTest {
     @Test
     public void testCreateGlanner() throws Exception{
         //given
-        User findUser = getUser(userRepository.findByEmail("cherish8513@naver.com"));
+        User findUser = getUser(userRepository.findByEmail(userEmail));
 
 
         //when
@@ -83,48 +89,31 @@ public class GlannerServiceTest {
     @Test
     public void testDeleteGlanner() throws Exception{
         //given
-        User findUser = getUser(userRepository.findByEmail("cherish8513@naver.com"));
-        SaveGroupBoardReqDto reqDto = new SaveGroupBoardReqDto("title", "content", new ArrayList<>(), "null");
-
-        GroupBoard groupBoard = reqDto.toEntity(findUser);
-        Glanner glanner = Glanner.builder()
-                .host(findUser)
-                .build();
-
-        groupBoard.changeGlanner(glanner);
-        GroupBoard savedGroupBoard = groupBoardRepository.save(groupBoard);
-
-        UserGlanner userGlanner = UserGlanner.builder()
-                .user(findUser)
-                .build();
-
-        glanner.addUserGlanner(userGlanner);
-
-        Glanner savedGlanner = glannerRepository.save(glanner);
+        LocalDateTime start = LocalDateTime.parse("2022-02-01 00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        userService.saveUser(new SaveUserReqDto("name", "test2@test.com", "123456", "010-1234-5689"));
+        SaveGroupBoardResDto saveGroupBoardResDto = groupBoardService.saveGroupBoard(userEmail, new SaveGroupBoardReqDto("title", "content", new ArrayList<>(), "interest"));
+        Long glannerId = saveGroupBoardResDto.getGlannerId();
+        glannerService.addDailyWork(new AddGlannerWorkReqDto(glannerId, "title", "content", start, start.plusHours(3), null));
+        glannerService.addDailyWork(new AddGlannerWorkReqDto(glannerId, "title", "content", start.plusHours(4), start.plusHours(8), null));
+        glannerService.addUser(new AddUserToGlannerReqDto(glannerId, "test2@test.com"));
 
         //when
-        Glanner findGlanner = getGlanner(glannerRepository.findRealById(savedGlanner.getId()));
-
-        glannerBoardRepository.deleteByGlanner(findGlanner);
-        groupBoardRepository.deleteByGlanner(findGlanner);
-        glannerRepository.deleteAllWorksById(findGlanner.getId());
-        glannerRepository.deleteAllUserGlannerById(findGlanner.getId());
-        glannerRepository.delete(findGlanner);
+        glannerService.deleteGlanner(glannerId);
 
         //then
         assertThatThrownBy(() -> {
-            groupBoardRepository.findRealById(savedGroupBoard.getId()).orElseThrow(BoardNotFoundException::new);
+            groupBoardRepository.findRealById(saveGroupBoardResDto.getGroupBoardId()).orElseThrow(BoardNotFoundException::new);
         }).isInstanceOf(BoardNotFoundException.class);
 
         assertThatThrownBy(() -> {
-            getGlanner(glannerRepository.findRealById(savedGlanner.getId()));
+            getGlanner(glannerRepository.findRealById(glannerId));
         }).isInstanceOf(IllegalArgumentException.class).hasMessage("글래너가 존재하지 않습니다.");
     }
 
     @Test
     public void testAddUser() throws Exception{
         //given
-        User findUser = getUser(userRepository.findByEmail("cherish8513@naver.com"));
+        User findUser = getUser(userRepository.findByEmail(userEmail));
         Glanner glanner = Glanner.builder()
                 .host(findUser)
                 .build();
@@ -175,62 +164,31 @@ public class GlannerServiceTest {
     public void testDeleteUser() throws Exception{
         //given
         //== glanner 생성 ==//
-        User findUser = getUser(userRepository.findByEmail("cherish8513@naver.com"));
-        Glanner glanner = Glanner.builder()
-                .host(findUser)
-                .build();
-
-        UserGlanner userGlanner = UserGlanner.builder()
-                .user(findUser)
-                .build();
-
-        glanner.addUserGlanner(userGlanner);
+        Long glannerId = glannerService.saveGlanner(userEmail);
 
         //== 참여 유저 생성 ==//
-        User anotherUser = User.builder()
-                .email("cherish8514@naver.com")
-                .role(UserRoleStatus.ROLE_USER)
-                .build();
-
-        Schedule schedule = Schedule.builder()
-                .build();
-
-        anotherUser.changeSchedule(schedule);
-
-        User savedAnotherUser = userRepository.save(anotherUser);
+        Long attendedId = userService.saveUser(new SaveUserReqDto("name", "test2@test.com", "123456", "010-1234-5689"));
 
         //== 글래너에 참여 유저 추가 ==//
-        UserGlanner userGlanner1 = UserGlanner.builder()
-                .user(savedAnotherUser)
-                .build();
-
-        glanner.addUserGlanner(userGlanner1);
-        Glanner savedGlanner = glannerRepository.save(glanner);
+        glannerService.addUser(new AddUserToGlannerReqDto(glannerId, "test2@test.com"));
 
         //when
         //== 글래너에 호스트와 유저 1명이 있는 상황 ==//
         //== 유저 1명이 가지고 있는 글래너는 1개 ==//
-        User attendingUser = getUser(userRepository.findByEmail("cherish8514@naver.com"));
-        Glanner findGlanner = getGlanner(glannerRepository.findRealById(savedGlanner.getId()));
-        int size = findGlanner.getUserGlanners().size();
-        for (int i = 0; i < size; i++) {
-            if(findGlanner.getUserGlanners().get(i).getUser().getId().equals(attendingUser.getId())){
-                findGlanner.getUserGlanners().get(i).delete();
-                break;
-            }
-        }
+        glannerService.deleteUser(glannerId, attendedId);
 
         //then
-        User deleteAfterUser = getUser(userRepository.findByEmail("cherish8514@naver.com"));
+        User deleteAfterUser = getUser(userRepository.findByEmail("test2@test.com"));
         assertThat(deleteAfterUser.getUserGlanners().size()).isEqualTo(0);
-        Glanner deleteAfterGlanner = getGlanner(glannerRepository.findById(savedGlanner.getId()));
+        Glanner deleteAfterGlanner = getGlanner(glannerRepository.findById(glannerId));
         assertThat(deleteAfterGlanner.getUserGlanners().size()).isEqualTo(1);
+        System.out.println(deleteAfterGlanner.getUserGlanners().get(0).getUser().getEmail());
     }
 
     @Test
     public void deleteDailyWork() throws Exception{
         //given
-        User findUser = getUser(userRepository.findByEmail("cherish8513@naver.com"));
+        User findUser = getUser(userRepository.findByEmail(userEmail));
         Glanner glanner = Glanner.builder()
                 .host(findUser)
                 .build();
@@ -257,7 +215,7 @@ public class GlannerServiceTest {
     @Test
     public void updateDailyWork() throws Exception{
         //given
-        User findUser = getUser(userRepository.findByEmail("cherish8513@naver.com"));
+        User findUser = getUser(userRepository.findByEmail(userEmail));
         Glanner glanner = Glanner.builder()
                 .host(findUser)
                 .build();
@@ -284,7 +242,7 @@ public class GlannerServiceTest {
     @Test
     public void testFindAGlannerInfo() throws Exception{
         //given
-        User findUser = userRepository.findByEmail("cherish8513@naver.com").orElseThrow(() -> new IllegalStateException("없는 회원 입니다."));
+        User findUser = userRepository.findByEmail(userEmail).orElseThrow(() -> new IllegalStateException("없는 회원 입니다."));
 
         SaveGroupBoardReqDto reqDto = new SaveGroupBoardReqDto("title", "content", new ArrayList<>(), "null");
         GroupBoard groupBoard = reqDto.toEntity(findUser);
@@ -318,7 +276,7 @@ public class GlannerServiceTest {
         assertThat(findGlannerResDto.getNumOfMember()).isEqualTo(1);
         assertThat(findGlannerResDto.getMembersInfos().size()).isEqualTo(1);
         assertThat(findGlannerResDto.getMembersInfos().get(0).getUserId()).isEqualTo(findUser.getId());
-        assertThat(findGlannerResDto.getMembersInfos().get(0).getUserEmail()).isEqualTo("cherish8513@naver.com");
+        assertThat(findGlannerResDto.getMembersInfos().get(0).getUserEmail()).isEqualTo(userEmail);
         assertThat(findGlannerResDto.getMembersInfos().get(0).getUserName()).isEqualTo("JeongJooHeon");
         assertThat(findGlannerResDto.getGroupBoardId()).isEqualTo(findGroupBoard.getId());
     }
@@ -326,7 +284,7 @@ public class GlannerServiceTest {
     public void createUser(){
         User user = User.builder()
                 .phoneNumber("010-6575-2938")
-                .email("cherish8513@naver.com")
+                .email(userEmail)
                 .name("JeongJooHeon")
                 .password("1234")
                 .role(UserRoleStatus.ROLE_USER)

@@ -16,4 +16,5 @@ public class FindGlannerWorkResDto {
     String content;
     LocalDateTime start;
     LocalDateTime end;
+    LocalDateTime alarmDate;
 }

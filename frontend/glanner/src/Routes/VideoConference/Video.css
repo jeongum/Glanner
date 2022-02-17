@@ -1,0 +1,44 @@
+#join-dialog {
+  padding: 150px 0px 25px 0px;
+}
+
+.stream-container {
+  padding: 0px;
+}
+
+.form-group {
+  margin: 0 auto;
+  padding: 30px;
+}
+
+.form-group p {
+  font-size: 20px;
+  display: flex;
+  margin: 10px;
+  text-align: center;
+}
+
+.form-control {
+  text-align: center;
+}
+
+#session-header {
+  padding: 20px;
+}
+
+#session-title {
+  padding: 20px;
+}
+
+#img-div {
+  margin-top: 10px;
+}
+
+#video-container .streamcomponent {
+  width: 300px;
+}
+
+#video-container .streamcomponent div p {
+  /* display: none; */
+  font-size: small;
+}

@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
-class UserServiceImplTest {
+class UserServiceTest {
 
     @Autowired
     private PasswordEncoder passwordEncoder;

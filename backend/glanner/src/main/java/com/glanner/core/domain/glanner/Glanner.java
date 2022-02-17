@@ -34,7 +34,7 @@ public class Glanner extends BaseTimeEntity {
     @JoinColumn(name = "user_id")
     private User host;
 
-    @OneToMany(mappedBy = "glanner", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "glanner", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<UserGlanner> userGlanners = new ArrayList<>();
 
     @OneToMany(mappedBy = "glanner", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)

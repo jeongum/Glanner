@@ -26,7 +26,8 @@ public class DailyWorkGlannerQueryRepositoryImpl implements DailyWorkGlannerQuer
                         dailyWorkGlanner.title,
                         dailyWorkGlanner.content,
                         dailyWorkGlanner.startDate,
-                        dailyWorkGlanner.endDate))
+                        dailyWorkGlanner.endDate,
+                        dailyWorkGlanner.alarmDate))
 
                 .from(dailyWorkGlanner)
                 .where(dailyWorkGlanner.glanner.id.eq(glannerId),

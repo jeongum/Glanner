@@ -139,8 +139,8 @@ public class GlannerControllerTest {
         LocalDateTime ldt = LocalDateTime.of(now.getYear(), now.getMonth(), now.getDayOfMonth(), now.getHour(), now.getMinute());
 
         List<FindGlannerWorkResDto> response = new ArrayList<>();
-        response.add(new FindGlannerWorkResDto(1L,"title", "content", ldt, ldt));
-        response.add(new FindGlannerWorkResDto(2L,"title", "content", ldt, ldt));
+        response.add(new FindGlannerWorkResDto(1L,"title", "content", ldt, ldt, null));
+        response.add(new FindGlannerWorkResDto(2L,"title", "content", ldt, ldt, null));
 
 
         //when

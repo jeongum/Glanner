@@ -44,7 +44,8 @@ public class UserQueryRepositoryImpl implements UserQueryRepository{
                         dailyWorkSchedule.title,
                         dailyWorkSchedule.content,
                         dailyWorkSchedule.startDate,
-                        dailyWorkSchedule.endDate))
+                        dailyWorkSchedule.endDate,
+                        dailyWorkSchedule.alarmDate))
                 .from(dailyWorkSchedule)
                 .where(dailyWorkSchedule.schedule.id.eq(scheduleId),
                         dailyWorkSchedule.startDate.after(start),
@@ -60,7 +61,8 @@ public class UserQueryRepositoryImpl implements UserQueryRepository{
                         dailyWorkSchedule.title,
                         dailyWorkSchedule.content,
                         dailyWorkSchedule.startDate,
-                        dailyWorkSchedule.endDate))
+                        dailyWorkSchedule.endDate,
+                        dailyWorkSchedule.alarmDate))
                 .from(dailyWorkSchedule)
                 .where(dailyWorkSchedule.id.eq(workId))
                 .fetchOne());

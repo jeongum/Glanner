@@ -16,4 +16,5 @@ public class FindPlannerWorkResDto {
     String content;
     LocalDateTime start;
     LocalDateTime end;
+    LocalDateTime alarmDate;
 }
