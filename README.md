@@ -1,10 +1,6 @@
 ## 📅Glanner
 
-온라인 상의 다양한 그룹 활동을 위한 플래너 플랫폼
-- 개인 플래너, 그룹 플래너 일정 관리
-- 알림톡, 화상회의 예약 등 편의성 기능 제공
-- 다양한 주제를 위한 자유 게시판 제공
-- 그룹 플래너를 형성하기 위한 그룹 모집 게시판 제공
+<img src="https://i.imgur.com/UP0wmvm.png" title="source: imgur.com" />
 
 [<img src="https://img.shields.io/badge/Notion-go-007396?style=flat-square"/>](https://butter-node-0ad.notion.site/Glanner-b16e6b30b2d64e76b05c75cfccc0862f)
 
