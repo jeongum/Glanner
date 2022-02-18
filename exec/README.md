@@ -5,6 +5,66 @@ Node.js : 16.13.2 <br>
 React : 17.0 <br>
 ubuntu : 20.04 <br>
 
+### 디렉토리 구조
+#### backend
+```
+.
+└── main
+    ├── generated
+    ├── java
+    │   └── com
+    │       └── glanner
+    │           ├── api
+    │           │   ├── controller
+    │           │   ├── service
+    │           │   ├── queryrepository
+    │           │   ├── exception
+    │           │   │   └── handler
+    │           │   ├── dto
+    │           │   │   ├── request
+    │           │   │   └── response
+    │           ├── core
+    │           │   ├── domain
+    │           │   │   ├── user
+    │           │   │   ├── glanner
+    │           │   │   └── board
+    │           │   └── repository
+    │           ├── security
+    │           │   └── jwt
+    │           ├── aop
+    │           │   ├── aspect
+    │           │   ├── annotation
+    │           │   └── logtrace
+    │           └── config
+    └── resources
+```
+
+#### frontend
+```
+Glanner
+└── src
+    ├── App.js
+    ├── Modal
+    │	
+    ├── Components 
+    │   ├── Common
+    │   │   ├── App
+    │   ├── Member
+    ├── Routes
+    │   ├── Community
+    │   ├── Member
+    │   │   ├── SignUp
+    │   │   └── SignIn
+    │   ├── Conference
+    │   ├── Planner
+    │   ├── Setting
+    │   └── Review
+    ├── api
+    ├── assets
+    ├── data
+    └── store
+        └── reducers
+```
 ### 도커
 저희는 젠킨스, 리액트 프로젝트, 스프링 프로젝트, DB, OpenVidu를 각각의 컨테이너로 배포했습니다. <br>
 리액트 : react-compose <br>
