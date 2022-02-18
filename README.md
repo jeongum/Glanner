@@ -6,6 +6,27 @@
 
 [<img src="https://img.shields.io/badge/Glanner-go-007396?style=flat-square"/>](https://i6a606.p.ssafy.io/)
 
+
+## Development Team
+#### 😁 나지엽 <br>
+#### 분야 : FE
+#### 담당 : 웹 페이지 제작, CSS, 시각적 기능 서비스
+#### 😎 송민주<br>
+#### 분야 : FE, FE Jira
+#### 담당 : 웹 페이지 제작, CSS, 글래너, 플래너 서비스
+#### 😁 안재영 <br>
+#### 분야 : FE
+#### 담당 : 웹 페이지 제작, CSS, 게시판 서비스
+#### 😃 안지애 <br>
+#### 분야 : BE, WebRtc, UCC
+#### 담당 : API 문서, OpenVidu 서비스
+#### 😄 이정음 <br>
+#### 분야 : BE, 발표, 디자인
+#### 담당 : Open APi, 알림 서비스
+#### 👑 정주헌 <br>
+#### 분야 : BE, 팀장, BE Jira, 서버
+#### 담당 : 시큐리티, 회원, 게시판 서비스
+
 ## 💻Stack
 
 #### Front
