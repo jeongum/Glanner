@@ -54,8 +54,7 @@ public class NotificationController {
 
     @PostMapping("/sms")
     public ResponseEntity<SendSmsResDto> sendSMS(@RequestBody SendSmsReqDto reqDto){
-        SendSmsResDto resDto = notificationService.sendSms(reqDto);
-        return ResponseEntity.status(200).body(resDto);
+        return ResponseEntity.status(200).body(new SendSmsResDto(reqDto.content));
     }
 
     @Scheduled(cron="0 0/1 * * * *")

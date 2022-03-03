@@ -12,6 +12,5 @@ public interface NotificationService {
     public List<FindNotificationResDto> findUnread(String userEmail);
     public void modifyStatus(String userEmail);
     public void sendMail(SendMailReqDto reqDto);
-    public SendSmsResDto sendSms(SendSmsReqDto reqDto);
     public void sendScheduledNoti();
 }

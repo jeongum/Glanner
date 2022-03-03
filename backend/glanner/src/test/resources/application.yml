@@ -39,7 +39,3 @@ jwt:
       path: auth
       refresh: refresh
 
-sms:
-  serviceid: ncp:sms:kr:279856777501:glanner
-  accesskey: vqCrek0X5afBgKemOtdP
-  secretkey: oJBNw9bRz0aSQ1ZAERXwRckGVF3McVHQc9q79ICE

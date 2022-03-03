@@ -62,13 +62,6 @@ class NotificationServiceTest {
     @Autowired
     private UserRepository userRepository;
 
-    @Value("${sms.serviceid}")
-    private String serviceId;
-    @Value("${sms.accesskey}")
-    private String accessKey;
-    @Value("${sms.secretkey}")
-    private String secretKey;
-
     @BeforeEach
     public void init() {
         createUser();
@@ -112,21 +105,6 @@ class NotificationServiceTest {
     }
 
     @Test
-    public void testSendSms() throws Exception{
-        //given
-        SendSmsReqDto reqDto = new SendSmsReqDto("01087973122", "테스트");
-        //when
-        List<SendSmsReqDto> messages = new ArrayList<>();
-        messages.add(reqDto);
-        try {
-            sendSmsServer(messages);
-        } catch (Exception e) {
-            throw new SMSNotSentException();
-        }
-        //then
-    }
-
-    @Test
     public void testSendScheduledSms() throws Exception{
         //given
         LocalDateTime now = LocalDateTime.now();
@@ -139,11 +117,6 @@ class NotificationServiceTest {
         List<FindWorkByTimeResDto> resDtos = notificationQueryRepository.findScheduleWork();
 
         for(FindWorkByTimeResDto resDto:resDtos){
-            /* 메세지 보내기 */
-            List<SendSmsReqDto> messages = new ArrayList<>();
-            messages.add(new SendSmsReqDto(resDto.getPhoneNumber().replace("-",""), makeContent(resDto.getTitle())));
-            try { sendSmsServer(messages); }
-            catch (Exception e) { throw new SMSNotSentException(); }
 
             /* 알림 보내기 */
             User findUser = userRepository.findById(resDto.getUserId()).orElseThrow(UserNotFoundException::new);
@@ -171,58 +144,6 @@ class NotificationServiceTest {
         return "["+title+"] 시작이 얼마 남지 않았어요! 일정을 위해 준비해 주세요 :)";
     }
 
-    public void sendSmsServer(List<SendSmsReqDto> messages)  throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, URISyntaxException, JsonProcessingException {
-        Long time = System.currentTimeMillis();
-
-        SendSmsApiReqDto smsRequest = new SendSmsApiReqDto("SMS", "COMM", "82", "01034033122", "테스트", messages);
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonBody = objectMapper.writeValueAsString(smsRequest);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("x-ncp-apigw-timestamp", time.toString());
-        headers.set("x-ncp-iam-access-key", this.accessKey);
-        String sig = makeSignature(time); //암호화
-        headers.set("x-ncp-apigw-signature-v2", sig);
-
-        HttpEntity<String> body = new HttpEntity<>(jsonBody,headers);
-
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
-
-        restTemplate.postForObject(new URI("https://sens.apigw.ntruss.com/sms/v2/services/"+this.serviceId+"/messages"), body, SendSmsApiResDto.class);
-    }
-
-
-    public String makeSignature(Long time) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException {
-
-        String space = " ";
-        String newLine = "\n";
-        String method = "POST";
-        String url = "/sms/v2/services/"+ this.serviceId+"/messages";
-        String timestamp = time.toString();
-        String accessKey = this.accessKey;
-        String secretKey = this.secretKey;
-
-        String message = new StringBuilder()
-                .append(method)
-                .append(space)
-                .append(url)
-                .append(newLine)
-                .append(timestamp)
-                .append(newLine)
-                .append(accessKey)
-                .toString();
-
-        SecretKeySpec signingKey = new SecretKeySpec(secretKey.getBytes("UTF-8"), "HmacSHA256");
-        Mac mac = Mac.getInstance("HmacSHA256");
-        mac.init(signingKey);
-
-        byte[] rawHmac = mac.doFinal(message.getBytes("UTF-8"));
-        String encodeBase64String = Base64.encodeBase64String(rawHmac);
-
-        return encodeBase64String;
-    }
 
     public void createUser(){
         User user = User.builder()
